@@ -1,0 +1,152 @@
+One-Layer Rotating Shallow Water Model
+======================================
+
+Classical Form
+--------------
+
+The one-layer, two-dimensional rotating shallow water model on a
+rotating :math:`f`-plane can be written as,
+
+.. math::
+
+   \begin{aligned}
+   \frac{\partial u}{\partial t} + \left(\bf{u} \cdot \nabla\right) u - f v 
+   &= - g \frac{\partial h}{\partial x},\\
+   \frac{\partial v}{\partial t} + \left(\bf{u} \cdot \nabla\right) v + f u 
+   &= - g \frac{\partial h}{\partial y},\\
+   \frac{\partial h}{\partial t} + \nabla \cdot \left( h \bf{u} \right) &= 0.\end{aligned}
+
+This describes the motion of a pancake like fluid in that it is thin in
+the vertical and much longer in the horizontal. It contains pressure
+forces due to the free surface and a Coriolis pseudo-force because of
+the rotating frame of reference.
+
+The fluid moves as columns that can be translated in the horizontal and
+stretched/contracted in the vertical. If the height of a column changes
+then the voriticty must change, as can be reflected in the fact that, in
+the absence of forcing and dissipation, Potential Vorticity is conserved
+following the motion,
+
+.. math::
+
+   \frac{D}{Dt} \left( 
+   \frac{ \frac{\partial v}{\partial x} - \frac{\partial u}{\partial y} + f }{h} \right) = 0.
+
+Conservation Form
+-----------------
+
+There are a variety of forms, these equations can be written. One of
+them is conservation where the three fields that have time derivatives
+are :math:`U = hu`, :math:`V = hv` and :math:`h`.
+
+.. math::
+
+   \begin{aligned}
+   \frac{\partial U}{\partial t} 
+   + \frac{\partial}{\partial x}\left( \frac{U^2}{h} + \frac{g h^2}{2} \right)
+   + \frac{\partial}{\partial y}\left( \frac{U V}{h}  \right) 
+   - f V 
+   &= 0,\\
+   \frac{\partial V}{\partial t} 
+   + \frac{\partial}{\partial x}\left( \frac{U V}{h}  \right) 
+   + \frac{\partial}{\partial y}\left( \frac{V^2}{h} + \frac{g h^2}{2} \right)
+   + f U 
+   &= 0,\\
+   \frac{\partial h}{\partial t} + \nabla \cdot \left( h \bf{u} \right) &= 0.\end{aligned}
+
+Conservation form is attractive because it can help to ensure that,
+using a clever numerical scheme, some quantitites are conserved. Note
+that if you have topography then there are source terms that appear on
+the right-hand side and this causes some problems.
+
+Vorticity-Bernoulli Form
+------------------------
+
+A third form arises from rewriting the nonlinear acceleration terms as a
+gradient and a cross product term. Using a vector identity, it can be
+shown that the above system is mathematically equivalent to the
+following,
+
+.. math::
+
+   \begin{aligned}
+   \frac{\partial u}{\partial t}  - q h v 
+   &= - \frac{\partial B}{\partial x},\\
+   \frac{\partial v}{\partial t}  + q h u 
+   &= - \frac{\partial B}{\partial y},\\
+   \frac{\partial h}{\partial t} + \nabla \left( h \bf{u} \right) &= 0.\end{aligned}
+
+Note that above we have defined the vorticity and the Bernoulli
+function,
+
+.. math::
+
+   \begin{aligned}
+   q &= \frac{\zeta + f}{h} 
+    = \frac{\frac{\partial v}{\partial x} - \frac{\partial u}{\partial y} + f}{h},\\
+   B & = g h + \frac12 \left( u^2 + v^2 \right).\end{aligned}
+
+Before we look at solving this complicated set of equations we consider
+the one and a half dimensional limit.
+
+:math:`1 \frac{1}{2}` Dimensional Limit
+---------------------------------------
+
+We assume that none of the variables depend on one horizontal direction,
+say :math:`y`. But, it is very important to realize that the velocity in
+that direction is not necessarily zero. Indeed, if you have flow in the
+:math:`x`-direction, the Coriolis force will deflect it to the right,
+which will then generate a flow that is perpendicular. This will
+continue and often give rise to inerital oscialltions in the horizontal.
+So we can have motion in either direction but the motion only changes
+with respect to :math:`x`.
+
+If we simply the governing equations we get
+
+.. math::
+
+   \begin{aligned}
+   \frac{\partial u}{\partial t}  - q h v 
+   &= - \frac{\partial B}{\partial x},\\
+   \frac{\partial v}{\partial t}  + q h u 
+   &= 0,\\
+   \frac{\partial h}{\partial t} + \frac{\partial}{\partial x} \left( h u \right) &= 0.\end{aligned}
+
+where the vorticity and the Bernoulli function simplify to,
+
+.. math::
+
+   \begin{aligned}
+   q & = \frac{\zeta + f}{h} = \frac{\frac{\partial v}{\partial x} + f}{h},\\
+   B & = g h^2 + \frac12 \left( u^2 + v^2 \right).\end{aligned}
+
+Conserved Quantities
+--------------------
+
+In the purely conservative or nondissipative limit, there are three
+quantities that are exactly conserved.
+
+1) Mass:
+
+.. math:: M = \int_D h \, dA
+
+2) Total Energy: sum of potential and kinetic energies
+
+.. math:: E = \frac12 \int_D \left(g h^2 + h( u^2 + v^2)\right) \, dA
+
+3) Potenal Enstrophy:
+
+.. math:: Q = \frac12 \int_D  h q^2 \, dA
+
+In a numerical model we cannot expect these to be conserved but we would
+like them to be close to be conserved. If they are very badly conserved
+than this could reflect that the numerical scheme is behaving badly.
+However, just because these are conserved that does not guarantee that
+the solution is correct. But they are usually good indicators as to how
+our method is doing in the conservative limit.
+
+Of course when nonconservative forces are introduced things will change.
+One might argue that since the world is non-dissipative then we don’t
+need to worry about conserving these. However, it is desirable to know
+that basis of your model is well behaved and therefore why we should
+worry about conserved quantities.

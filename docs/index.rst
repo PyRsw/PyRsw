@@ -12,6 +12,7 @@ Contents:
    :maxdepth: 2
 
    plan
+   sw_intro
 
 Indices and tables
 ==================

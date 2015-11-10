@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.11 (TeX Live 2010) (format=pdflatex 2010.7.21)  9 NOV 2015 21:59
+This is pdfTeX, Version 3.1415926-1.40.11 (TeX Live 2010) (format=pdflatex 2010.7.21)  10 NOV 2015 15:18
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -921,6 +921,35 @@ LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <17.28> not available
 ] (./PyRsw.toc
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <10> not available
 (Font)              Font shape `T1/ptm/b/n' tried instead on input line 2.
+
+
+! LaTeX Error: Bad math environment delimiter.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.7 ...out it.} Dimensional Limit}{6}{section.2.4}
+                                                  
+? 
+! Extra }, or forgotten $.
+<argument> ...inue without it.} Dimensional Limit}
+                                                  \hyper@linkend 
+l.7 ...out it.} Dimensional Limit}{6}{section.2.4}
+                                                  
+? 
+! Missing $ inserted.
+<inserted text> 
+                $
+l.7 ...out it.} Dimensional Limit}{6}{section.2.4}
+                                                  
+? 
+! Missing } inserted.
+<inserted text> 
+                }
+l.7 ...out it.} Dimensional Limit}{6}{section.2.4}
+                                                  
+? 
 )
 \tf@toc=\write7
 \openout7 = `PyRsw.toc'.
@@ -947,37 +976,66 @@ LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <24.88> not available
 
 ]
 Chapter 2.
-LaTeX Font Info:    Try loading font information for TS1+ptm on input line 192.
+[5]
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 271.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `\begingroup' on input line 271.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `\endgroup' on input line 271.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `\@@over' on input line 271.
+
+[6] [7] [8
+
+]
+Chapter 3.
+LaTeX Font Info:    Try loading font information for TS1+ptm on input line 342.
 
 (/usr/local/texlive/2010/texmf-dist/tex/latex/psnfss/ts1ptm.fd
 File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
 ) (./PyRsw.ind)
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 207.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 357.
 
-[5]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 207.
+[9]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 357.
  (./PyRsw.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 207.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 357.
 Package rerunfilecheck Info: File `PyRsw.out' has not changed.
-(rerunfilecheck)             Checksum: 429191E882E9A1666C30A0630B7CADAC;92.
+(rerunfilecheck)             Checksum: 8E78916854A14B6657C1F7216ABA0A4C;492.
  ) 
 Here is how much of TeX's memory you used:
- 8559 strings out of 493747
- 120050 string characters out of 3143546
- 203899 words of memory out of 3000000
- 11555 multiletter control sequences out of 15000+200000
- 46126 words of font info for 50 fonts, out of 3000000 for 9000
+ 8626 strings out of 493747
+ 121044 string characters out of 3143546
+ 216267 words of memory out of 3000000
+ 11586 multiletter control sequences out of 15000+200000
+ 52331 words of font info for 62 fonts, out of 3000000 for 9000
  715 hyphenation exceptions out of 8191
- 38i,11n,45p,264b,380s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 38i,21n,45p,448b,380s stack positions out of 5000i,500n,10000p,200000b,50000s
 {/usr/local/texlive/2010/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
-exlive/2010/texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/
-2010/texmf-dist/fonts/type1/urw/helvetic/uhvbo8a.pfb></usr/local/texlive/2010/t
-exmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2010/texmf-dist/
-fonts/type1/urw/times/utmr8a.pfb>
-Output written on PyRsw.pdf (9 pages, 48734 bytes).
+exlive/2010/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/te
+xlive/2010/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/tex
+live/2010/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texl
+ive/2010/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texliv
+e/2010/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/
+2010/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/20
+10/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2010/
+texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2010/t
+exmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/2010/texmf-di
+st/fonts/type1/urw/helvetic/uhvbo8a.pfb></usr/local/texlive/2010/texmf-dist/fon
+ts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2010/texmf-dist/fonts/type1/u
+rw/times/utmr8a.pfb>
+Output written on PyRsw.pdf (13 pages, 133363 bytes).
 PDF statistics:
- 101 PDF objects out of 1000 (max. 8388607)
- 80 compressed objects within 1 object stream
- 28 named destinations out of 1000 (max. 500000)
- 37 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 188 PDF objects out of 1000 (max. 8388607)
+ 154 compressed objects within 2 object streams
+ 41 named destinations out of 1000 (max. 500000)
+ 85 words of extra memory for PDF output out of 10000 (max. 10000000)
 

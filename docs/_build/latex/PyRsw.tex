@@ -19,7 +19,7 @@
 
 
 \title{PyRsw Documentation}
-\date{November 09, 2015}
+\date{November 10, 2015}
 \release{0.1}
 \author{PyRsw Team}
 \newcommand{\sphinxlogo}{}
@@ -185,6 +185,156 @@ openmp + mpi
 \end{enumerate}
 
 \end{enumerate}
+
+
+\chapter{One-Layer Rotating Shallow Water Model}
+\label{sw_intro::doc}\label{sw_intro:one-layer-rotating-shallow-water-model}
+
+\section{Classical Form}
+\label{sw_intro:classical-form}
+The one-layer, two-dimensional rotating shallow water model on a
+rotating \(f\)-plane can be written as,
+\begin{gather}
+\begin{split}\begin{aligned}
+\frac{\partial u}{\partial t} + \left(\bf{u} \cdot \nabla\right) u - f v
+&= - g \frac{\partial h}{\partial x},\\
+\frac{\partial v}{\partial t} + \left(\bf{u} \cdot \nabla\right) v + f u
+&= - g \frac{\partial h}{\partial y},\\
+\frac{\partial h}{\partial t} + \nabla \cdot \left( h \bf{u} \right) &= 0.\end{aligned}\end{split}\notag
+\end{gather}
+This describes the motion of a pancake like fluid in that it is thin in
+the vertical and much longer in the horizontal. It contains pressure
+forces due to the free surface and a Coriolis pseudo-force because of
+the rotating frame of reference.
+
+The fluid moves as columns that can be translated in the horizontal and
+stretched/contracted in the vertical. If the height of a column changes
+then the voriticty must change, as can be reflected in the fact that, in
+the absence of forcing and dissipation, Potential Vorticity is conserved
+following the motion,
+\begin{gather}
+\begin{split}\frac{D}{Dt} \left(
+\frac{ \frac{\partial v}{\partial x} - \frac{\partial u}{\partial y} + f }{h} \right) = 0.\end{split}\notag
+\end{gather}
+
+\section{Conservation Form}
+\label{sw_intro:conservation-form}
+There are a variety of forms, these equations can be written. One of
+them is conservation where the three fields that have time derivatives
+are \(U = hu\), \(V = hv\) and \(h\).
+\begin{gather}
+\begin{split}\begin{aligned}
+\frac{\partial U}{\partial t}
++ \frac{\partial}{\partial x}\left( \frac{U^2}{h} + \frac{g h^2}{2} \right)
++ \frac{\partial}{\partial y}\left( \frac{U V}{h}  \right)
+- f V
+&= 0,\\
+\frac{\partial V}{\partial t}
++ \frac{\partial}{\partial x}\left( \frac{U V}{h}  \right)
++ \frac{\partial}{\partial y}\left( \frac{V^2}{h} + \frac{g h^2}{2} \right)
++ f U
+&= 0,\\
+\frac{\partial h}{\partial t} + \nabla \cdot \left( h \bf{u} \right) &= 0.\end{aligned}\end{split}\notag
+\end{gather}
+Conservation form is attractive because it can help to ensure that,
+using a clever numerical scheme, some quantitites are conserved. Note
+that if you have topography then there are source terms that appear on
+the right-hand side and this causes some problems.
+
+
+\section{Vorticity-Bernoulli Form}
+\label{sw_intro:vorticity-bernoulli-form}
+A third form arises from rewriting the nonlinear acceleration terms as a
+gradient and a cross product term. Using a vector identity, it can be
+shown that the above system is mathematically equivalent to the
+following,
+\begin{gather}
+\begin{split}\begin{aligned}
+\frac{\partial u}{\partial t}  - q h v
+&= - \frac{\partial B}{\partial x},\\
+\frac{\partial v}{\partial t}  + q h u
+&= - \frac{\partial B}{\partial y},\\
+\frac{\partial h}{\partial t} + \nabla \left( h \bf{u} \right) &= 0.\end{aligned}\end{split}\notag
+\end{gather}
+Note that above we have defined the vorticity and the Bernoulli
+function,
+\begin{gather}
+\begin{split}\begin{aligned}
+q &= \frac{\zeta + f}{h}
+ = \frac{\frac{\partial v}{\partial x} - \frac{\partial u}{\partial y} + f}{h},\\
+B & = g h + \frac12 \left( u^2 + v^2 \right).\end{aligned}\end{split}\notag
+\end{gather}
+Before we look at solving this complicated set of equations we consider
+the one and a half dimensional limit.
+
+
+\section{\(1 \frac{1}{2}\) Dimensional Limit}
+\label{sw_intro:dimensional-limit}
+We assume that none of the variables depend on one horizontal direction,
+say \(y\). But, it is very important to realize that the velocity in
+that direction is not necessarily zero. Indeed, if you have flow in the
+\(x\)-direction, the Coriolis force will deflect it to the right,
+which will then generate a flow that is perpendicular. This will
+continue and often give rise to inerital oscialltions in the horizontal.
+So we can have motion in either direction but the motion only changes
+with respect to \(x\).
+
+If we simply the governing equations we get
+\begin{gather}
+\begin{split}\begin{aligned}
+\frac{\partial u}{\partial t}  - q h v
+&= - \frac{\partial B}{\partial x},\\
+\frac{\partial v}{\partial t}  + q h u
+&= 0,\\
+\frac{\partial h}{\partial t} + \frac{\partial}{\partial x} \left( h u \right) &= 0.\end{aligned}\end{split}\notag
+\end{gather}
+where the vorticity and the Bernoulli function simplify to,
+\begin{gather}
+\begin{split}\begin{aligned}
+q & = \frac{\zeta + f}{h} = \frac{\frac{\partial v}{\partial x} + f}{h},\\
+B & = g h^2 + \frac12 \left( u^2 + v^2 \right).\end{aligned}\end{split}\notag
+\end{gather}
+
+\section{Conserved Quantities}
+\label{sw_intro:conserved-quantities}
+In the purely conservative or nondissipative limit, there are three
+quantities that are exactly conserved.
+\begin{enumerate}
+\item {} 
+Mass:
+
+\end{enumerate}
+\begin{gather}
+\begin{split}M = \int_D h \, dA\end{split}\notag
+\end{gather}\begin{enumerate}
+\setcounter{enumi}{1}
+\item {} 
+Total Energy: sum of potential and kinetic energies
+
+\end{enumerate}
+\begin{gather}
+\begin{split}E = \frac12 \int_D \left(g h^2 + h( u^2 + v^2)\right) \, dA\end{split}\notag
+\end{gather}\begin{enumerate}
+\setcounter{enumi}{2}
+\item {} 
+Potenal Enstrophy:
+
+\end{enumerate}
+\begin{gather}
+\begin{split}Q = \frac12 \int_D  h q^2 \, dA\end{split}\notag
+\end{gather}
+In a numerical model we cannot expect these to be conserved but we would
+like them to be close to be conserved. If they are very badly conserved
+than this could reflect that the numerical scheme is behaving badly.
+However, just because these are conserved that does not guarantee that
+the solution is correct. But they are usually good indicators as to how
+our method is doing in the conservative limit.
+
+Of course when nonconservative forces are introduced things will change.
+One might argue that since the world is non-dissipative then we don’t
+need to worry about conserving these. However, it is desirable to know
+that basis of your model is well behaved and therefore why we should
+worry about conserved quantities.
 
 
 \chapter{Indices and tables}

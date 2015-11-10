@@ -1,0 +1,287 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>One-Layer Rotating Shallow Water Model &mdash; pysw 0.1 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="pysw 0.1 documentation" href="../index.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="../index.html" class="fa fa-home"> pysw</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../plan.html">plan</a></li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">pysw</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>One-Layer Rotating Shallow Water Model</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="../_sources/equations/sw_intro.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="one-layer-rotating-shallow-water-model">
+<h1>One-Layer Rotating Shallow Water Model<a class="headerlink" href="#one-layer-rotating-shallow-water-model" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="classical-form">
+<h2>Classical Form<a class="headerlink" href="#classical-form" title="Permalink to this headline">¶</a></h2>
+<p>The one-layer, two-dimensional rotating shallow water model on a
+rotating <span class="math">\(f\)</span>-plane can be written as,</p>
+<div class="math">
+\[\begin{split}\begin{aligned}
+\frac{\partial u}{\partial t} + \left(\bf{u} \cdot \nabla\right) u - f v
+&amp;= - g \frac{\partial h}{\partial x},\\
+\frac{\partial v}{\partial t} + \left(\bf{u} \cdot \nabla\right) v + f u
+&amp;= - g \frac{\partial h}{\partial y},\\
+\frac{\partial h}{\partial t} + \nabla \cdot \left( h \bf{u} \right) &amp;= 0.\end{aligned}\end{split}\]</div>
+<p>This describes the motion of a pancake like fluid in that it is thin in
+the vertical and much longer in the horizontal. It contains pressure
+forces due to the free surface and a Coriolis pseudo-force because of
+the rotating frame of reference.</p>
+<p>The fluid moves as columns that can be translated in the horizontal and
+stretched/contracted in the vertical. If the height of a column changes
+then the voriticty must change, as can be reflected in the fact that, in
+the absence of forcing and dissipation, Potential Vorticity is conserved
+following the motion,</p>
+<div class="math">
+\[\frac{D}{Dt} \left(
+\frac{ \frac{\partial v}{\partial x} - \frac{\partial u}{\partial y} + f }{h} \right) = 0.\]</div>
+</div>
+<div class="section" id="conservation-form">
+<h2>Conservation Form<a class="headerlink" href="#conservation-form" title="Permalink to this headline">¶</a></h2>
+<p>There are a variety of forms, these equations can be written. One of
+them is conservation where the three fields that have time derivatives
+are <span class="math">\(U = hu\)</span>, <span class="math">\(V = hv\)</span> and <span class="math">\(h\)</span>.</p>
+<div class="math">
+\[\begin{split}\begin{aligned}
+\frac{\partial U}{\partial t}
++ \frac{\partial}{\partial x}\left( \frac{U^2}{h} + \frac{g h^2}{2} \right)
++ \frac{\partial}{\partial y}\left( \frac{U V}{h}  \right)
+- f V
+&amp;= 0,\\
+\frac{\partial V}{\partial t}
++ \frac{\partial}{\partial x}\left( \frac{U V}{h}  \right)
++ \frac{\partial}{\partial y}\left( \frac{V^2}{h} + \frac{g h^2}{2} \right)
++ f U
+&amp;= 0,\\
+\frac{\partial h}{\partial t} + \nabla \cdot \left( h \bf{u} \right) &amp;= 0.\end{aligned}\end{split}\]</div>
+<p>Conservation form is attractive because it can help to ensure that,
+using a clever numerical scheme, some quantitites are conserved. Note
+that if you have topography then there are source terms that appear on
+the right-hand side and this causes some problems.</p>
+</div>
+<div class="section" id="vorticity-bernoulli-form">
+<h2>Vorticity-Bernoulli Form<a class="headerlink" href="#vorticity-bernoulli-form" title="Permalink to this headline">¶</a></h2>
+<p>A third form arises from rewriting the nonlinear acceleration terms as a
+gradient and a cross product term. Using a vector identity, it can be
+shown that the above system is mathematically equivalent to the
+following,</p>
+<div class="math">
+\[\begin{split}\begin{aligned}
+\frac{\partial u}{\partial t}  - q h v
+&amp;= - \frac{\partial B}{\partial x},\\
+\frac{\partial v}{\partial t}  + q h u
+&amp;= - \frac{\partial B}{\partial y},\\
+\frac{\partial h}{\partial t} + \nabla \left( h \bf{u} \right) &amp;= 0.\end{aligned}\end{split}\]</div>
+<p>Note that above we have defined the vorticity and the Bernoulli
+function,</p>
+<div class="math">
+\[\begin{split}\begin{aligned}
+q &amp;= \frac{\zeta + f}{h}
+ = \frac{\frac{\partial v}{\partial x} - \frac{\partial u}{\partial y} + f}{h},\\
+B &amp; = g h + \frac12 \left( u^2 + v^2 \right).\end{aligned}\end{split}\]</div>
+<p>Before we look at solving this complicated set of equations</p>
+<blockquote>
+<div><span class="math">\(1 \frac12\)</span> Dimensional Limit</div></blockquote>
+<hr class="docutils" />
+<p>We assume that none of the variables depend on one horizontal direction,
+say <span class="math">\(y\)</span>. But, it is very important to realize that the velocity in
+that direction is not necessarily zero. Indeed, if you have flow in the
+<span class="math">\(x\)</span>-direction, the Coriolis force will deflect it to the right,
+which will then generate a flow that is perpendicular. This will
+continue and often give rise to inerital oscialltions in the horizontal.
+So we can have motion in either direction but the motion only changes
+with respect to <span class="math">\(x\)</span>.</p>
+<p>If we simply the governing equations we get</p>
+<div class="math">
+\[\begin{split}\begin{aligned}
+\frac{\partial u}{\partial t}  - q h v
+&amp;= - \frac{\partial B}{\partial x},\\
+\frac{\partial v}{\partial t}  + q h u
+&amp;= 0,\\
+\frac{\partial h}{\partial t} + \frac{\partial}{\partial x} \left( h u \right) &amp;= 0.\end{aligned}\end{split}\]</div>
+<p>where the vorticity and the Bernoulli function simplify to,</p>
+<div class="math">
+\[\begin{split}\begin{aligned}
+q &amp; = \frac{\zeta + f}{h} = \frac{\frac{\partial v}{\partial x} + f}{h},\\
+B &amp; = g h^2 + \frac12 \left( u^2 + v^2 \right).\end{aligned}\end{split}\]</div>
+</div>
+<div class="section" id="conserved-quantities">
+<h2>Conserved Quantities<a class="headerlink" href="#conserved-quantities" title="Permalink to this headline">¶</a></h2>
+<p>In the purely conservative or nondissipative limit, there are three
+quantities that are exactly conserved.</p>
+<ol class="arabic simple">
+<li>Mass:</li>
+</ol>
+<div class="math">
+\[M = \int_D h \, dA\]</div>
+<ol class="arabic simple" start="2">
+<li>Total Energy: sum of potential and kinetic energies</li>
+</ol>
+<div class="math">
+\[E = \frac12 \int_D \left(g h^2 + h( u^2 + v^2)\right) \, dA\]</div>
+<ol class="arabic simple" start="3">
+<li>Potenal Enstrophy:</li>
+</ol>
+<div class="math">
+\[Q = \frac12 \int_D  h q^2 \, dA\]</div>
+<p>In a numerical model we cannot expect these to be conserved but we would
+like them to be close to be conserved. If they are very badly conserved
+than this could reflect that the numerical scheme is behaving badly.
+However, just because these are conserved that does not guarantee that
+the solution is correct. But they are usually good indicators as to how
+our method is doing in the conservative limit.</p>
+<p>Of course when nonconservative forces are introduced things will change.
+One might argue that since the world is non-dissipative then we don’t
+need to worry about conserving these. However, it is desirable to know
+that basis of your model is well behaved and therefore why we should
+worry about conserved quantities.</p>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, PyRsw team.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
