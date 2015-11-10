@@ -2,8 +2,8 @@ This is pdfTeX, Version 3.1415926-1.40.11 (TeX Live 2010) (format=pdflatex 2010.
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**pysw.tex
-(./pysw.tex
+**PyRsw.tex
+(./PyRsw.tex
 LaTeX2e <2009/09/24>
 Babel <v3.8l> and hyphenation patterns for english, dumylang, nohyphenation, ge
 rman-x-2009-06-19, ngerman-x-2009-06-19, ancientgreek, ibycus, arabic, armenian
@@ -813,12 +813,12 @@ Package: float 2001/11/08 v1.3d Float enhancements (AL)
 \bigstrutjot=\dimen139
 )
 \@indexfile=\write5
-\openout5 = `pysw.idx'.
+\openout5 = `PyRsw.idx'.
 
 
-Writing index file pysw.idx
-(./pysw.aux)
-\openout1 = `pysw.aux'.
+Writing index file PyRsw.idx
+(./PyRsw.aux)
+\openout1 = `PyRsw.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 125.
 LaTeX Font Info:    ... okay on input line 125.
@@ -891,9 +891,9 @@ LaTeX Info: Redefining \ref on input line 125.
 LaTeX Info: Redefining \pageref on input line 125.
 LaTeX Info: Redefining \nameref on input line 125.
 
-(./pysw.out) (./pysw.out)
+(./PyRsw.out) (./PyRsw.out)
 \@outlinefile=\write6
-\openout6 = `pysw.out'.
+\openout6 = `PyRsw.out'.
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 128--128
@@ -918,12 +918,12 @@ LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <17.28> not available
 
 {/usr/local/texlive/2010/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2
 
-] (./pysw.toc
+] (./PyRsw.toc
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <10> not available
 (Font)              Font shape `T1/ptm/b/n' tried instead on input line 2.
 )
 \tf@toc=\write7
-\openout7 = `pysw.toc'.
+\openout7 = `PyRsw.toc'.
 
 
 Adding blank page after the table of contents.
@@ -951,30 +951,30 @@ LaTeX Font Info:    Try loading font information for TS1+ptm on input line 192.
 
 (/usr/local/texlive/2010/texmf-dist/tex/latex/psnfss/ts1ptm.fd
 File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
-) (./pysw.ind)
+) (./PyRsw.ind)
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 207.
 
 [5]
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 207.
- (./pysw.aux)
+ (./PyRsw.aux)
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 207.
-Package rerunfilecheck Info: File `pysw.out' has not changed.
+Package rerunfilecheck Info: File `PyRsw.out' has not changed.
 (rerunfilecheck)             Checksum: 429191E882E9A1666C30A0630B7CADAC;92.
  ) 
 Here is how much of TeX's memory you used:
  8559 strings out of 493747
- 120033 string characters out of 3143546
- 203917 words of memory out of 3000000
+ 120050 string characters out of 3143546
+ 203899 words of memory out of 3000000
  11555 multiletter control sequences out of 15000+200000
  46126 words of font info for 50 fonts, out of 3000000 for 9000
  715 hyphenation exceptions out of 8191
- 38i,11n,45p,263b,380s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 38i,11n,45p,264b,380s stack positions out of 5000i,500n,10000p,200000b,50000s
 {/usr/local/texlive/2010/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
 exlive/2010/texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/
 2010/texmf-dist/fonts/type1/urw/helvetic/uhvbo8a.pfb></usr/local/texlive/2010/t
 exmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2010/texmf-dist/
 fonts/type1/urw/times/utmr8a.pfb>
-Output written on pysw.pdf (9 pages, 48971 bytes).
+Output written on PyRsw.pdf (9 pages, 48734 bytes).
 PDF statistics:
  101 PDF objects out of 1000 (max. 8388607)
  80 compressed objects within 1 object stream
