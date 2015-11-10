@@ -1,2 +1,2 @@
-# PyRsw
-Numerical Simulations of the Rotating Shallow Water Model
+# pysw
+Python code to solve the Rotating Shallow Water Model

@@ -1,0 +1,209 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Layered quasigeostrophic model &mdash; pysw 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="pysw 0.1 documentation" href="index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="layered-quasigeostrophic-model">
+<h1>Layered quasigeostrophic model<a class="headerlink" href="#layered-quasigeostrophic-model" title="Permalink to this headline">¶</a></h1>
+<p>The <span class="math">\({\mathrm{N}}\)</span>-layer quasigeostrophic (QG) potential vorticity
+is</p>
+<div class="math">
+\[\begin{split}\begin{aligned}
+{q_1} &amp;= {\nabla^2}\psi_1 + \frac{f_0^2}{H_1} \left(\frac{\psi_{2}-\psi_1}{g'_{1}}\right)\,,  \qquad &amp; i =1{\, ,}\nonumber \\
+{q_n} &amp;= {\nabla^2}\psi_n + \frac{f_0^2}{H_n} \left(\frac{\psi_{n-1}-\psi_n}{g'_{n-1}}  - \frac{\psi_{i}-\psi_{n+1}}{g'_{i}}\right)\,,  \qquad &amp;i = 2,{\mathrm{N}}-1 {\, ,}\nonumber \\
+{q_{\mathrm{N}}} &amp;= {\nabla^2}\psi_{\mathrm{N}}+ \frac{f_0^2}{H_{\mathrm{N}}} \left(\frac{\psi_{\textsf{N}-1}-\psi_{\mathrm{N}}}{g'_{{\mathrm{N}}-1}}\right) + \frac{f_0}{H_{\mathrm{N}}}h_b (x,y)\,,  \qquad &amp; i ={\mathrm{N}}\,,\end{aligned}\end{split}\]</div>
+<p>where <span class="math">\(q_n\)</span> is the n’th layer QG potential vorticity, and
+<span class="math">\(\psi_n\)</span> is the streamfunction, <span class="math">\(f_0\)</span> is the inertial
+frequency, n’th <span class="math">\(H_n\)</span> is the layer depth, and <span class="math">\(h_b\)</span> is the
+bottom topography. (Note that in QG <span class="math">\(h_b/H_{\mathrm{N}}&lt;&lt; 1\)</span>.)
+Also the n’th buoyancy jump (reduced gravity) is</p>
+<div class="math">
+\[g'_n \equiv g \frac{\rho_{n}-\rho_{n+1}}{\rho_n}{\, ,}\]</div>
+<p>where <span class="math">\(g\)</span> is the acceleration due to gravity and <span class="math">\(\rho_n\)</span> is
+the layer density.</p>
+<p>The dynamics of the system is given by the evolution of PV. We introduce
+a background flow that can vary in the horizontal. The streamfunction
+associated with this flow can be denoted with <span class="math">\(\Psi_n(x,y)\)</span> for
+each layer and geostrophy yields its corresponding velocity
+<span class="math">\(\vec{V_n} = (U_n(x,y),V_n(x,y))\)</span> where <span class="math">\(\Psi_{ny} = - U_n\)</span>
+and <span class="math">\(\Psi_{nx} = V_n\)</span>. We can perturb the stream function in each
+layer into a background flow and deviations from that flow as,</p>
+<div class="math">
+\[\begin{aligned}
+\psi_n^{{\text{tot}}} = \Psi_n + \psi_n.\end{aligned}\]</div>
+<p>With this basic decomposition we can than write out the corresponding
+decompositions in velocity</p>
+<div class="math">
+\[\begin{split}\begin{aligned}
+\label{eq:Uequiv}
+u_n^{{{\text{tot}}}} = U_n - \psi_{n y}{\, ,}\nonumber \\
+v_n^{{\text{tot}}} = V_n + \psi_{n x} {\, ,}\end{aligned}\end{split}\]</div>
+<p>and</p>
+<div class="math">
+\[q_n^{{\text{tot}}} = Q_n + \delta_{n{\mathrm{N}}}\frac{f_0}{H_{\mathrm{N}}}h_b + q_n {\, ,}\]</div>
+<p>where <span class="math">\(Q_n + \delta_{n{\mathrm{N}}}\frac{f_0}{H_{\mathrm{N}}}h_b\)</span>
+is n’th layer background PV, we obtain the evolution equations</p>
+<div class="math">
+\[\begin{split}\begin{aligned}
+\label{eq:qg_dynamics}
+{q_n}_t + \mathsf{J}(\psi_n,q_n + \delta_{n {\mathrm{N}}} \frac{f_0}{H_{\mathrm{N}}}h_b )&amp; + U_n ({q_n}_x + \delta_{n {\mathrm{N}}} \frac{f_0}{H_{\mathrm{N}}}h_{bx}) + V_n ({q_n}_y + \delta_{n {\mathrm{N}}} \frac{f_0}{H_{\mathrm{N}}}h_{by})+ \nonumber
+\\ &amp; {Q_n}_y {\psi_n}_x - {Q_n}_x {\psi_n}_y = {\text{ssd}}- r_{ek} \delta_{n{\mathrm{N}}} {\nabla^2}\psi_n {\, ,}\qquad n = 1,{\mathrm{N}}{\, ,}\end{aligned}\end{split}\]</div>
+<p>where <span class="math">\({\text{ssd}}\)</span> is stands for small scale dissipation, which
+is achieved by an spectral exponential filter or hyperviscosity, and
+<span class="math">\(r_{ek}\)</span> is the linear bottom drag coefficient. The Dirac delta,
+<span class="math">\(\delta_{nN}\)</span>, indicates that the drag is only applied in the
+bottom layer.</p>
+<div class="section" id="linear-stability-analysis">
+<h2>Linear Stability Analysis<a class="headerlink" href="#linear-stability-analysis" title="Permalink to this headline">¶</a></h2>
+<p>In order to study the stability of a jet in the context of our
+<span class="math">\(n\)</span>-layer QG model we focus our attention on basic states that
+consist of zonal flows. i.e. <span class="math">\(\Psi_n(y)\)</span> only. If we assume that
+the quadratic quantities we can then linearize to obtain in the
+conservative limit over a flat bottom,</p>
+<div class="math">
+\[\begin{aligned}
+\label{eq:qglin_dynamics}
+{q_n}_t  + U_n {q_n}_x + {Q_n}_y {\psi_n}_x  = 0,\end{aligned}\]</div>
+<p>for <span class="math">\(n = 1, \cdots, N\)</span>.</p>
+<p>We assume that the perturbations are normal modes in the zonal direction
+and time,</p>
+<div class="math">
+\[\psi_n  = {\mathrm{Re}}[ \hat \psi_n e^{i(kx - \omega t)} ].\]</div>
+<p>This implies that the PV will be modified appropriately and we denote it
+with <span class="math">\(\hat q_n\)</span>.</p>
+<p>We substitute this into the linear equations and then divide by the
+exponential to obtain,</p>
+<div class="math">
+\[\begin{aligned}
+c  {\hat q_n}  =  U_n {\hat q_n} +  {Q_n}_y {\hat \psi_n} ,\end{aligned}\]</div>
+<p>where the basic state only depends on <span class="math">\(y\)</span>, and layer of course,
+and we have introduced the phase speed <span class="math">\(c=\omega/k\)</span>. Note that the
+actual PVs are</p>
+<div class="math">
+\[\begin{split}\begin{aligned}
+{\hat q_1} &amp;= (\partial_{yy} - k^2) \hat \psi_1 + \frac{f_0^2}{H_1} \left(\frac{\hat \psi_{2}-\hat \psi_1}{g'_{1}}\right)\,,  \qquad &amp; i =1{\, ,}\nonumber \\
+{\hat q_n} &amp;= (\partial_{yy} - k^2)\psi_n + \frac{f_0^2}{H_n} \left(\frac{\hat \psi_{n-1}-
+\hat \psi_n}{g'_{n-1}}  - \frac{\hat \psi_{i}-\hat \psi_{n+1}}{g'_{i}}\right)\,,  \qquad &amp;i = 2,{\mathrm{N}}-1 {\, ,}\nonumber \\
+{\hat q_{\mathrm{N}}} &amp;= (\partial_{yy} - k^2)\hat \psi_{\mathrm{N}}+ \frac{f_0^2}{H_{\mathrm{N}}} \left(\frac{\hat \psi_{\textsf{N}-1} - \hat \psi_{\mathrm{N}}}{g'_{{\mathrm{N}}-1}}\right)\,,  \qquad &amp; i ={\mathrm{N}}\,,\end{aligned}\end{split}\]</div>
+</div>
+</div>
+<div class="section" id="special-case-one-layer-model">
+<h1>Special case: one-layer model<a class="headerlink" href="#special-case-one-layer-model" title="Permalink to this headline">¶</a></h1>
+<p>In the one-layer case we have</p>
+<div class="math">
+\[\begin{aligned}
+c  {\hat q_1}  =  U_1 {\hat q_1} +  {Q_1}_y {\hat \psi_1} ,\end{aligned}\]</div>
+<div class="math">
+\[\begin{aligned}
+{\hat q_1} = \left[ \partial_{yy} - k^2 -  \frac{f_0^2}{g'_1 H_1} \right] \hat \psi_1.\end{aligned}\]</div>
+</div>
+<div class="section" id="special-case-two-layer-model">
+<h1>Special case: two-layer model<a class="headerlink" href="#special-case-two-layer-model" title="Permalink to this headline">¶</a></h1>
+<p>In the two-layer case we have</p>
+<div class="math">
+\[\begin{aligned}
+c  {\hat q_n}  =  U_n {\hat q_n} +  {Q_n}_y {\hat \psi_n} ,\end{aligned}\]</div>
+<div class="math">
+\[\begin{split}\begin{aligned}
+{\hat q_1} &amp;= \left[ \partial_{yy} - k^2 -  \frac{f_0^2}{g'_1 H_1}\right] \hat \psi_1 + \frac{f_0^2}{g'_1 H_1} \hat \psi_{2}, \\
+{\hat q_2} &amp;= \frac{f_0^2}{g'_1 H_2}\hat \psi_1+ \left[ \partial_{yy} - k^2 -  \frac{f_0^2}{g'_1 H_2} \right] \hat \psi_2
+.\end{aligned}\end{split}\]</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Layered quasigeostrophic model</a><ul>
+<li><a class="reference internal" href="#linear-stability-analysis">Linear Stability Analysis</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#special-case-one-layer-model">Special case: one-layer model</a></li>
+<li><a class="reference internal" href="#special-case-two-layer-model">Special case: two-layer model</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/notation_layered_stability.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, Francis Poulin and Ben Storer.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.6</a>
+      
+      |
+      <a href="_sources/notation_layered_stability.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

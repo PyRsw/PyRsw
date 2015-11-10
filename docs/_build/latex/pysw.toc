@@ -1,0 +1,6 @@
+\select@language {english}
+\contentsline {chapter}{\numberline {1}Layered quasigeostrophic model}{3}{chapter.1}
+\contentsline {section}{\numberline {1.1}Linear Stability Analysis}{4}{section.1.1}
+\contentsline {chapter}{\numberline {2}Special case: one-layer model}{5}{chapter.2}
+\contentsline {chapter}{\numberline {3}Special case: two-layer model}{7}{chapter.3}
+\contentsline {chapter}{\numberline {4}Indices and tables}{9}{chapter.4}
