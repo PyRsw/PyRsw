@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# pysw documentation build configuration file, created by
+# PyRsw documentation build configuration file, created by
 # sphinx-quickstart on Mon Nov  9 14:11:37 2015.
 #
 # This file is execfile()d with the current directory set to its
@@ -49,7 +49,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'pysw'
+project = u'PyRsw'
 copyright = u'2015, PyRsw team'
 author = u'PyRsw team'
 
