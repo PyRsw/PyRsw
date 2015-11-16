@@ -30,28 +30,28 @@ class Simulation:
     # First-level initialization, default values
     def __init__(self):
 
-        self.Nx = 1                # Default grid size
+        self.Nx = 1                 # Default grid size
         self.Ny = 1
         self.Nz = 1
 
-        self.Lx = 1                # Default domain sizes
+        self.Lx = 1                 # Default domain sizes
         self.Ly = 1
 
-        self.nfluxes = 0           # Length of flux history
+        self.nfluxes = 0            # Length of flux history
         self.fluxes = Flux()
         
-        self.method = ''           # Spectral or Finite Volume (FV)?
+        self.method = 'Spectral'    # Spectral or Finite Volume (FV)?
 
-        self.dynamics = ''         # Nonlinear or Linear
+        self.dynamics = 'Nonlinear' # Nonlinear or Linear
         
-        self.g    = 9.81           # gravity
-        self.f0   = 1e-4           # Coriolis
-        self.cfl  = 0.1            # default CFL
-        self.time = 0              # initial time
-        self.min_dt = 1e-3         # minimum timestep
+        self.g    = 9.81            # gravity
+        self.f0   = 1e-4            # Coriolis
+        self.cfl  = 0.1             # default CFL
+        self.time = 0               # initial time
+        self.min_dt = 1e-3          # minimum timestep
 
-        self.geomx = 'periodic'    # x boundary condition
-        self.geomy = 'periodic'    # y boundary condition
+        self.geomx = 'periodic'     # x boundary condition
+        self.geomy = 'periodic'     # y boundary condition
 
         self.cmap = 'seismic'
         
@@ -63,11 +63,20 @@ class Simulation:
         self.frame_count = 0
         self.ylims = [[],[],[]]
 
-        self.topo_func = null_topo # Default to no topograpy
+        self.topo_func = null_topo  # Default to no topograpy
         
     # Full initialization for once the user has specified parameters
     def initialize(self):
 
+        print 'Parameters:'
+        print '-----------'
+        print 'geom     = ', self.geom
+        print 'geomx    = ', self.geomx
+        print 'stepper  = ', self.stepper
+        print 'method   = ', self.method
+        print 'dynamics = ', self.dynamics
+        print ' '
+        
         self.frame_count = 0
         
         # Initialize grids and cell centres
@@ -77,12 +86,12 @@ class Simulation:
             dx = self.Lx/self.Nx
             self.x = np.arange(dx/2,self.Lx,dx)
             dxs[0] = dx
-            print('dx = ', dx)
+            #print('dx = ', dx)
         if self.Ny > 1:
             dy = self.Ly/self.Ny
             self.y = np.arange(dy/2,self.Ly,dy)
             dxs[1] = dy
-            print('dy = ', dy)
+            #print('dy = ', dy)
         self.dx = dxs
 
         # Initialize differentiation and averaging operators
@@ -105,6 +114,7 @@ class Simulation:
         self.topo_func(self)
 
         # Prepare the spectral filter if we're using one
+        Nkx, Nky = len(self.kx), len(self.ky)
         if self.method == 'Spectral':
             kmax = max(self.kx.ravel())
             ks = 0.4*kmax
@@ -112,8 +122,8 @@ class Simulation:
             alpha = 0.69*ks**(-1.88/np.log(km/ks))
             beta  = 1.88/np.log(km/ks)
             KX,KY = np.meshgrid(self.kx,self.ky,indexing='ij')
-            self.sfilt = np.exp(-alpha*(KX**2)**(beta/2.)-alpha*(KY**2)**(beta/2.)).reshape((self.Nx,self.Ny))
-
+            self.sfilt = np.exp(-alpha*(KX**2)**(beta/2.)-alpha*(KY**2)**(beta/2.)).reshape((Nkx,Nky))
+        
     def prepare_for_run(self):
 
         # If we're going to be plotting, then initialize the plots
@@ -123,7 +133,6 @@ class Simulation:
         self.initialize_plots(self)
         self.next_plot_time = self.plott
         
-        #self.initialize_plots = Plot_tools.initialize_plots_hov
         num_plot = self.end_time/self.plott+1
         if self.Nx > 1:
             self.hov_h = np.zeros((self.Nx,self.Nz,num_plot))
@@ -182,28 +191,19 @@ class Simulation:
 
         return do_plot, do_diag, do_save
 
-    # Spectral filter
-    def apply_filter(self):
-        for ii in range(self.Nz):
-            self.soln.u[:,:,ii] = ifftn(self.sfilt*fftn(self.soln.u[:,:,ii],axes=[0,1]),axes=[0,1]).real
-            self.soln.v[:,:,ii] = ifftn(self.sfilt*fftn(self.soln.v[:,:,ii],axes=[0,1]),axes=[0,1]).real
-            self.soln.h[:,:,ii] = ifftn(self.sfilt*fftn(self.soln.h[:,:,ii],axes=[0,1]),axes=[0,1]).real
-
-
     # Advance the simulation one time-step.
     def step(self):
-        self.compute_dt()
+        self.compute_dt() 
 
         # Check if we need to adjust the time-step
         # to match an output time
-        #FJP: add advance_hov here?
         do_plot, do_diag, do_save = self.adjust_dt()
 
         self.stepper(self)
 
         # Filter if necessary
         if self.method == 'Spectral':
-            self.apply_filter()
+            self.apply_filter(self)
 
         self.time += self.dt
        
@@ -273,7 +273,6 @@ class Simulation:
 
         if self.diagnose:
             Diagnose.plot(self)
-
         
         if (self.animate == 'Anim'):
             plt.ioff()
@@ -284,24 +283,6 @@ class Simulation:
 
         if self.diagnose:
             Diagnose.save(self)
-
-        # FJP: Put into Diagnose
-        # FJP: compute power spectrum of divergence of mass flux
-        plt.figure
-        t = np.arange(0,self.end_time+self.plott,self.plott)/86400.
-        
-        for L in range(self.Nz):
-            field = self.hov_h[:,0,:].T - np.sum(self.Hs[L:])
-            plt.subplot(self.Nz,1,L+1)
-            plt.pcolormesh(self.x/1e3,t, field,
-                            cmap=self.cmap, vmin = np.min(field.ravel()), vmax = np.max(field.ravel()))
-            plt.xlim([self.x[0]/1e3, self.x[-1]/1e3])
-            plt.ylim([t[0], t[-1]])
-            plt.title(r"$Hovm{\"o}ller Plot\, {of} \,\, \eta$")
-            plt.xlabel(r"$distance \, \, (km)$")
-            plt.ylabel(r"$Time \, \, (days)$")
-            plt.colorbar()
-        plt.show()
 
     # Compute time-step using CFL condition.
     def compute_dt(self):

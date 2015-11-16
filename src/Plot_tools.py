@@ -82,11 +82,9 @@ def update_save(sim):
     sim.fig.savefig('Frames/{0:05d}.png'.format(sim.frame_count))
     sim.frame_count += 1
 
-# Update plot objects if using hov
+
 def update_hov(sim):
 
-    print "hov_count", sim.hov_count, sim.time
-    
     sim.fig.suptitle(smart_time(sim.time))
     if sim.Nx > 1:
         sim.hov_h[:,:,sim.hov_count] = sim.soln.h[:,0,:-1]
@@ -96,22 +94,6 @@ def update_hov(sim):
         x = sim.y/1e3
     sim.hov_count += 1
     
-    """
-    plt.figure(sim.fig.number)
-    t = np.arange(0,sim.end_time+sim.plott,sim.plott)/86400.
-    # Update h
-    for L in range(sim.Nz):
-        plt.subplot(sim.Nz,1,L+1)
-        #sim.Qs[L].set_array(sim.hov_h[:-1,L,:-1].T.ravel() - np.sum(sim.Hs[L:]))
-        plt.pcolormesh(x,t[sim.hov_count-1:sim.hov_count+1],
-                        sim.hov_h[:,L,sim.hov_count-1:sim.hov_count+1].T - np.sum(sim.Hs[L:]),
-                        cmap=sim.cmap,
-                        vmin = sim.vmin[L], vmax = sim.vmax[L])
-
-    plt.pause(0.01)
-    plt.draw()
-    """
-
 
 # Initialize plot objects for anim or save
 def initialize_plots_animsave(sim):
@@ -152,10 +134,8 @@ def initialize_plots_animsave(sim):
             l, = plt.plot(x,sim.soln.u[:,:,L].ravel(), linewidth=2)
             if len(sim.ylims[0]) == 2:
                 plt.ylim(sim.ylims[0])
-            if sim.method == 'Spectral':
-                plt.ylabel('u')
-            else:
-                plt.ylabel('uh')
+            plt.ylabel('u')
+            plt.ylim([-0.1, 0.1])
             Qs[0] += [l]
 
         # Plot v
@@ -169,10 +149,8 @@ def initialize_plots_animsave(sim):
             l, = plt.plot(x,sim.soln.v[:,:,L].ravel(), linewidth=2)
             if len(sim.ylims[1]) == 2:
                 plt.ylim(sim.ylims[1])
-            if sim.method == 'Spectral':
-                plt.ylabel('v')
-            else:
-                plt.ylabel('vh')
+            plt.ylabel('v')
+            plt.ylim([-0.1, 0.1]);
             Qs[1] += [l]
 
         # Plot h
@@ -186,6 +164,7 @@ def initialize_plots_animsave(sim):
             l, = plt.plot(x,sim.soln.h[:,:,L].ravel() - np.sum(sim.Hs[L:]), linewidth=2)
             if len(sim.ylims[2]) == 2:
                 plt.ylim(sim.ylims[2])
+            plt.ylim([-0.2, 1.2]);
             plt.ylabel('eta')
             Qs[2] += [l]
 
