@@ -140,7 +140,6 @@ class Simulation:
         if self.animate != 'None':
             if (self.animate == 'Anim') or (self.animate == 'Save'):
                 self.initialize_plots = Plot_tools.initialize_plots_animsave
-        self.initialize_plots(self)
         self.next_plot_time = self.plott
         
         num_plot = self.end_time/self.plott+1
@@ -151,6 +150,8 @@ class Simulation:
             self.hov_h = np.zeros((self.Ny,self.Nz,num_plot))
             self.hov_h[:,:,0] = self.soln.h[0,:,:-1]
         self.hov_count = 1
+
+        self.initialize_plots(self)
 
         # If we're going to be diagnosing, initialize those
         Diagnose.initialize_diagnostics(self)
@@ -296,25 +297,13 @@ class Simulation:
     # Compute time-step using CFL condition.
     def compute_dt(self):
         c = np.sqrt(self.g*np.sum(self.Hs))
-        eps = 1.e-8 
-        hs = self.soln.h[:,:,:self.Nz] - self.soln.h[:,:,1:]
+        eps = 1e-8
 
-        #FJP: really need to remove all these if statements
-        if self.Nx > 1:
-            u = self.soln.u[:,:,:self.Nz]
-            
-            max_u = np.max(np.abs(u.ravel()))
-            dt_x = self.dx[0]/(max_u+2*c)
-        else:
-            dt_x = np.Inf
+        max_u = np.max(np.abs(self.soln.u.ravel()))
+        max_v = np.max(np.abs(self.soln.v.ravel()))
 
-        if self.Ny > 1:
-            u = self.soln.v[:,:,:self.Nz]
-            
-            max_v = np.max(np.abs(u.ravel()))
-            dt_y = self.dx[1]/(max_v+2*c)
-        else:
-            dt_y = np.Inf
+        dt_x = self.end_time - ((self.Nx-1)/(self.Nx-1+eps))*(self.end_time - self.dx[0]/(max_u+2*c))
+        dt_y = self.end_time - ((self.Ny-1)/(self.Ny-1+eps))*(self.end_time - self.dx[1]/(max_v+2*c))
 
         self.dt = max([self.cfl*min([dt_x,dt_y]),self.min_dt])
 
