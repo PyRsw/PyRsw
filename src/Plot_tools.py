@@ -135,7 +135,7 @@ def initialize_plots_animsave(sim):
             if len(sim.ylims[0]) == 2:
                 plt.ylim(sim.ylims[0])
             plt.ylabel('u')
-            plt.ylim([-0.1, 0.1])
+            plt.ylim([-0.2, 0.2])
             Qs[0] += [l]
 
         # Plot v
@@ -150,7 +150,7 @@ def initialize_plots_animsave(sim):
             if len(sim.ylims[1]) == 2:
                 plt.ylim(sim.ylims[1])
             plt.ylabel('v')
-            plt.ylim([-0.1, 0.1]);
+            plt.ylim([-0.2, 0.2]);
             Qs[1] += [l]
 
         # Plot h

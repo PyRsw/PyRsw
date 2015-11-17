@@ -70,11 +70,13 @@ class Simulation:
 
         print 'Parameters:'
         print '-----------'
-        print 'geom     = ', self.geom
         print 'geomx    = ', self.geomx
         print 'stepper  = ', self.stepper
         print 'method   = ', self.method
         print 'dynamics = ', self.dynamics
+        print 'Nx       = ', self.Nx
+        print 'Ny       = ', self.Ny
+        print 'Nz       = ', self.Nz
         print ' '
         
         self.frame_count = 0
@@ -113,16 +115,24 @@ class Simulation:
         self.curr_flux = Solution(self.Nx,self.Ny,self.Nz)
         self.topo_func(self)
 
-        # Prepare the spectral filter if we're using one
-        Nkx, Nky = len(self.kx), len(self.ky)
-        if self.method == 'Spectral':
-            kmax = max(self.kx.ravel())
-            ks = 0.4*kmax
-            km = 0.5*kmax
-            alpha = 0.69*ks**(-1.88/np.log(km/ks))
-            beta  = 1.88/np.log(km/ks)
-            KX,KY = np.meshgrid(self.kx,self.ky,indexing='ij')
-            self.sfilt = np.exp(-alpha*(KX**2)**(beta/2.)-alpha*(KY**2)**(beta/2.)).reshape((Nkx,Nky))
+        # Default parameters as Chris Suggests from his thesis
+        fcut, ford, fstr = 0.6, 2.0, 20.0
+        if self.Nx>1:
+            k = self.kx/max(self.kx.ravel())
+            filtx = np.exp(-fstr*((np.abs(k)-fcut)/(1-fcut))**ford)*(np.abs(k)>fcut) + (np.abs(k)<fcut)
+            filtx = filtx.reshape((self.Nkx,1))
+        else:
+            filtx = np.array([1.0])
+                
+        if self.Ny>1:
+            k = self.ky/max(self.ky.ravel())
+            filty = np.exp(-fstr*((np.abs(k)-fcut)/(1-fcut))**ford)*(np.abs(k)>fcut) + (np.abs(k)<fcut)
+            filty = filty.reshape((1,self.Nky))
+        else:
+            filty = np.array([1.0])
+                
+        self.sfilt = np.tile(filtx,(1,self.Nky))*np.tile(filty,(self.Nkx,1))
+            
         
     def prepare_for_run(self):
 
@@ -187,7 +197,6 @@ class Simulation:
         if self.output:
             if t + self.min_dt >= self.next_save_time:
                 do_save = True
-
 
         return do_plot, do_diag, do_save
 
