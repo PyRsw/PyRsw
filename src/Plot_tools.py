@@ -49,6 +49,31 @@ def update_anim(sim):
     plt.pause(0.01)
     plt.draw()
 
+# Create Hovmuller plot at end of anim simulation
+def plot_hov(sim):
+    plt.figure()
+    t = np.arange(0,sim.end_time+sim.plott,sim.plott)/86400.
+
+    if sim.Ny==1:
+        x = sim.x/1e3
+        xlab = 'x (km)'
+    elif sim.Nx == 1:
+        x = sim.y/1e3
+        xlab = 'y (km)'
+
+    for L in range(sim.Nz):
+        field = sim.hov_h[:,0,:].T - np.sum(sim.Hs[L:])
+        cv = np.max(np.abs(field.ravel()))
+        plt.subplot(sim.Nz,1,L+1)
+        plt.pcolormesh(x,t, field,
+            cmap=sim.cmap, vmin = -cv, vmax = cv)
+        plt.axis('tight')
+        plt.title(r"$Hovm{\"o}ller Plot\, {of} \,\, \eta$")
+        plt.xlabel(xlab)
+        plt.ylabel(r"$Time \, \, (days)$")
+        plt.colorbar()
+
+
 # Update plot objects if saving
 def update_save(sim):
 
