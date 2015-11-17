@@ -47,7 +47,7 @@ def SPECTRAL_x(sim):       # Set the differentiation operators
     elif sim.geomx == 'periodic':
         kx = 2*np.pi/sim.Lx*np.hstack([range(0,int(sim.Nx/2)), range(-int(sim.Nx/2),0)])
         sim.kx = kx.copy()
-        sim.ik = 1j*np.tile(kx.reshape((sim.Nkx,1)),(1,sim.Nky))
+        sim.ik = 1j*np.tile(kx.reshape((sim.Nkx,1)),(1,sim.Ny))
         
         sim.ddx_u = ddx_period
         sim.ddx_v = ddx_period
@@ -55,7 +55,7 @@ def SPECTRAL_x(sim):       # Set the differentiation operators
     elif sim.geomx == 'walls':
         kx = np.pi/sim.Lx*np.hstack([range(0,int(sim.Nx)), range(-int(sim.Nx),0)])
         sim.kx = kx.copy()
-        sim.ik = 1j*np.tile(kx.reshape((sim.Nkx,1)),(1,sim.Nky))
+        sim.ik = 1j*np.tile(kx.reshape((sim.Nkx,1)),(1,sim.Ny))
         
         sim.ddx_u = ddx_odd
         sim.ddx_v = ddx_even

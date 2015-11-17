@@ -14,9 +14,7 @@ def ddy_even(f,il):
 
     N = f.shape[1]
     fe = np.concatenate([f,f[:,::-1]],axis=1)
-    fe = np.concatenate([f,f],axis=1)
-    df = np.real(ifft(il*fft(fe,axis=1),axis=1))
-    df = df[:,:N]
+    df = np.real(ifft(il*fft(fe,axis=1),axis=1))[:,:N]
     
     return df
 
@@ -24,8 +22,7 @@ def ddy_odd(f,il):
 
     N = f.shape[1]
     fe = np.concatenate([f,-f[:,::-1]],axis=1)
-    df = np.real(ifft(il*fft(fe,axis=1),axis=1))
-    df = df[:,:N]
+    df = np.real(ifft(il*fft(fe,axis=1),axis=1))[:,:N]
     
     return df
 
@@ -46,7 +43,7 @@ def SPECTRAL_y(sim):  # Set the differentiation operators
     elif sim.geomy == 'periodic':
         ky = 2*np.pi/sim.Ly*np.hstack([range(0,int(sim.Ny/2)), range(-int(sim.Ny/2),0)])
         sim.ky = ky.copy()
-        sim.il = 1j*np.tile(ky.reshape((1,sim.Nky)),(sim.Nkx,1))
+        sim.il = 1j*np.tile(ky.reshape((1,sim.Nky)),(sim.Nx,1))
         
         sim.ddy_u = ddy_period
         sim.ddy_v = ddy_period
@@ -54,7 +51,7 @@ def SPECTRAL_y(sim):  # Set the differentiation operators
     elif sim.geomy == 'walls':
         ky = np.pi/sim.Ly*np.hstack([range(0,int(sim.Ny)), range(-int(sim.Ny),0)])
         sim.ky = ky.copy()
-        sim.il = 1j*np.tile(ky.reshape((1,sim.Nky)),(sim.Nkx,1))
+        sim.il = 1j*np.tile(ky.reshape((1,sim.Nky)),(sim.Nx,1))
         
         sim.ddy_u = ddy_even
         sim.ddy_v = ddy_odd
