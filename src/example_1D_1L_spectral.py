@@ -20,6 +20,8 @@ sim.flux_method = Flux.spectral_sw # Flux method: spectral_sw is only option cur
 # Specify paramters
 sim.Lx  = 4000e3          # Domain extent               (m)
 sim.Ly  = 4000e3          # Domain extent               (m)
+sim.geomx = 'periodic'    # Boundary Conditions
+sim.geomy = 'periodic'    # Boundary Conditions
 sim.Nx  = 128             # Grid points in x
 sim.Ny  = 1               # Grid points in y
 sim.Nz  = 1               # Number of layers
@@ -28,7 +30,7 @@ sim.f0  = 1.e-4           # Coriolis                    (1/sec)
 sim.cfl = 0.05            # CFL coefficient             (m)
 sim.Hs  = [100.]          # Vector of mean layer depths (m)
 sim.rho = [1025.]         # Vector of layer densities   (kg/m^3)
-sim.end_time = 24.*hour   # End Time                    (sec)
+sim.end_time = 36.*hour   # End Time                    (sec)
 
 # Plotting parameters
 sim.plott   = 20.*minute  # Period of plots
