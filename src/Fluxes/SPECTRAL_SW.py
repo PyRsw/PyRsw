@@ -21,8 +21,8 @@ def spectral_sw_flux(sim):
         du, dv, dh = sim.ddx_u(u,sim.ik), sim.ddx_v(v,sim.ik), sim.ddx_h(h,sim.ik)
 
         # Coriolis and x-derivatives
-        sim.curr_flux.u[:,:,ii] = - u*du + (sim.f0 + sim.beta*sim.Y)*v  - sim.gs[ii]*dh
-        sim.curr_flux.v[:,:,ii] = - u*dv - (sim.f0 + sim.beta*sim.Y)*u     
+        sim.curr_flux.u[:,:,ii] = - u*du + sim.F*v  - sim.gs[ii]*dh
+        sim.curr_flux.v[:,:,ii] = - u*dv - sim.F*u     
         sim.curr_flux.h[:,:,ii] = - u*dh - h*du     
 
         # Compute y-derivatives
@@ -48,8 +48,8 @@ def spectral_sw_linear_flux(sim):
         du, dv, dh = sim.ddx_u(u,sim.ik), sim.ddx_v(v,sim.ik), sim.ddx_h(h,sim.ik)
 
         # Coriolis and x-derivatives
-        sim.curr_flux.u[:,:,ii] =   (sim.f0 + sim.beta*sim.Y)*v - sim.gs[ii]*dh
-        sim.curr_flux.v[:,:,ii] = - (sim.f0 + sim.beta*sim.Y)*u     
+        sim.curr_flux.u[:,:,ii] =   sim.F*v - sim.gs[ii]*dh
+        sim.curr_flux.v[:,:,ii] = - sim.F*u     
         sim.curr_flux.h[:,:,ii] = - sim.Hs[ii]*du     
 
         # Compute y-derivatives

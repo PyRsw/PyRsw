@@ -112,6 +112,8 @@ class Simulation:
                 self.Y = Y - self.Ly/2.
         else:
             self.Y = 0.
+            
+        self.F = self.f0 + self.beta*self.Y
 
         # Initialize differentiation and averaging operators
         self.flux_method(self)
