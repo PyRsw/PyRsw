@@ -118,30 +118,23 @@ Solve the problem.
 Plot the Hovmöller diagram in time versus space.
 
 ::
-    # Hovmuller plot
-    plt.figure()
-    t = np.arange(0,sim.end_time+sim.plott,sim.plott)/86400.
 
     if sim.Ny==1:
-        x = sim.x/1e3
-    elif sim.Nx == 1:
-        x = sim.y/1e3
-
-    for L in range(sim.Nz):
-        field = sim.hov_h[:,0,:].T - np.sum(sim.Hs[L:])
-        cv = np.max(np.abs(field.ravel()))
-        plt.subplot(sim.Nz,1,L+1)
-        plt.pcolormesh(x,t, field,
-            cmap=sim.cmap, vmin = -cv, vmax = cv)
-        plt.axis('tight')
-        plt.title(r"$\mathrm{Hovm{\"o}ller} \; \mathrm{Plot} \; \mathrm{of} \; \eta$", fontsize = 16)
-        if sim.Nx > 1:
-            plt.xlabel(r"$\mathrm{x} \; \mathrm{(km)}$", fontsize=14)
-        else:
-            plt.xlabel(r"$\mathrm{y} \; \mathrm{(km)}$", fontsize=14)
-        plt.ylabel(r"$\mathrm{Time} \; \mathrm{(days)}$", fontsize=14)
-        plt.colorbar()
-    plt.show()
+        plt.figure               
+        t = np.arange(0,sim.end_time+sim.plott,sim.plott)/86400.
+            
+        for L in range(sim.Nz):
+            field = sim.hov_h[:,0,:].T - np.sum(sim.Hs[L:])
+            plt.subplot(sim.Nz,1,L+1)
+            plt.pcolormesh(sim.x/1e3,t, field,
+                cmap=sim.cmap, vmin = 0, vmax = amp)
+            plt.xlim([sim.x[0]/1e3, sim.x[-1]/1e3])
+            plt.ylim([t[0], t[-1]])
+            plt.title(r"$Hovm{\"o}ller Plot\, {of} \,\, \eta$")
+            plt.xlabel(r"$distance \, \, (km)$")
+            plt.ylabel(r"$Time \, \, (days)$")
+            plt.colorbar()
+        plt.show()
 
 .. figure:: Figures/ex1_fig1.png
    :alt: Final solution for the test case.
