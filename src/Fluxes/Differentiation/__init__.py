@@ -1,6 +1,6 @@
-# Interpolators
-#     This module provides the interpolator options
-#     for the simulator class.
+# Differentiation
+#     This module provides the differentiation
+#     functions for the simulator class.
 
 # Import the interpolator options
 from SPECTRAL_x import SPECTRAL_x
