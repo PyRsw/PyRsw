@@ -285,7 +285,8 @@ class Simulation:
             Diagnose.plot(self)
         
         if (self.animate == 'Anim'):
-            Plot_tools.plot_hov(self)
+            if (self.Nx == 1) or (self.Ny == 1):
+                Plot_tools.plot_hov(self)
             plt.ioff()
             plt.show()
 

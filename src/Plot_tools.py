@@ -56,10 +56,8 @@ def plot_hov(sim):
 
     if sim.Ny==1:
         x = sim.x/1e3
-        xlab = 'x (km)'
     elif sim.Nx == 1:
         x = sim.y/1e3
-        xlab = 'y (km)'
 
     for L in range(sim.Nz):
         field = sim.hov_h[:,0,:].T - np.sum(sim.Hs[L:])
@@ -68,9 +66,12 @@ def plot_hov(sim):
         plt.pcolormesh(x,t, field,
             cmap=sim.cmap, vmin = -cv, vmax = cv)
         plt.axis('tight')
-        plt.title(r"$Hovm{\"o}ller Plot\, {of} \,\, \eta$")
-        plt.xlabel(xlab)
-        plt.ylabel(r"$Time \, \, (days)$")
+        plt.title(r"$\mathrm{Hovm{\"o}ller} \; \mathrm{Plot} \; \mathrm{of} \; \eta$", fontsize = 16)
+        if sim.Nx > 1:
+            plt.xlabel(r"$\mathrm{x} \; \mathrm{(km)}$", fontsize=14)
+        else:
+            plt.xlabel(r"$\mathrm{y} \; \mathrm{(km)}$", fontsize=14)
+        plt.ylabel(r"$\mathrm{Time} \; \mathrm{(days)}$", fontsize=14)
         plt.colorbar()
 
 

@@ -21,7 +21,7 @@ sim.flux_method = Flux.spectral_sw # Flux method: spectral_sw is only option cur
 sim.Lx  = 4000e3          # Domain extent               (m)
 sim.Ly  = 4000e3          # Domain extent               (m)
 sim.Nx  = 128               # Grid points in x
-sim.Ny  = 1               # Grid points in y
+sim.Ny  = 128             # Grid points in y
 sim.Nz  = 1               # Number of layers
 sim.g   = 9.81            # Gravity                     (m/sec^2)
 sim.f0  = 0.e-4           # Coriolis                    (1/sec)
@@ -32,7 +32,7 @@ sim.end_time = 24.*hour   # End Time                    (sec)
 
 # Plotting parameters
 sim.plott   = 20.*minute  # Period of plots
-sim.animate = 'None'      # 'Save' to create video frames,
+sim.animate = 'Anim'      # 'Save' to create video frames,
                           # 'Anim' to animate,
                           # 'None' otherwise
                          
