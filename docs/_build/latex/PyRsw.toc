@@ -4,6 +4,8 @@
 \contentsline {section}{\numberline {2.1}Classical Form}{5}{section.2.1}
 \contentsline {section}{\numberline {2.2}Conservation Form}{5}{section.2.2}
 \contentsline {section}{\numberline {2.3}Vorticity-Bernoulli Form}{6}{section.2.3}
-\contentsline {section}{\numberline {2.4}\relax $1 \frac {1}{2}\relax \GenericError { }{LaTeX Error: Bad math environment delimiter}{See the LaTeX manual or LaTeX Companion for explanation.}{Your command was ignored.\MessageBreak Type I <command> <return> to replace it with another command,\MessageBreak or <return> to continue without it.} Dimensional Limit}{6}{section.2.4}
+\contentsline {section}{\numberline {2.4}\(1 \frac {1}{2}\) Dimensional Limit}{6}{section.2.4}
 \contentsline {section}{\numberline {2.5}Conserved Quantities}{6}{section.2.5}
-\contentsline {chapter}{\numberline {3}Indices and tables}{9}{chapter.3}
+\contentsline {chapter}{\numberline {3}Examples}{9}{chapter.3}
+\contentsline {section}{\numberline {3.1}Geostrophic Adjustment: 1D and 1L}{9}{section.3.1}
+\contentsline {chapter}{\numberline {4}Indices and tables}{13}{chapter.4}

@@ -60,8 +60,6 @@ if sim.Ny==1:
     sim.soln.h[:,:,0] += amp*np.exp(-(sim.x-x0)**2/(W**2)).reshape((sim.Nx,1))
 elif sim.Nx==1:
     sim.soln.h[:,:,0] += amp*np.exp(-(sim.y-x0)**2/(W**2)).reshape((1,sim.Ny))
-else:
-    sim.soln.h[:,:,0] += amp*np.exp(-(sim.x-x0)**2/(W**2)).reshape((sim.Nx,1))*np.exp(-(sim.y-x0)**2/(W**2)).reshape((1,sim.Ny))
 
 sim.run()                # Run the simulation
 

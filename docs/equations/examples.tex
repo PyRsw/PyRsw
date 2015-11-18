@@ -1,0 +1,166 @@
+\documentclass[11pt]{article}
+\usepackage{geometry}                
+\geometry{a4paper,left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+\usepackage{natbib}
+\usepackage{color}
+\definecolor{mygreen}{RGB}{28,172,0} % color values Red, Green, Blue
+\definecolor{mylilas}{RGB}{170,55,241}
+\usepackage{epsfig}
+\usepackage{amssymb,amsmath}
+\usepackage{enumerate}
+\usepackage{enumitem}
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\usepackage{mathtools}
+
+
+\newcommand{\ssd}{\text{ssd}}
+\newcommand{\sS}{\mathsf{S}}
+\newcommand{\tot}{\text{tot}}
+
+\usepackage[procnames]{listings}
+\usepackage{color}
+
+\begin{document}
+
+\definecolor{keywords}{RGB}{255,0,90}
+\definecolor{comments}{RGB}{0,0,113}
+\definecolor{red}{RGB}{160,0,0}
+\definecolor{green}{RGB}{0,150,0}
+
+\lstset{language=Python, 
+        basicstyle=\ttfamily\small, 
+        keywordstyle=\color{keywords},
+        commentstyle=\color{comments},
+        stringstyle=\color{red},
+        showstringspaces=false,
+        identifierstyle=\color{green},
+        procnamekeys={def,class}}
+ 
+
+\input{symbols}
+
+\section*{Examples}
+
+\subsection*{Geostrophic Adjustment: 1D and 1L}
+
+In the directory \texttt{src} you will find an example entitled \texttt{example\_1D\_1L\_spectral.py}
+
+First, libraries are imported.  Two standard ones are numpy, for calculations, and matplotlib.pyplot for plotting.  Those are standard to numpy.  Then, there are four other things that are imported:
+\begin{itemize}
+\item {\bf Steppers} This contains different time-stepping functions.  At the moment we have Euler, Adams-Bashforth 2 (AB2) and Runge-Kutta 4 (RK4).  PyRsw uses adaptive time stepping to try and be more efficient in how the solution is marched forward.
+\item {\bf Fluxes} This contains the fluxes for the RSW model.  At the moment there is only the option for a pseudo-spectral model but this will be generalized to include a Finite Volume method as well.
+\item {\bf PyRsw} This is the main library and importing Simulation imports the core of the library.  
+\item {\bf constants}  This has some useful constants, more can be added if desired.
+\end{itemize}
+
+\noindent After the libraries are imported then a simulation object is created.
+\begin{lstlisting}
+sim = Simulation()
+\end{lstlisting}
+
+\noindent  Below specifies the geometry in $x$ and $y$: [Options 'periodic', 'walls']
+
+\noindent We use AB2, a spectral method: [Options: Euler, AB2, RK4]
+
+\noindent We solve the nonlinear dynamics (can be Linear) 
+
+\noindent  Use spectral sw model (no other choices).  Maybe hide this.
+\begin{lstlisting}
+sim.geomx       = 'walls'            
+sim.geomy       = 'periodic'
+sim.stepper     = Step.AB2       
+sim.method      = 'Spectral'       
+sim.dynamics    = 'Nonlinear'    
+sim.flux_method = Flux.spectral_sw
+\end{lstlisting}
+
+We specify a lot of parameters.  There are some default values that are specified in \tt{PyRsw}.
+\begin{lstlisting}
+sim.Lx  = 4000e3          # Domain extent               (m)
+sim.Ly  = 4000e3          # Domain extent               (m)
+sim.geomx = 'periodic'    # Boundary Conditions
+sim.geomy = 'periodic'    # Boundary Conditions
+sim.Nx  = 128             # Grid points in x
+sim.Ny  = 1               # Grid points in y
+sim.Nz  = 1               # Number of layers
+sim.g   = 9.81            # Gravity                     (m/sec^2)
+sim.f0  = 1.e-4           # Coriolis                    (1/sec)
+sim.cfl = 0.05            # CFL coefficient             (m)
+sim.Hs  = [100.]          # Vector of mean layer depths (m)
+sim.rho = [1025.]         # Vector of layer densities   (kg/m^3)
+sim.end_time = 36.*hour   # End Time                    (sec)
+\end{lstlisting}
+
+We can specify the periodicity of plotting and whether we want a life animation or make a video.  More on this this later.
+\begin{lstlisting}
+sim.output = False        # True or False
+sim.savet  = 1.*hour      # Time between saves
+\end{lstlisting}
+
+Specify periodicity of diagnostics and whether to compute them.  This is not tested.
+\begin{lstlisting}
+sim.diagt    = 2.*minute  # Time for output
+sim.diagnose = False      # True or False
+\end{lstlisting}
+
+Initialize the simulation.
+\begin{lstlisting}
+sim.initialize()
+\end{lstlisting}
+
+Specify the initial conditions.  There is an option whether we want the domain in $x$ or $y$.  At the moment there is no difference because there is no $\beta$-plane but this will be added.
+\begin{lstlisting}
+for ii in range(sim.Nz):  # Set mean depths
+    sim.soln.h[:,:,ii] = sim.Hs[ii]
+
+# Gaussian initial conditions
+x0 = 1.*sim.Lx/2.      # Centre
+W  = 200.e3                # Width
+amp = 1.                  # Amplitude
+if sim.Ny==1:
+    sim.soln.h[:,:,0] += amp*np.exp(-(sim.x-x0)**2/(W**2)).reshape((sim.Nx,1))
+elif sim.Nx==1:
+    sim.soln.h[:,:,0] += amp*np.exp(-(sim.y-x0)**2/(W**2)).reshape((1,sim.Ny))
+\end{lstlisting}
+
+Solve the problem.
+\begin{lstlisting}
+sim.run()             
+\end{lstlisting}
+
+Plot the Hovm\"oller diagram in time versus space.
+\begin{lstlisting}
+if sim.Ny==1:
+    plt.figure               
+    t = np.arange(0,sim.end_time+sim.plott,sim.plott)/86400.
+        
+    for L in range(sim.Nz):
+        field = sim.hov_h[:,0,:].T - np.sum(sim.Hs[L:])
+        plt.subplot(sim.Nz,1,L+1)
+        plt.pcolormesh(sim.x/1e3,t, field,
+            cmap=sim.cmap, vmin = 0, vmax = amp)
+        plt.xlim([sim.x[0]/1e3, sim.x[-1]/1e3])
+        plt.ylim([t[0], t[-1]])
+        plt.title(r"$Hovm{\"o}ller Plot\, {of} \,\, \eta$")
+        plt.xlabel(r"$distance \, \, (km)$")
+        plt.ylabel(r"$Time \, \, (days)$")
+        plt.colorbar()
+    plt.show()
+\end{lstlisting}
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=12cm]{Figures/ex1_fig1.png}
+\caption{Final solution for the test case.}
+\end{center}
+\end{figure}
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=12cm]{Figures/ex1_fig2.png}
+\caption{Hovm\"oller plot for the test case.}
+\end{center}
+\end{figure}
+
+\end{document}

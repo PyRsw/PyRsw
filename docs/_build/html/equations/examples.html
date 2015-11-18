@@ -1,0 +1,293 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Examples &mdash; PyRsw 0.1 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="PyRsw 0.1 documentation" href="../index.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="../index.html" class="fa fa-home"> PyRsw</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../plan.html">plan</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sw_intro.html">One-Layer Rotating Shallow Water Model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../sw_intro.html#classical-form">Classical Form</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sw_intro.html#conservation-form">Conservation Form</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sw_intro.html#vorticity-bernoulli-form">Vorticity-Bernoulli Form</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sw_intro.html#dimensional-limit"><span class="math">\(1 \frac{1}{2}\)</span> Dimensional Limit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sw_intro.html#conserved-quantities">Conserved Quantities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../examples.html#geostrophic-adjustment-1d-and-1l">Geostrophic Adjustment: 1D and 1L</a></li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">PyRsw</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>Examples</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="../_sources/equations/examples.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="examples">
+<h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="geostrophic-adjustment-1d-and-1l">
+<h2>Geostrophic Adjustment: 1D and 1L<a class="headerlink" href="#geostrophic-adjustment-1d-and-1l" title="Permalink to this headline">¶</a></h2>
+<p>In the directory <code class="docutils literal"><span class="pre">src</span></code> you will find an example entitled
+<code class="docutils literal"><span class="pre">example_1D_1L_spectral.py</span></code></p>
+<p>First, libraries are imported. Two standard ones are numpy, for
+calculations, and matplotlib.pyplot for plotting. Those are standard to
+numpy. Then, there are four other things that are imported:</p>
+<ul class="simple">
+<li><strong>Steppers</strong> This contains different time-stepping functions. At the
+moment we have Euler, Adams-Bashforth 2 (AB2) and Runge-Kutta 4
+(RK4). PyRsw uses adaptive time stepping to try and be more efficient
+in how the solution is marched forward.</li>
+<li><strong>Fluxes</strong> This contains the fluxes for the RSW model. At the moment
+there is only the option for a pseudo-spectral model but this will be
+generalized to include a Finite Volume method as well.</li>
+<li><strong>PyRsw</strong> This is the main library and importing Simulation imports
+the core of the library.</li>
+<li><strong>constants</strong> This has some useful constants, more can be added if
+desired.</li>
+</ul>
+<p>After the libraries are imported then a simulation object is created.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">sim</span> <span class="o">=</span> <span class="n">Simulation</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Below specifies the geometry in <span class="math">\(x\)</span> and <span class="math">\(y\)</span>: [Options
+’periodic’, ’walls’]</p>
+<p>We use AB2, a spectral method: [Options: Euler, AB2, RK4]</p>
+<p>We solve the nonlinear dynamics (can be Linear)</p>
+<p>Use spectral sw model (no other choices). Maybe hide this.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">sim</span><span class="o">.</span><span class="n">geomx</span>       <span class="o">=</span> <span class="s">&#39;walls&#39;</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">geomy</span>       <span class="o">=</span> <span class="s">&#39;periodic&#39;</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">stepper</span>     <span class="o">=</span> <span class="n">Step</span><span class="o">.</span><span class="n">AB2</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">method</span>      <span class="o">=</span> <span class="s">&#39;Spectral&#39;</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">dynamics</span>    <span class="o">=</span> <span class="s">&#39;Nonlinear&#39;</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">flux_method</span> <span class="o">=</span> <span class="n">Flux</span><span class="o">.</span><span class="n">spectral_sw</span>
+</pre></div>
+</div>
+<p>We specify a lot of parameters. There are some default values that are
+specified in .</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">sim</span><span class="o">.</span><span class="n">Lx</span>  <span class="o">=</span> <span class="mf">4000e3</span>          <span class="c"># Domain extent               (m)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">Ly</span>  <span class="o">=</span> <span class="mf">4000e3</span>          <span class="c"># Domain extent               (m)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">geomx</span> <span class="o">=</span> <span class="s">&#39;periodic&#39;</span>    <span class="c"># Boundary Conditions</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">geomy</span> <span class="o">=</span> <span class="s">&#39;periodic&#39;</span>    <span class="c"># Boundary Conditions</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">Nx</span>  <span class="o">=</span> <span class="mi">128</span>             <span class="c"># Grid points in x</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">Ny</span>  <span class="o">=</span> <span class="mi">1</span>               <span class="c"># Grid points in y</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">Nz</span>  <span class="o">=</span> <span class="mi">1</span>               <span class="c"># Number of layers</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">g</span>   <span class="o">=</span> <span class="mf">9.81</span>            <span class="c"># Gravity                     (m/sec^2)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">f0</span>  <span class="o">=</span> <span class="mf">1.e-4</span>           <span class="c"># Coriolis                    (1/sec)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">cfl</span> <span class="o">=</span> <span class="mf">0.05</span>            <span class="c"># CFL coefficient             (m)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">Hs</span>  <span class="o">=</span> <span class="p">[</span><span class="mf">100.</span><span class="p">]</span>          <span class="c"># Vector of mean layer depths (m)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">rho</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1025.</span><span class="p">]</span>         <span class="c"># Vector of layer densities   (kg/m^3)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">end_time</span> <span class="o">=</span> <span class="mf">36.</span><span class="o">*</span><span class="n">hour</span>   <span class="c"># End Time                    (sec)</span>
+</pre></div>
+</div>
+<p>We can specify the periodicity of plotting and whether we want a life
+animation or make a video. More on this this later.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">sim</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="bp">False</span>        <span class="c"># True or False</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">savet</span>  <span class="o">=</span> <span class="mf">1.</span><span class="o">*</span><span class="n">hour</span>      <span class="c"># Time between saves</span>
+</pre></div>
+</div>
+<p>Specify periodicity of diagnostics and whether to compute them. This is
+not tested.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">sim</span><span class="o">.</span><span class="n">diagt</span>    <span class="o">=</span> <span class="mf">2.</span><span class="o">*</span><span class="n">minute</span>  <span class="c"># Time for output</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">diagnose</span> <span class="o">=</span> <span class="bp">False</span>      <span class="c"># True or False</span>
+</pre></div>
+</div>
+<p>Initialize the simulation.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">sim</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Specify the initial conditions. There is an option whether we want the
+domain in <span class="math">\(x\)</span> or <span class="math">\(y\)</span>. At the moment there is no difference
+because there is no <span class="math">\(\beta\)</span>-plane but this will be added.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">Nz</span><span class="p">):</span>  <span class="c"># Set mean depths</span>
+    <span class="n">sim</span><span class="o">.</span><span class="n">soln</span><span class="o">.</span><span class="n">h</span><span class="p">[:,:,</span><span class="n">ii</span><span class="p">]</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Hs</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span>
+
+<span class="c"># Gaussian initial conditions</span>
+<span class="n">x0</span> <span class="o">=</span> <span class="mf">1.</span><span class="o">*</span><span class="n">sim</span><span class="o">.</span><span class="n">Lx</span><span class="o">/</span><span class="mf">2.</span>      <span class="c"># Centre</span>
+<span class="n">W</span>  <span class="o">=</span> <span class="mf">200.e3</span>                <span class="c"># Width</span>
+<span class="n">amp</span> <span class="o">=</span> <span class="mf">1.</span>                  <span class="c"># Amplitude</span>
+<span class="k">if</span> <span class="n">sim</span><span class="o">.</span><span class="n">Ny</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+    <span class="n">sim</span><span class="o">.</span><span class="n">soln</span><span class="o">.</span><span class="n">h</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">amp</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">x</span><span class="o">-</span><span class="n">x0</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="n">W</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">sim</span><span class="o">.</span><span class="n">Nx</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+<span class="k">elif</span> <span class="n">sim</span><span class="o">.</span><span class="n">Nx</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+    <span class="n">sim</span><span class="o">.</span><span class="n">soln</span><span class="o">.</span><span class="n">h</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">amp</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">y</span><span class="o">-</span><span class="n">x0</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="n">W</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="n">sim</span><span class="o">.</span><span class="n">Ny</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Solve the problem.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Plot the Hovmöller diagram in time versus space.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">if</span> <span class="n">sim</span><span class="o">.</span><span class="n">Ny</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">sim</span><span class="o">.</span><span class="n">end_time</span><span class="o">+</span><span class="n">sim</span><span class="o">.</span><span class="n">plott</span><span class="p">,</span><span class="n">sim</span><span class="o">.</span><span class="n">plott</span><span class="p">)</span><span class="o">/</span><span class="mf">86400.</span>
+
+    <span class="k">for</span> <span class="n">L</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">Nz</span><span class="p">):</span>
+        <span class="n">field</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">hov_h</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,:]</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">Hs</span><span class="p">[</span><span class="n">L</span><span class="p">:])</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">Nz</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">L</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">x</span><span class="o">/</span><span class="mf">1e3</span><span class="p">,</span><span class="n">t</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span>
+            <span class="n">cmap</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">cmap</span><span class="p">,</span> <span class="n">vmin</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span> <span class="o">=</span> <span class="n">amp</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="n">sim</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mf">1e3</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mf">1e3</span><span class="p">])</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">t</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">r&quot;$Hovm{</span><span class="se">\&quot;</span><span class="s">o}ller Plot\, {of} \,\, \eta$&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">r&quot;$distance \, \, (km)$&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">r&quot;$Time \, \, (days)$&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="figure" id="id1">
+<img alt="Final solution for the test case." src="../_images/ex1_fig1.png" />
+<p class="caption"><span class="caption-text">Final solution for the test case.</span></p>
+</div>
+<div class="figure" id="id2">
+<img alt="Hovmöller plot for the test case." src="../_images/ex1_fig2.png" />
+<p class="caption"><span class="caption-text">Hovmöller plot for the test case.</span></p>
+</div>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, PyRsw team.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -13,6 +13,7 @@ Contents:
 
    plan
    sw_intro
+   examples
 
 Indices and tables
 ==================
