@@ -137,8 +137,9 @@ class Simulation:
     def prepare_for_run(self):
 
         # If we're going to be plotting, then initialize the plots
-        if (self.animate == 'Anim') or (self.animate == 'Save'):
-            self.initialize_plots = Plot_tools.initialize_plots_animsave
+        if self.animate != 'None':
+            if (self.animate == 'Anim') or (self.animate == 'Save'):
+                self.initialize_plots = Plot_tools.initialize_plots_animsave
         self.next_plot_time = self.plott
         
         num_plot = self.end_time/self.plott+1
@@ -150,8 +151,7 @@ class Simulation:
             self.hov_h[:,:,0] = self.soln.h[0,:,:-1]
         self.hov_count = 1
 
-        if self.animate != 'None':
-            self.initialize_plots(self)
+        self.initialize_plots(self)
 
         # If we're going to be diagnosing, initialize those
         Diagnose.initialize_diagnostics(self)
@@ -285,8 +285,6 @@ class Simulation:
             Diagnose.plot(self)
         
         if (self.animate == 'Anim'):
-            if (self.Nx == 1) or (self.Ny == 1):
-                Plot_tools.plot_hov(self)
             plt.ioff()
             plt.show()
 
