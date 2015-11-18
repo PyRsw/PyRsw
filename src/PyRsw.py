@@ -142,10 +142,10 @@ class Simulation:
         self.next_plot_time = self.plott
         
         num_plot = self.end_time/self.plott+1
-        if self.Nx > 1:
+        if (self.Nx > 1) and (self.Ny == 1):
             self.hov_h = np.zeros((self.Nx,self.Nz,num_plot))
             self.hov_h[:,:,0] = self.soln.h[:,0,:-1]
-        else:
+        elif (self.Nx == 1) and (self.Ny > 1):
             self.hov_h = np.zeros((self.Ny,self.Nz,num_plot))
             self.hov_h[:,:,0] = self.soln.h[0,:,:-1]
         self.hov_count = 1
@@ -220,8 +220,8 @@ class Simulation:
         if do_plot:
             self.update_plots(self)
             self.next_plot_time += self.plott
-            #FJP: in diagnostics?
-            Plot_tools.update_hov(self)
+            if (self.Nx == 1) or (self.Ny == 1):
+                Plot_tools.update_hov(self)
 
         if do_diag:
             Diagnose.update(self)
