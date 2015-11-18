@@ -7,8 +7,7 @@ import matplotlib.pyplot as plt
 import Plot_tools
 import Diagnose
 from scipy.fftpack import fftn, ifftn, fftfreq
-import os
-import shutil
+import os, sys, shutil
 
 def null_topo(a_sim):
     return
@@ -46,6 +45,7 @@ class Simulation:
         
         self.g    = 9.81            # gravity
         self.f0   = 1e-4            # Coriolis
+        self.beta = 0.
         self.cfl  = 0.1             # default CFL
         self.time = 0               # initial time
         self.min_dt = 1e-3          # minimum timestep
@@ -77,6 +77,11 @@ class Simulation:
         print 'Nx       = ', self.Nx
         print 'Ny       = ', self.Ny
         print 'Nz       = ', self.Nz
+        if self.f0 != 0:
+            if self.beta != 0:
+                print('Coriolis = beta-plane')
+            else:
+                print('Coriolis = f-plane')
         print ' '
         
         self.frame_count = 0
@@ -88,13 +93,27 @@ class Simulation:
             dx = self.Lx/self.Nx
             self.x = np.arange(dx/2,self.Lx,dx)
             dxs[0] = dx
-            #print('dx = ', dx)
         if self.Ny > 1:
             dy = self.Ly/self.Ny
             self.y = np.arange(dy/2,self.Ly,dy)
             dxs[1] = dy
-            #print('dy = ', dy)
         self.dx = dxs
+
+        if self.beta != 0.:
+            if self.geomy != 'walls':
+                print('beta-plane requires "walls" geometry in y.')
+                sys.exit()
+            if self.Ny == 1:
+                self.Y = 0.
+            elif (self.Ny > 1) and (self.Nx == 1):
+                self.Y = self.y - self.Ly/2.
+            else:
+                tmp, Y = np.meshgrid(self.x,self.y)
+                self.Y = Y - self.Ly/2.
+        else:
+            self.Y = 0.
+            
+        self.F = self.f0 + self.beta*self.Y
 
         # Initialize differentiation and averaging operators
         self.flux_method(self)
