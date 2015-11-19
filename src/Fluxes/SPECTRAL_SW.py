@@ -69,13 +69,13 @@ def filter_general(sim):
         he = sim.soln.h[:,:,ii]
 
         # Extend Grid if walls in x
-        if sim.geomx=='walls':
+        if (sim.geomx=='walls') and (sim.Nx > 1):
             ue = np.concatenate([ue,-ue[::-1,:]],axis=0)
             ve = np.concatenate([ve, ve[::-1,:]],axis=0)
             he = np.concatenate([he, he[::-1,:]],axis=0)
 
         # Extend Grid if walls in y
-        if sim.geomy=='walls':
+        if (sim.geomy=='walls') and (sim.Ny > 1):
             ue = np.concatenate([ue, ue[:,::-1]],axis=1)
             ve = np.concatenate([ve,-ve[:,::-1]],axis=1)
             he = np.concatenate([he, he[:,::-1]],axis=1)

@@ -33,7 +33,7 @@ sim.end_time = 2*24.*hour   # End Time                    (sec)
 
 # Plotting parameters
 sim.plott   = 20.*minute  # Period of plots
-sim.animate = 'None'      # 'Save' to create video frames,
+sim.animate = 'Anim'      # 'Save' to create video frames,
                           # 'Anim' to animate,
                           # 'None' otherwise
                          

@@ -77,19 +77,19 @@ def SPECTRAL_y(sim):       # Set the differentiation operators
 
             def ddy_u(f,sim):
                 N = f.shape[1]
-                fe = np.concatenate([f,f[:,::-1]],axis=0)
+                fe = np.concatenate([f,f[:,::-1]],axis=1)
                 df = np.real(sim.iffty_u(sim.il*sim.ffty_u(fe)))[:,:N]
                 return df
     
             def ddy_v(f,sim):
                 N = f.shape[1]
-                fe = np.concatenate([f,-f[:,::-1]],axis=0)
+                fe = np.concatenate([f,-f[:,::-1]],axis=1)
                 df = np.real(sim.iffty_v(sim.il*sim.ffty_v(fe)))[:,:N]
                 return df
     
             def ddy_h(f,sim):
                 N = f.shape[1]
-                fe = np.concatenate([f,f[:,::-1]],axis=0)
+                fe = np.concatenate([f,f[:,::-1]],axis=1)
                 df = np.real(sim.iffty_h(sim.il*sim.ffty_h(fe)))[:,:N]
                 return df
 
