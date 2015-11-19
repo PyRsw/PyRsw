@@ -25,7 +25,7 @@ def update_anim(sim):
 
     if sim.Nx > 1 and sim.Ny > 1:
         for L in range(sim.Nz):
-            sim.Qs[L].set_array(np.ravel(sim.soln.h[:sim.Nx-1,:sim.Ny-1,L].T))
+            sim.Qs[L].set_array(np.ravel(sim.soln.u[:sim.Nx-1,:sim.Ny-1,L]))
             sim.Qs[L].changed()
     else:
         # Update u
@@ -46,7 +46,7 @@ def update_anim(sim):
         sim.axs[2].relim()
         sim.axs[2].autoscale_view()
 
-    plt.pause(0.01)
+    plt.pause(2) #0.01)
     plt.draw()
 
 # Create Hovmuller plot at end of anim simulation
@@ -129,22 +129,23 @@ def initialize_plots_animsave(sim):
     fig.suptitle('t = 0')
 
     if sim.Nx > 1 and sim.Ny > 1:
-        x = sim.x/1e3
-        y = sim.y/1e3
+        x = sim.X/1e3
+        y = sim.Y/1e3
         Qs  = []
         axs = []
         for L in range(sim.Nz):
             plt.subplot(1,sim.Nz,L+1)
             axs += [plt.gca()]
-            Qs += [plt.pcolormesh(x,y,sim.soln.h[:,:,L].T, cmap='viridis')]
+            Qs += [plt.pcolormesh(x,y,sim.soln.u[:,:,L], cmap='viridis')]
             plt.colorbar()
             try:
-                plt.contour(x,y,sim.soln.h[:,:,-1].T)
+                plt.contour(x,y,sim.soln.u[:,:,-1])
             except:
                 pass
             plt.axis('tight')
             plt.gca().set_aspect('equal')
-
+            plt.pause(2.0)
+            
     else:
         Qs  = [[],[],[]]
         axs = []

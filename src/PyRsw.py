@@ -115,7 +115,7 @@ class Simulation:
             self.Y = 0.
 
         #FJP: fix this later      
-        self.X, self.Y = np.meshgrid(self.x,self.y)
+        self.X, self.Y = np.meshgrid(self.x,self.y,indexing='ij')
         self.X -= self.Lx/2.
         self.Y -= self.Ly/2.
         self.F = self.f0 + self.beta*self.Y

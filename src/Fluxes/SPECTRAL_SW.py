@@ -33,7 +33,7 @@ def spectral_sw_flux(sim):
         sim.curr_flux.u[:,:,ii] += - v*du
         sim.curr_flux.v[:,:,ii] += - v*dv - sim.gs[ii]*dh
         sim.curr_flux.h[:,:,ii] += - v*dh - h*dv 
-        
+
     return
 
 def spectral_sw_linear_flux(sim):
