@@ -108,11 +108,16 @@ class Simulation:
             elif (self.Ny > 1) and (self.Nx == 1):
                 self.Y = self.y - self.Ly/2.
             else:
-                tmp, Y = np.meshgrid(self.x,self.y)
+                X, Y = np.meshgrid(self.x,self.y)
+                self.X = X - self.Lx/2.
                 self.Y = Y - self.Ly/2.
         else:
             self.Y = 0.
-            
+
+        #FJP: fix this later      
+        self.X, self.Y = np.meshgrid(self.x,self.y)
+        self.X -= self.Lx/2.
+        self.Y -= self.Ly/2.
         self.F = self.f0 + self.beta*self.Y
 
         # Initialize differentiation and averaging operators
