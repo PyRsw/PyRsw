@@ -11,7 +11,7 @@ sim = Simulation()  # Create a simulation object
 
 # Geometry and Model Equations
 sim.geomx       = 'walls'       # Geometry Types: 'periodic' or 'walls'
-sim.geomy       = 'walls'
+sim.geomy       = 'periodic'
 sim.stepper     = Step.AB2         # Time-stepping algorithm: Euler, AB2, RK4
 sim.method      = 'Spectral'       # Numerical method: 'Spectral'
 sim.dynamics    = 'Nonlinear'      # Dynamics: 'Nonlinear' or 'Linear'
@@ -25,8 +25,8 @@ sim.Ny  = 128             # Grid points in y
 sim.Nz  = 1               # Number of layers
 sim.g   = 9.81            # Gravity                     (m/sec^2)
 sim.f0  = 1.e-4           # Coriolis                    (1/sec)
-sim.cfl = 0.02            # CFL coefficient             (m)
-sim.beta = 1e-10          # Coriolis beta parameter     (1/m/sec)
+sim.beta = 0e-10          # Coriolis beta parameter     (1/m/sec)
+sim.cfl = 0.05            # CFL coefficient             (m)
 sim.Hs  = [100.]          # Vector of mean layer depths (m)
 sim.rho = [1025.]         # Vector of layer densities   (kg/m^3)
 sim.end_time = 2*24.*hour   # End Time                    (sec)
@@ -62,7 +62,6 @@ elif sim.Nx==1:
 
 sim.run()                # Run the simulation
 
-sys.exit()
 
 # Hovmuller plot
 plt.figure()
