@@ -112,18 +112,18 @@ def spectral_sw(sim):
     try:
         tmp_in_u  = pyfftw.n_byte_align_empty((sim.Nkx,sim.Nky),16,dtype='complex128')
         tmp_out_u = pyfftw.n_byte_align_empty((sim.Nkx,sim.Nky),16,dtype='complex128')
-        sim.fftn_u  = pyfftw.FFTW(tmp_in_u, tmp_out_u, axes=[0,1], direction='FFTW_FORWARD')
-        sim.ifftn_u = pyfftw.FFTW(tmp_out_u, tmp_in_u, axes=[0,1], direction='FFTW_BACKWARD')
+        sim.fftn_u  = pyfftw.FFTW(tmp_in_u, tmp_out_u, axes=[0,1], direction='FFTW_FORWARD', threads = sim.num_threads)
+        sim.ifftn_u = pyfftw.FFTW(tmp_out_u, tmp_in_u, axes=[0,1], direction='FFTW_BACKWARD', threads = sim.num_threads)
 
         tmp_in_v  = pyfftw.n_byte_align_empty((sim.Nkx,sim.Nky),16,dtype='complex128')
         tmp_out_v = pyfftw.n_byte_align_empty((sim.Nkx,sim.Nky),16,dtype='complex128')
-        sim.fftn_v  = pyfftw.FFTW(tmp_in_v, tmp_out_v, axes=[0,1], direction='FFTW_FORWARD')
-        sim.ifftn_v = pyfftw.FFTW(tmp_out_v, tmp_in_v, axes=[0,1], direction='FFTW_BACKWARD')
+        sim.fftn_v  = pyfftw.FFTW(tmp_in_v, tmp_out_v, axes=[0,1], direction='FFTW_FORWARD', threads = sim.num_threads)
+        sim.ifftn_v = pyfftw.FFTW(tmp_out_v, tmp_in_v, axes=[0,1], direction='FFTW_BACKWARD', threads = sim.num_threads)
 
         tmp_in_h  = pyfftw.n_byte_align_empty((sim.Nkx,sim.Nky),16,dtype='complex128')
         tmp_out_h = pyfftw.n_byte_align_empty((sim.Nkx,sim.Nky),16,dtype='complex128')
-        sim.fftn_h  = pyfftw.FFTW(tmp_in_h, tmp_out_h, axes=[0,1], direction='FFTW_FORWARD')
-        sim.ifftn_h = pyfftw.FFTW(tmp_out_h, tmp_in_h, axes=[0,1], direction='FFTW_BACKWARD')
+        sim.fftn_h  = pyfftw.FFTW(tmp_in_h, tmp_out_h, axes=[0,1], direction='FFTW_FORWARD', threads = sim.num_threads)
+        sim.ifftn_h = pyfftw.FFTW(tmp_out_h, tmp_in_h, axes=[0,1], direction='FFTW_BACKWARD', threads = sim.num_threads)
 
     except:
         def ifftx(ar):

@@ -42,6 +42,8 @@ class Simulation:
         self.method = 'Spectral'    # Spectral or Finite Volume (FV)?
 
         self.dynamics = 'Nonlinear' # Nonlinear or Linear
+
+        self.num_threads = 1
         
         self.g    = 9.81            # gravity
         self.f0   = 1e-4            # Coriolis

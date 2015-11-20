@@ -28,18 +28,18 @@ def SPECTRAL_y(sim):       # Set the differentiation operators
         try:
             tmp_in_u  = pyfftw.n_byte_align_empty((sim.Nx,sim.Nky),16,dtype='complex128')
             tmp_out_u = pyfftw.n_byte_align_empty((sim.Nx,sim.Nky),16,dtype='complex128')
-            sim.ffty_u  = pyfftw.FFTW(tmp_in_u, tmp_out_u, axes=[1], direction='FFTW_FORWARD')
-            sim.iffty_u = pyfftw.FFTW(tmp_out_u, tmp_in_u, axes=[1], direction='FFTW_BACKWARD')
+            sim.ffty_u  = pyfftw.FFTW(tmp_in_u, tmp_out_u, axes=[1], direction='FFTW_FORWARD', threads = sim.num_threads)
+            sim.iffty_u = pyfftw.FFTW(tmp_out_u, tmp_in_u, axes=[1], direction='FFTW_BACKWARD', threads = sim.num_threads)
 
             tmp_in_v  = pyfftw.n_byte_align_empty((sim.Nx,sim.Nky),16,dtype='complex128')
             tmp_out_v = pyfftw.n_byte_align_empty((sim.Nx,sim.Nky),16,dtype='complex128')
-            sim.ffty_v  = pyfftw.FFTW(tmp_in_v, tmp_out_v, axes=[1], direction='FFTW_FORWARD')
-            sim.iffty_v = pyfftw.FFTW(tmp_out_v, tmp_in_v, axes=[1], direction='FFTW_BACKWARD')
+            sim.ffty_v  = pyfftw.FFTW(tmp_in_v, tmp_out_v, axes=[1], direction='FFTW_FORWARD', threads  = sim.num_threads)
+            sim.iffty_v = pyfftw.FFTW(tmp_out_v, tmp_in_v, axes=[1], direction='FFTW_BACKWARD', threads = sim.num_threads)
 
             tmp_in_h  = pyfftw.n_byte_align_empty((sim.Nx,sim.Nky),16,dtype='complex128')
             tmp_out_h = pyfftw.n_byte_align_empty((sim.Nx,sim.Nky),16,dtype='complex128')
-            sim.ffty_h  = pyfftw.FFTW(tmp_in_h, tmp_out_h, axes=[1], direction='FFTW_FORWARD')
-            sim.iffty_h = pyfftw.FFTW(tmp_out_h, tmp_in_h, axes=[1], direction='FFTW_BACKWARD')
+            sim.ffty_h  = pyfftw.FFTW(tmp_in_h, tmp_out_h, axes=[1], direction='FFTW_FORWARD', threads  = sim.num_threads)
+            sim.iffty_h = pyfftw.FFTW(tmp_out_h, tmp_in_h, axes=[1], direction='FFTW_BACKWARD', threads = sim.num_threads)
 
         except:
             def iffty(ar):
