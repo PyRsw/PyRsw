@@ -10,29 +10,29 @@ import sys
 sim = Simulation()  # Create a simulation object
 
 # Geometry and Model Equations
-sim.geomx       = 'walls'       # Geometry Types: 'periodic' or 'walls'
+sim.geomx       = 'periodic'       # Geometry Types: 'periodic' or 'walls'
 sim.geomy       = 'walls'
-sim.stepper     = Step.AB2         # Time-stepping algorithm: Euler, AB2, RK4
+sim.stepper     = Step.AB3         # Time-stepping algorithm: Euler, AB2, RK4
 sim.method      = 'Spectral'       # Numerical method: 'Spectral'
 sim.dynamics    = 'Nonlinear'      # Dynamics: 'Nonlinear' or 'Linear'
 sim.flux_method = Flux.spectral_sw # Flux method: spectral_sw is only option currently
 
 # Specify paramters
-sim.Lx  = 4000e3          # Domain extent               (m)
-sim.Ly  = 4000e3          # Domain extent               (m)
-sim.Nx  = 128             # Grid points in x
+sim.Lx  = 200e3          # Domain extent               (m)
+sim.Ly  = 200e3          # Domain extent               (m)
+sim.Nx  = 4               # Grid points in x
 sim.Ny  = 128             # Grid points in y
 sim.Nz  = 1               # Number of layers
 sim.g   = 9.81            # Gravity                     (m/sec^2)
 sim.f0  = 1.e-4           # Coriolis                    (1/sec)
-sim.beta = 1e-10          # Coriolis beta               (1/m/sec)
+sim.beta = 0e-10          # Coriolis beta               (1/m/sec)
 sim.cfl = 0.05            # CFL coefficient             (m)
 sim.Hs  = [100.]          # Vector of mean layer depths (m)
 sim.rho = [1025.]         # Vector of layer densities   (kg/m^3)
 sim.end_time = 24.*hour   # End Time                    (sec)
 
 # Plotting parameters
-sim.plott   = 20.*minute  # Period of plots
+sim.plott   = 10.*minute  # Period of plots
 sim.animate = 'Anim'      # 'Save' to create video frames,
                           # 'Anim' to animate,
                           # 'None' otherwise
@@ -51,11 +51,18 @@ sim.initialize()
 for ii in range(sim.Nz):  # Set mean depths
     sim.soln.h[:,:,ii] = sim.Hs[ii]
 
-# Gaussian initial conditions
-x0 = 1.*sim.Lx/2.      # Centre
-W  = 200.e3                # Width
-amp = 1.                  # Amplitude
-sim.soln.h[:,:,0] += amp*np.exp(-(sim.x-x0)**2/(W**2)).reshape((sim.Nx,1))*np.exp(-(sim.y-x0)**2/(W**2)).reshape((1,sim.Ny))
+# Jet initial conditions
+x0 = 1.*sim.Lx/2.          # Centre
+Lj = 10.e3                # Width
+amp = 0.1                  # Amplitude
+sim.soln.h[:,:,0] += -amp*np.tanh(sim.Y/Lj)
+sim.soln.u[:,:,0] +=  sim.g*amp/(sim.f0*Lj)/(np.cosh(sim.Y/Lj))**2
+
+#plt.clf()
+#plt.pcolormesh(sim.X/1e3, sim.Y/1e3, sim.soln.u[:,:,0])
+#plt.colorbar()
+#plt.show()
+#sys.exit()
 
 sim.run()                # Run the simulation
 

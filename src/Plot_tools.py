@@ -82,7 +82,7 @@ def update_save(sim):
 
     if sim.Nx > 1 and sim.Ny > 1:
         for L in range(sim.Nz):
-            sim.Qs[L].set_array(np.ravel(sim.soln.h[:sim.Nx-1,:sim.Ny-1,L].T))
+            sim.Qs[L].set_array(np.ravel(sim.soln.u[:sim.Nx-1,:sim.Ny-1,L].T))
             sim.Qs[L].changed()
     else:
         # Update u
