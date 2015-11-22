@@ -10,8 +10,8 @@ import sys
 sim = Simulation()  # Create a simulation object
 
 # Geometry and Model Equations
-sim.geomx       = 'periodic'       # Geometry Types: 'periodic' or 'walls'
-sim.geomy       = 'walls'
+sim.geomx       = 'walls'       # Geometry Types: 'periodic' or 'walls'
+sim.geomy       = 'periodic'
 sim.stepper     = Step.AB3         # Time-stepping algorithm: Euler, AB2, RK4
 sim.method      = 'Spectral'       # Numerical method: 'Spectral'
 sim.dynamics    = 'Nonlinear'      # Dynamics: 'Nonlinear' or 'Linear'
@@ -19,9 +19,9 @@ sim.flux_method = Flux.spectral_sw # Flux method: spectral_sw is only option cur
 
 # Specify paramters
 sim.Lx  = 200e3          # Domain extent               (m)
-sim.Ly  = 200e3          # Domain extent               (m)
-sim.Nx  = 4               # Grid points in x
-sim.Ny  = 128             # Grid points in y
+sim.Ly  = 200e3           # Domain extent               (m)
+sim.Nx  = 128             # Grid points in x
+sim.Ny  = 1               # Grid points in y
 sim.Nz  = 1               # Number of layers
 sim.g   = 9.81            # Gravity                     (m/sec^2)
 sim.f0  = 1.e-4           # Coriolis                    (1/sec)
@@ -55,8 +55,8 @@ for ii in range(sim.Nz):  # Set mean depths
 x0 = 1.*sim.Lx/2.          # Centre
 Lj = 10.e3                # Width
 amp = 0.1                  # Amplitude
-sim.soln.h[:,:,0] += -amp*np.tanh(sim.Y/Lj)
-sim.soln.u[:,:,0] +=  sim.g*amp/(sim.f0*Lj)/(np.cosh(sim.Y/Lj))**2
+sim.soln.h[:,:,0] += -amp*np.tanh(sim.X/Lj)
+sim.soln.v[:,:,0] += -sim.g*amp/(sim.f0*Lj)/(np.cosh(sim.X/Lj))**2
 
 #plt.clf()
 #plt.pcolormesh(sim.X/1e3, sim.Y/1e3, sim.soln.u[:,:,0])

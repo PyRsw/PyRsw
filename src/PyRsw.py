@@ -114,10 +114,12 @@ class Simulation:
         else:
             self.Y = 0.
 
-        #FJP: fix this later      
+        #FJP: fix this later
+        if self.Ny==1:
+            self.y = np.array([self.Ly/2])
+        self.x -= self.Lx/2.
+        self.y -= self.Ly/2.
         self.X, self.Y = np.meshgrid(self.x,self.y,indexing='ij')
-        self.X -= self.Lx/2.
-        self.Y -= self.Ly/2.
         self.F = self.f0 + self.beta*self.Y
 
         # Initialize differentiation and averaging operators
