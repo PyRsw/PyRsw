@@ -163,4 +163,16 @@ if sim.Ny==1:
 \end{center}
 \end{figure}
 
+\subsection*{Geostrophic Adjustment: 2D and 1L}
+
+The basic script is almost identical to the 1D case.  The changes are as follows:
+\begin{itemize}
+\item[1.] Set $Nx$ and $Ny$ both equal to $128$, and from this we build a 2D grid.   
+\item[2.] Define the initial conditions on a 2D grid.
+\item[3.] The plotting is different.  We plot a 2D field using \tt{pcolormesh} and we don't do a Hovm\"oller plot.
+\end{itemize}
+
+\subsection*{Bickley Jet: 2D and 1L}
+
+Following Poulin and Flierl (2003) and Irwin and Poulin (2014), we look at the instability of a jet.
 \end{document}
