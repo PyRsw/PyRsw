@@ -2,3 +2,25 @@
 src/*.png
 src/Frames
 src/*.mp4
+
+# Ignore latex-related files
+*.synctex.gz
+*.aux
+*.glo
+*.idx
+*.log
+*.toc
+*.ist
+*.acn
+*.acr
+*.alg
+*.bbl
+*.blg
+*.dvi
+*.glg
+*.gls
+*.ilg
+*.ind
+*.lof
+*.lot
+*.out
