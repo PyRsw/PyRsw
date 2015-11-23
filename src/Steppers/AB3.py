@@ -55,7 +55,6 @@ def AB3(sim):
                 +   a*b*(tp    - tn))   \
              /((ts-a)*(ts-b))
 
-
         # Evolve the system
         sim.soln.u += w0*sim.curr_flux.u + w1*sim.fluxes.u[0] + w2*sim.fluxes.u[1]
         sim.soln.v += w0*sim.curr_flux.v + w1*sim.fluxes.v[0] + w2*sim.fluxes.v[1]
@@ -64,8 +63,8 @@ def AB3(sim):
         # Store the appropriate histories.
         if sim.nfluxes == 2:
             sim.fluxes.u = [sim.curr_flux.u.copy(), sim.fluxes.u[0]]
-            sim.fluxes.v = [sim.curr_flux.v.copy(), sim.fluxes.v[1]]
-            sim.fluxes.h = [sim.curr_flux.h.copy(), sim.fluxes.h[1]]
+            sim.fluxes.v = [sim.curr_flux.v.copy(), sim.fluxes.v[0]]
+            sim.fluxes.h = [sim.curr_flux.h.copy(), sim.fluxes.h[0]]
             sim.dts    = [sim.dt, sim.dts[0]]
         else:
             sim.fluxes.u = [sim.curr_flux.u] + sim.fluxes.u

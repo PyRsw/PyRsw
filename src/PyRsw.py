@@ -94,12 +94,18 @@ class Simulation:
         
         if self.Nx > 1:
             dx = self.Lx/self.Nx
-            self.x = np.arange(dx/2,self.Lx,dx)
+            self.x = np.arange(dx/2,self.Lx,dx) - self.Lx/2.
             dxs[0] = dx
+        else:
+            self.x = np.array([0.])
+            
         if self.Ny > 1:
             dy = self.Ly/self.Ny
-            self.y = np.arange(dy/2,self.Ly,dy)
+            self.y = np.arange(dy/2,self.Ly,dy) - self.Ly/2.
             dxs[1] = dy
+        else:
+            self.y = np.array([0.])
+            
         self.dx = dxs
 
         if self.beta != 0.:
@@ -107,14 +113,7 @@ class Simulation:
                 print('beta-plane requires "walls" geometry in y.')
                 sys.exit()
 
-        # Create a 2D grid, centred about (0,0)
-        if self.Ny == 1:
-            self.y = np.array([self.Ly/2])
-        if self.Nx == 1:
-            self.x = np.array([self.Lx/2])
-
-        self.x -= self.Lx/2.
-        self.y -= self.Ly/2.
+        # Define a 2D grid
         self.X, self.Y = np.meshgrid(self.x,self.y,indexing='ij')
         self.F = self.f0 + self.beta*self.Y
 
@@ -225,11 +224,9 @@ class Simulation:
 
     # Advance the simulation one time-step.
     def step(self):
-        #FJP: set dt elsewhere
-        #self.dt = 1.0
+
         self.compute_dt() 
 
-        #FJP: commented this out.  
         # Check if we need to adjust the time-step
         # to match an output time
         do_plot, do_diag, do_save = self.adjust_dt()
