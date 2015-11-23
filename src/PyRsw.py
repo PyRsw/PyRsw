@@ -70,7 +70,10 @@ class Simulation:
 
         print('Parameters:')
         print('-----------')
-        print('geomx    = {0:s}'.format(self.geomx))
+        if self.Nx > 1:
+            print('geomx    = {0:s}'.format(self.geomx))
+        if self.Ny > 1:
+            print('geomy    = {0:s}'.format(self.geomy))
         print('stepper  = {0:s}'.format(self.stepper.__name__))
         print('method   = {0:s}'.format(self.method))
         print('dynamics = {0:s}'.format(self.dynamics))
