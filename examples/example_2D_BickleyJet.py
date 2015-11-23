@@ -1,11 +1,17 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
+
+# Add the PyRsw tools to the path
+# At the moment it is given explicitely.
+# In the future, it could also be added to the
+# pythonpath environment variable
+sys.path.append('../src')
 
 import Steppers as Step
 import Fluxes as Flux
 from PyRsw import Simulation
 from constants import minute, hour, day
-import sys
 
 sim = Simulation()  # Create a simulation object
 
