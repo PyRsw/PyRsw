@@ -1,6 +1,5 @@
 import Differentiation as Diff
 import numpy as np
-import matplotlib.pyplot as plt
 import sys
 
 try:
@@ -33,7 +32,7 @@ def spectral_sw_flux(sim):
         sim.curr_flux.u[:,:,ii] += - v*du
         sim.curr_flux.v[:,:,ii] += - v*dv - sim.gs[ii]*dh
         sim.curr_flux.h[:,:,ii] += - v*dh - h*dv 
-        
+
     return
 
 def spectral_sw_linear_flux(sim):
@@ -64,9 +63,9 @@ def spectral_sw_linear_flux(sim):
 
 def filter_general(sim):
     for ii in range(sim.Nz):
-        ue = sim.soln.u[:,:,ii]
-        ve = sim.soln.v[:,:,ii]
-        he = sim.soln.h[:,:,ii]
+        ue = sim.soln.u[:,:,ii].copy()
+        ve = sim.soln.v[:,:,ii].copy()
+        he = sim.soln.h[:,:,ii].copy()
 
         # Extend Grid if walls in x
         if (sim.geomx=='walls') and (sim.Nx > 1):

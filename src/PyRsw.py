@@ -70,15 +70,18 @@ class Simulation:
     # Full initialization for once the user has specified parameters
     def initialize(self):
 
-        print 'Parameters:'
-        print '-----------'
-        print 'geomx    = ', self.geomx
-        print 'stepper  = ', self.stepper
-        print 'method   = ', self.method
-        print 'dynamics = ', self.dynamics
-        print 'Nx       = ', self.Nx
-        print 'Ny       = ', self.Ny
-        print 'Nz       = ', self.Nz
+        print('Parameters:')
+        print('-----------')
+        if self.Nx > 1:
+            print('geomx    = {0:s}'.format(self.geomx))
+        if self.Ny > 1:
+            print('geomy    = {0:s}'.format(self.geomy))
+        print('stepper  = {0:s}'.format(self.stepper.__name__))
+        print('method   = {0:s}'.format(self.method))
+        print('dynamics = {0:s}'.format(self.dynamics))
+        print('Nx       = {0:d}'.format(self.Nx))
+        print('Ny       = {0:d}'.format(self.Ny))
+        print('Nz       = {0:d}'.format(self.Nz))
         if self.f0 != 0:
             if self.beta != 0:
                 print('Coriolis = beta-plane')
@@ -93,28 +96,27 @@ class Simulation:
         
         if self.Nx > 1:
             dx = self.Lx/self.Nx
-            self.x = np.arange(dx/2,self.Lx,dx)
+            self.x = np.arange(dx/2,self.Lx,dx) - self.Lx/2.
             dxs[0] = dx
+        else:
+            self.x = np.array([0.])
+            
         if self.Ny > 1:
             dy = self.Ly/self.Ny
-            self.y = np.arange(dy/2,self.Ly,dy)
+            self.y = np.arange(dy/2,self.Ly,dy) - self.Ly/2.
             dxs[1] = dy
+        else:
+            self.y = np.array([0.])
+            
         self.dx = dxs
 
         if self.beta != 0.:
             if self.geomy != 'walls':
                 print('beta-plane requires "walls" geometry in y.')
                 sys.exit()
-            if self.Ny == 1:
-                self.Y = 0.
-            elif (self.Ny > 1) and (self.Nx == 1):
-                self.Y = self.y - self.Ly/2.
-            else:
-                tmp, Y = np.meshgrid(self.x,self.y)
-                self.Y = Y - self.Ly/2.
-        else:
-            self.Y = 0.
-            
+
+        # Define a 2D grid
+        self.X, self.Y = np.meshgrid(self.x,self.y,indexing='ij')
         self.F = self.f0 + self.beta*self.Y
 
         # Initialize differentiation and averaging operators
@@ -224,6 +226,7 @@ class Simulation:
 
     # Advance the simulation one time-step.
     def step(self):
+
         self.compute_dt() 
 
         # Check if we need to adjust the time-step
