@@ -1,7 +1,7 @@
 *.pyc
-src/*.png
-src/Frames
-src/*.mp4
+examples/*.png
+examples/Frames
+examples/*.mp4
 
 # Ignore latex-related files
 *.synctex.gz
