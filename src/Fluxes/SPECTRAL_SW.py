@@ -64,9 +64,9 @@ def spectral_sw_linear_flux(sim):
 
 def filter_general(sim):
     for ii in range(sim.Nz):
-        ue = sim.soln.u[:,:,ii]
-        ve = sim.soln.v[:,:,ii]
-        he = sim.soln.h[:,:,ii]
+        ue = sim.soln.u[:,:,ii].copy()
+        ve = sim.soln.v[:,:,ii].copy()
+        he = sim.soln.h[:,:,ii].copy()
 
         # Extend Grid if walls in x
         if (sim.geomx=='walls') and (sim.Nx > 1):

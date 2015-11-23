@@ -1,2 +1,4 @@
 *.pyc
 src/*.png
+src/Frames
+src/*.mp4

@@ -24,8 +24,8 @@ def initialize_diagnostics(sim):
         h   = sim.soln.h[:,:,ii] - sim.soln.h[:,:,ii+1]
 
         if sim.method == 'Spectral':
-            v   = sim.soln.u[:,:,ii]
-            u   = sim.soln.v[:,:,ii]
+            v   = sim.soln.u[:,:,ii].copy()
+            u   = sim.soln.v[:,:,ii].copy()
         else:
             v   = sim.soln.u[:,:,ii]/(eps + h)
             u   = sim.soln.v[:,:,ii]/(eps + h)
@@ -49,8 +49,8 @@ def compute_KE(sim):
     for ii in range(sim.Nz):
         h   = sim.soln.h[:,:,ii] - sim.soln.h[:,:,ii+1]
         if sim.method == 'Spectral':
-            v   = sim.soln.u[:,:,ii]
-            u   = sim.soln.v[:,:,ii]
+            v   = sim.soln.u[:,:,ii].copy()
+            u   = sim.soln.v[:,:,ii].copy()
         else:
             v   = sim.soln.u[:,:,ii]/(eps + h)
             u   = sim.soln.v[:,:,ii]/(eps + h)
@@ -73,8 +73,8 @@ def compute_enstrophy(sim):
         # Compute the mid-depth of the next layer
         h   = sim.soln.h[:,:,ii] - sim.soln.h[:,:,ii+1]
         if sim.method == 'Spectral':
-            v   = sim.soln.u[:,:,ii]
-            u   = sim.soln.v[:,:,ii]
+            v   = sim.soln.u[:,:,ii].copy
+            u   = sim.soln.v[:,:,ii].copy()
         else:
             v   = sim.soln.u[:,:,ii]/(eps + h)
             u   = sim.soln.v[:,:,ii]/(eps + h)
@@ -102,8 +102,8 @@ def update(sim):
     for ii in range(sim.Nz):
         h   = sim.soln.h[:,:,ii] - sim.soln.h[:,:,ii+1]
         if sim.method == 'Spectral':
-            v   = sim.soln.u[:,:,ii]
-            u   = sim.soln.v[:,:,ii]
+            v   = sim.soln.u[:,:,ii].copy()
+            u   = sim.soln.v[:,:,ii].copy()
         else:
             v   = sim.soln.u[:,:,ii]/(eps + h)
             u   = sim.soln.v[:,:,ii]/(eps + h)

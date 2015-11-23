@@ -26,14 +26,14 @@ sim.Nz  = 1               # Number of layers
 sim.g   = 9.81            # Gravity                     (m/sec^2)
 sim.f0  = 1.e-4           # Coriolis                    (1/sec)
 sim.beta = 0e-10          # Coriolis beta               (1/m/sec)
-sim.cfl = 0.05            # CFL coefficient             (m)
+sim.cfl = 0.6             # CFL coefficient             (m)
 sim.Hs  = [100.]          # Vector of mean layer depths (m)
 sim.rho = [1025.]         # Vector of layer densities   (kg/m^3)
-sim.end_time = 24.*hour   # End Time                    (sec)
+sim.end_time = 4*24.*hour   # End Time                    (sec)
 
 # Plotting parameters
-sim.plott   = 10.*minute  # Period of plots
-sim.animate = 'Anim'      # 'Save' to create video frames,
+sim.plott   = 20.*minute  # Period of plots
+sim.animate = 'Save'      # 'Save' to create video frames,
                           # 'Anim' to animate,
                           # 'None' otherwise
                          
@@ -57,12 +57,6 @@ Lj = 10.e3                # Width
 amp = 0.1                  # Amplitude
 sim.soln.h[:,:,0] += -amp*np.tanh(sim.X/Lj)
 sim.soln.v[:,:,0] += -sim.g*amp/(sim.f0*Lj)/(np.cosh(sim.X/Lj))**2
-
-#plt.clf()
-#plt.pcolormesh(sim.X/1e3, sim.Y/1e3, sim.soln.u[:,:,0])
-#plt.colorbar()
-#plt.show()
-#sys.exit()
 
 sim.run()                # Run the simulation
 

@@ -230,8 +230,8 @@ class Simulation:
     # Advance the simulation one time-step.
     def step(self):
         #FJP: set dt elsewhere
-        self.dt = 1.0
-        #self.compute_dt() 
+        #self.dt = 1.0
+        self.compute_dt() 
 
         #FJP: commented this out.  
         # Check if we need to adjust the time-step
