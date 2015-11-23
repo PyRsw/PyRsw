@@ -31,8 +31,11 @@ sim.Hs  = [100.]          # Vector of mean layer depths (m)
 sim.rho = [1025.]         # Vector of layer densities   (kg/m^3)
 sim.end_time = 2.*24.*hour   # End Time                    (sec)
 
+# Parallel? Only applies to the FFTWs
+sim.num_threads = 4
+
 # Plotting parameters
-sim.plott   = 20.*minute  # Period of plots
+sim.plott   = 15.*minute  # Period of plots
 sim.animate = 'Anim'      # 'Save' to create video frames,
                           # 'Anim' to animate,
                           # 'None' otherwise
@@ -54,7 +57,6 @@ for ii in range(sim.Nz):  # Set mean depths
 # Gaussian initial conditions
 W  = 200.e3                # Width
 amp = 1.                  # Amplitude
-
 sim.soln.h[:,:,0] += amp*np.exp(-(sim.X/W)**2 - (sim.Y/W)**2)
 
 # Run the simulation
