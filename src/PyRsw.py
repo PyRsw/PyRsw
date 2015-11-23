@@ -68,15 +68,15 @@ class Simulation:
     # Full initialization for once the user has specified parameters
     def initialize(self):
 
-        print 'Parameters:'
-        print '-----------'
-        print 'geomx    = ', self.geomx
-        print 'stepper  = ', self.stepper
-        print 'method   = ', self.method
-        print 'dynamics = ', self.dynamics
-        print 'Nx       = ', self.Nx
-        print 'Ny       = ', self.Ny
-        print 'Nz       = ', self.Nz
+        print('Parameters:')
+        print('-----------')
+        print('geomx    = {0:s}'.format(self.geomx))
+        print('stepper  = {0:s}'.format(self.stepper.__name__))
+        print('method   = {0:s}'.format(self.method))
+        print('dynamics = {0:s}'.format(self.dynamics))
+        print('Nx       = {0:d}'.format(self.Nx))
+        print('Ny       = {0:d}'.format(self.Ny))
+        print('Nz       = {0:d}'.format(self.Nz))
         if self.f0 != 0:
             if self.beta != 0:
                 print('Coriolis = beta-plane')
@@ -103,20 +103,13 @@ class Simulation:
             if self.geomy != 'walls':
                 print('beta-plane requires "walls" geometry in y.')
                 sys.exit()
-            if self.Ny == 1:
-                self.Y = 0.
-            elif (self.Ny > 1) and (self.Nx == 1):
-                self.Y = self.y - self.Ly/2.
-            else:
-                X, Y = np.meshgrid(self.x,self.y)
-                self.X = X - self.Lx/2.
-                self.Y = Y - self.Ly/2.
-        else:
-            self.Y = 0.
 
-        #FJP: fix this later
-        if self.Ny==1:
+        # Create a 2D grid, centred about (0,0)
+        if self.Ny == 1:
             self.y = np.array([self.Ly/2])
+        if self.Nx == 1:
+            self.x = np.array([self.Lx/2])
+
         self.x -= self.Lx/2.
         self.y -= self.Ly/2.
         self.X, self.Y = np.meshgrid(self.x,self.y,indexing='ij')

@@ -1,6 +1,5 @@
 import Differentiation as Diff
 import numpy as np
-import matplotlib.pyplot as plt
 import sys
 
 try:

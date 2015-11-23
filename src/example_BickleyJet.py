@@ -12,28 +12,28 @@ sim = Simulation()  # Create a simulation object
 # Geometry and Model Equations
 sim.geomx       = 'periodic'       # Geometry Types: 'periodic' or 'walls'
 sim.geomy       = 'walls'
-sim.stepper     = Step.AB2         # Time-stepping algorithm: Euler, AB2, RK4
+sim.stepper     = Step.AB3         # Time-stepping algorithm: Euler, AB2, RK4
 sim.method      = 'Spectral'       # Numerical method: 'Spectral'
 sim.dynamics    = 'Nonlinear'      # Dynamics: 'Nonlinear' or 'Linear'
 sim.flux_method = Flux.spectral_sw # Flux method: spectral_sw is only option currently
 
 # Specify paramters
-sim.Lx  = 200e3          # Domain extent               (m)
-sim.Ly  = 200e3          # Domain extent               (m)
-sim.Nx  = 64             # Grid points in x
-sim.Ny  = 64             # Grid points in y
+sim.Lx  = 300e3          # Domain extent               (m)
+sim.Ly  = 300e3          # Domain extent               (m)
+sim.Nx  = 256            # Grid points in x
+sim.Ny  = 256            # Grid points in y
 sim.Nz  = 1               # Number of layers
 sim.g   = 9.81            # Gravity                     (m/sec^2)
 sim.f0  = 1.e-4           # Coriolis                    (1/sec)
 sim.beta = 0e-10          # Coriolis beta               (1/m/sec)
-sim.cfl = 0.05            # CFL coefficient             (m)
+sim.cfl = 0.1             # CFL coefficient             (m)
 sim.Hs  = [100.]          # Vector of mean layer depths (m)
 sim.rho = [1025.]         # Vector of layer densities   (kg/m^3)
-sim.end_time = 24.*hour   # End Time                    (sec)
+sim.end_time = 8*24.*hour   # End Time                    (sec)
 
 # Plotting parameters
-sim.plott   = 10.*minute  # Period of plots
-sim.animate = 'Anim'      # 'Save' to create video frames,
+sim.plott   = 30.*minute  # Period of plots
+sim.animate = 'Save'      # 'Save' to create video frames,
                           # 'Anim' to animate,
                           # 'None' otherwise
                          
@@ -56,22 +56,7 @@ Ljet = 20e3            # Jet width
 amp  = 0.1             # Elevation of free-surface in basic state
 sim.soln.h[:,:,0] += -amp*np.tanh(sim.Y/Ljet)
 sim.soln.u[:,:,0]  =  sim.g*amp/(sim.f0*Ljet)/(np.cosh(sim.Y/Ljet)**2)
-sim.soln.u[:,:,0] +=  1e-3*np.exp(-(sim.Y/Ljet)**2)*np.random.randn(sim.Nx,sim.Ny)
-#sim.soln.h[:,:,0] +=  amp*np.tanh(sim.X/Ljet)
-#sim.soln.v[:,:,0]  =  sim.g*amp/(sim.f0*Ljet)/(np.cosh(sim.X/Ljet)**2)
-
-#FJP: plot solution
-#FJP: LSA
-#plt.figure()
-#plt.clf()
-#plt.pcolormesh(sim.X, sim.Y, sim.soln.u[:,:,0], cmap='seismic')
-#plt.colorbar()
-#plt.show()
-#plt.plot(sim.Y[:,0]/1e3, -amp*np.tanh(sim.Y[:,0]/Ljet),'-ob')
-#plt.show()
-#plt.plot(sim.Y[:,0]/1e3,  sim.g*amp/(sim.f0*Ljet)/(np.cosh(sim.Y/Ljet)**2),'-ob')
-#plt.show()
-#sys.exit()
+sim.soln.u[:,:,0] +=  2e-3*np.exp(-(sim.Y/Ljet)**2)*np.random.randn(sim.Nx,sim.Ny)
 
 sim.run()                # Run the simulation
 

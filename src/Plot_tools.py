@@ -25,7 +25,7 @@ def update_anim(sim):
 
     if sim.Nx > 1 and sim.Ny > 1:
         for L in range(sim.Nz):
-            sim.Qs[L].set_array(np.ravel(sim.soln.u[:sim.Nx-1,:sim.Ny-1,L]))
+            sim.Qs[L].set_array(np.ravel(sim.soln.h[:sim.Nx-1,:sim.Ny-1,L] - sim.Hs[L]))
             sim.Qs[L].changed()
     else:
         # Update u
@@ -42,7 +42,7 @@ def update_anim(sim):
 
         # Update h
         for L in range(sim.Nz):
-            sim.Qs[2][L].set_ydata(sim.soln.h[:,:,L] - np.sum(sim.Hs[L:]))
+            sim.Qs[2][L].set_ydata(sim.soln.h[:,:,L] - sim.Hs[L])
         sim.axs[2].relim()
         sim.axs[2].autoscale_view()
 
@@ -82,7 +82,7 @@ def update_save(sim):
 
     if sim.Nx > 1 and sim.Ny > 1:
         for L in range(sim.Nz):
-            sim.Qs[L].set_array(np.ravel(sim.soln.u[:sim.Nx-1,:sim.Ny-1,L].T))
+            sim.Qs[L].set_array(np.ravel(sim.soln.h[:sim.Nx-1,:sim.Ny-1,L] - sim.Hs[L]))
             sim.Qs[L].changed()
     else:
         # Update u
@@ -99,7 +99,7 @@ def update_save(sim):
 
         # Update h
         for L in range(sim.Nz):
-            sim.Qs[2][L].set_ydata(sim.soln.h[:,:,L] - np.sum(sim.Hs[L:]))
+            sim.Qs[2][L].set_ydata(sim.soln.h[:,:,L] - sim.Hs[L])
         sim.axs[2].relim()
         sim.axs[2].autoscale_view()
 
@@ -136,15 +136,16 @@ def initialize_plots_animsave(sim):
         for L in range(sim.Nz):
             plt.subplot(1,sim.Nz,L+1)
             axs += [plt.gca()]
-            Qs += [plt.pcolormesh(x,y,sim.soln.u[:,:,L], cmap='viridis')]
+            cv = np.max(np.abs(np.ravel((sim.soln.h[:,:,L] - sim.Hs[L]))))
+            Qs += [plt.pcolormesh(x,y,sim.soln.h[:,:,L] - sim.Hs[L], cmap=sim.cmap, 
+                        vmin = -cv, vmax = cv)]
             plt.colorbar()
             try:
-                plt.contour(x,y,sim.soln.u[:,:,-1])
+                plt.contour(x,y,sim.soln.h[:,:,-1])
             except:
                 pass
             plt.axis('tight')
             plt.gca().set_aspect('equal')
-            plt.pause(2.0)
             
     else:
         Qs  = [[],[],[]]
@@ -162,7 +163,8 @@ def initialize_plots_animsave(sim):
             if len(sim.ylims[0]) == 2:
                 plt.ylim(sim.ylims[0])
             plt.ylabel('u')
-            plt.ylim([-0.2, 0.2])
+            tmp = plt.gca().get_ylim()
+            plt.ylim([-np.max(np.abs(tmp)), np.max(np.abs(tmp))]);
             Qs[0] += [l]
 
         # Plot v
@@ -177,7 +179,8 @@ def initialize_plots_animsave(sim):
             if len(sim.ylims[1]) == 2:
                 plt.ylim(sim.ylims[1])
             plt.ylabel('v')
-            plt.ylim([-0.2, 0.2]);
+            tmp = plt.gca().get_ylim()
+            plt.ylim([-np.max(np.abs(tmp)), np.max(np.abs(tmp))]);
             Qs[1] += [l]
 
         # Plot h
@@ -191,16 +194,19 @@ def initialize_plots_animsave(sim):
             l, = plt.plot(x,sim.soln.h[:,:,L].ravel() - np.sum(sim.Hs[L:]), linewidth=2)
             if len(sim.ylims[2]) == 2:
                 plt.ylim(sim.ylims[2])
-            plt.ylim([-0.2, 1.2]);
+            tmp = plt.gca().get_ylim()
+            plt.ylim([-np.max(np.abs(tmp)), np.max(np.abs(tmp))]);
             plt.ylabel('eta')
             Qs[2] += [l]
 
-        plt.plot(x,sim.soln.h[:,:,-1].ravel(),'k')
+        if np.linalg.norm(sim.soln.h[:,:,-1]) > 0:
+            plt.plot(x,sim.soln.h[:,:,-1].ravel(),'k')
 
     if sim.animate == 'Anim':
         sim.update_plots = update_anim
     elif sim.animate == 'Save':
         sim.update_plots = update_save
+        plt.pause(0.01)
 
     if sim.animate == 'Anim':
         plt.ion()
@@ -231,9 +237,7 @@ def initialize_plots_hov(sim):
         if sim.Ny > 1:
             x = sim.y/1e3
             plt.xlabel('y (km)')
-        print(x.shape,t.shape,sim.hov_h.shape)
-        plt.pcolormesh(x,t,-1000*np.ones(sim.hov_h[:,L,:].T.shape),vmin = 0, vmax = 1, cmap = 'cubehelix')
-        #Q = plt.pcolormesh(x,t,sim.hov_h[:,L,:].T - np.sum(sim.Hs[L:]),cmap=sim.cmap)
+        Q = plt.pcolormesh(x,t,sim.hov_h[:,L,:].T - np.sum(sim.Hs[L:]),cmap=sim.cmap)
         sim.vmin = range(sim.Nz)
         sim.vmax = range(sim.Nz)
         if len(sim.ylims[2]) == 2:
