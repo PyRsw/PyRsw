@@ -46,7 +46,7 @@ def update_anim(sim):
         sim.axs[2].relim()
         sim.axs[2].autoscale_view()
 
-    plt.pause(2) #0.01)
+    plt.pause(0.01) 
     plt.draw()
 
 # Create Hovmuller plot at end of anim simulation
