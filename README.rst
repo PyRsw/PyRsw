@@ -1,4 +1,4 @@
-.. figure:: https://github.com/pyqg/pyqg/blob/master/docs/_static/vortex_rollup.png
+.. figure:: https://github.com/PyRsw/PyRsw/tree/new-Readme/docs/_static/height_jet.png
    :alt:
 
 PyRsw: Python Rotating Shallow Water Model
