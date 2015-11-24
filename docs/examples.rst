@@ -174,8 +174,8 @@ much work.
 At some point we should change walls to ’slip’ and allow for ’noslip’
 boundary conditions as well.
 
-Geostrophic Adjustment: 2D
---------------------------
+Geostrophic Adjustment: Two-Dimensions
+--------------------------------------
 
 The basic script is almost identical to the 1D case and can be found in
 the examples folder with the title example\_2D\_geoadjust.py. The
@@ -191,8 +191,8 @@ changes are as follows:
 -  The plotting is different. We plot a 2D field using pcolormesh and we
    don’t do a Hovmöller plot.
 
-Bickley Jet: 2D and 1L
-----------------------
+Bickley Jet: Two-Dimensions
+---------------------------
 
 Following Poulin and Flierl (2003) and Irwin and Poulin (2014), we look
 at the instability of a Bickley jet. The script is called
