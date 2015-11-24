@@ -73,7 +73,9 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="">Examples</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#geostrophic-adjustment-1d-and-1l">Geostrophic Adjustment: 1D and 1L</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geostrophic-adjustment-one-dimension">Geostrophic Adjustment: One-Dimension</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geostrophic-adjustment-two-dimensions">Geostrophic Adjustment: Two-Dimensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bickley-jet-two-dimensions">Bickley Jet: Two-Dimensions</a></li>
 </ul>
 </li>
 </ul>
@@ -113,18 +115,18 @@
             
   <div class="section" id="examples">
 <h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="geostrophic-adjustment-1d-and-1l">
-<h2>Geostrophic Adjustment: 1D and 1L<a class="headerlink" href="#geostrophic-adjustment-1d-and-1l" title="Permalink to this headline">¶</a></h2>
-<p>In the directory <code class="docutils literal"><span class="pre">src</span></code> you will find an example entitled
-<code class="docutils literal"><span class="pre">example_1D_1L_spectral.py</span></code></p>
+<div class="section" id="geostrophic-adjustment-one-dimension">
+<h2>Geostrophic Adjustment: One-Dimension<a class="headerlink" href="#geostrophic-adjustment-one-dimension" title="Permalink to this headline">¶</a></h2>
+<p>In the directory <code class="docutils literal"><span class="pre">examples</span></code> you will find an example entitled
+<code class="docutils literal"><span class="pre">example_1D_geoadjust.py</span></code></p>
 <p>First, libraries are imported. Two standard ones are numpy, for
 calculations, and matplotlib.pyplot for plotting. Those are standard to
 numpy. Then, there are four other things that are imported:</p>
 <ul class="simple">
 <li><strong>Steppers</strong> This contains different time-stepping functions. At the
-moment we have Euler, Adams-Bashforth 2 (AB2) and Runge-Kutta 4
-(RK4). PyRsw uses adaptive time stepping to try and be more efficient
-in how the solution is marched forward.</li>
+moment we have Euler, Adams-Bashforth 2 (AB2), Adams-Bashforth 3
+(AB3) and Runge-Kutta 4 (RK4). PyRsw uses adaptive time stepping to
+try and be more efficient in how the solution is marched forward.</li>
 <li><strong>Fluxes</strong> This contains the fluxes for the RSW model. At the moment
 there is only the option for a pseudo-spectral model but this will be
 generalized to include a Finite Volume method as well.</li>
@@ -139,32 +141,42 @@ desired.</li>
 </div>
 <p>Below specifies the geometry in <span class="math">\(x\)</span> and <span class="math">\(y\)</span>: [Options
 ’periodic’, ’walls’]</p>
-<p>We use AB2, a spectral method: [Options: Euler, AB2, RK4]</p>
-<p>We solve the nonlinear dynamics (can be Linear)</p>
-<p>Use spectral sw model (no other choices). Maybe hide this.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">sim</span><span class="o">.</span><span class="n">geomx</span>       <span class="o">=</span> <span class="s">&#39;walls&#39;</span>
-<span class="n">sim</span><span class="o">.</span><span class="n">geomy</span>       <span class="o">=</span> <span class="s">&#39;periodic&#39;</span>
-<span class="n">sim</span><span class="o">.</span><span class="n">stepper</span>     <span class="o">=</span> <span class="n">Step</span><span class="o">.</span><span class="n">AB2</span>
+<p>We use AB3, a spectral method: [Options: Euler, AB2, AB3, RK4]</p>
+<p>We solve the nonlinear dynamics: [Options: Linear and Nonlinear]</p>
+<p>Use spectral sw model (no other choices at present).</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">sim</span><span class="o">.</span><span class="n">geomy</span>       <span class="o">=</span> <span class="s">&#39;periodic&#39;</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">stepper</span>     <span class="o">=</span> <span class="n">Step</span><span class="o">.</span><span class="n">AB3</span>
 <span class="n">sim</span><span class="o">.</span><span class="n">method</span>      <span class="o">=</span> <span class="s">&#39;Spectral&#39;</span>
 <span class="n">sim</span><span class="o">.</span><span class="n">dynamics</span>    <span class="o">=</span> <span class="s">&#39;Nonlinear&#39;</span>
 <span class="n">sim</span><span class="o">.</span><span class="n">flux_method</span> <span class="o">=</span> <span class="n">Flux</span><span class="o">.</span><span class="n">spectral_sw</span>
 </pre></div>
 </div>
 <p>We specify a lot of parameters. There are some default values that are
-specified in .</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">sim</span><span class="o">.</span><span class="n">Lx</span>  <span class="o">=</span> <span class="mf">4000e3</span>          <span class="c"># Domain extent               (m)</span>
-<span class="n">sim</span><span class="o">.</span><span class="n">Ly</span>  <span class="o">=</span> <span class="mf">4000e3</span>          <span class="c"># Domain extent               (m)</span>
-<span class="n">sim</span><span class="o">.</span><span class="n">geomx</span> <span class="o">=</span> <span class="s">&#39;periodic&#39;</span>    <span class="c"># Boundary Conditions</span>
-<span class="n">sim</span><span class="o">.</span><span class="n">geomy</span> <span class="o">=</span> <span class="s">&#39;periodic&#39;</span>    <span class="c"># Boundary Conditions</span>
-<span class="n">sim</span><span class="o">.</span><span class="n">Nx</span>  <span class="o">=</span> <span class="mi">128</span>             <span class="c"># Grid points in x</span>
-<span class="n">sim</span><span class="o">.</span><span class="n">Ny</span>  <span class="o">=</span> <span class="mi">1</span>               <span class="c"># Grid points in y</span>
-<span class="n">sim</span><span class="o">.</span><span class="n">Nz</span>  <span class="o">=</span> <span class="mi">1</span>               <span class="c"># Number of layers</span>
-<span class="n">sim</span><span class="o">.</span><span class="n">g</span>   <span class="o">=</span> <span class="mf">9.81</span>            <span class="c"># Gravity                     (m/sec^2)</span>
-<span class="n">sim</span><span class="o">.</span><span class="n">f0</span>  <span class="o">=</span> <span class="mf">1.e-4</span>           <span class="c"># Coriolis                    (1/sec)</span>
-<span class="n">sim</span><span class="o">.</span><span class="n">cfl</span> <span class="o">=</span> <span class="mf">0.05</span>            <span class="c"># CFL coefficient             (m)</span>
-<span class="n">sim</span><span class="o">.</span><span class="n">Hs</span>  <span class="o">=</span> <span class="p">[</span><span class="mf">100.</span><span class="p">]</span>          <span class="c"># Vector of mean layer depths (m)</span>
-<span class="n">sim</span><span class="o">.</span><span class="n">rho</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1025.</span><span class="p">]</span>         <span class="c"># Vector of layer densities   (kg/m^3)</span>
-<span class="n">sim</span><span class="o">.</span><span class="n">end_time</span> <span class="o">=</span> <span class="mf">36.</span><span class="o">*</span><span class="n">hour</span>   <span class="c"># End Time                    (sec)</span>
+specified in PyRsw.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">sim</span><span class="o">.</span><span class="n">Ly</span>  <span class="o">=</span> <span class="mf">4000e3</span>            <span class="c"># Domain extent               (m)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">Nx</span>  <span class="o">=</span> <span class="mi">1</span>                 <span class="c"># Grid points in x</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">Ny</span>  <span class="o">=</span> <span class="mi">128</span>               <span class="c"># Grid points in y</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">Nz</span>  <span class="o">=</span> <span class="mi">1</span>                 <span class="c"># Number of layers</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">g</span>   <span class="o">=</span> <span class="mf">9.81</span>              <span class="c"># Gravity                     (m/sec^2)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">f0</span>  <span class="o">=</span> <span class="mf">1.e-4</span>             <span class="c"># Coriolis                    (1/sec)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="mf">0e-10</span>            <span class="c"># Coriolis beta parameter     (1/m/sec)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">cfl</span> <span class="o">=</span> <span class="mf">0.05</span>              <span class="c"># CFL coefficient             (m)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">Hs</span>  <span class="o">=</span> <span class="p">[</span><span class="mf">100.</span><span class="p">]</span>            <span class="c"># Vector of mean layer depths (m)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">rho</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1025.</span><span class="p">]</span>           <span class="c"># Vector of layer densities   (kg/m^3)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">end_time</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="mf">24.</span><span class="o">*</span><span class="n">hour</span>   <span class="c"># End Time                    (sec)</span>
+</pre></div>
+</div>
+<p>There is an option to thread the FFTW’s if using pyfftw.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">sim</span><span class="o">.</span><span class="n">num_threads</span> <span class="o">=</span> <span class="mi">4</span>
+</pre></div>
+</div>
+<p>Below we specify the plotting interval, what kind of plotting to do, and
+the limits on the three figures.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">sim</span><span class="o">.</span><span class="n">plott</span>   <span class="o">=</span> <span class="mf">20.</span><span class="o">*</span><span class="n">minute</span>  <span class="c"># Period of plots</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">animate</span> <span class="o">=</span> <span class="s">&#39;Anim&#39;</span>      <span class="c"># &#39;Save&#39; to create video frames,</span>
+                          <span class="c"># &#39;Anim&#39; to animate,</span>
+                          <span class="c"># &#39;None&#39; otherwise</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">ylims</span><span class="o">=</span><span class="p">[[</span><span class="o">-</span><span class="mf">0.18</span><span class="p">,</span><span class="mf">0.18</span><span class="p">],[</span><span class="o">-</span><span class="mf">0.18</span><span class="p">,</span><span class="mf">0.18</span><span class="p">],[</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">1.0</span><span class="p">]]</span>
 </pre></div>
 </div>
 <p>We can specify the periodicity of plotting and whether we want a life
@@ -190,13 +202,10 @@ because there is no <span class="math">\(\beta\)</span>-plane but this will be a
     <span class="n">sim</span><span class="o">.</span><span class="n">soln</span><span class="o">.</span><span class="n">h</span><span class="p">[:,:,</span><span class="n">ii</span><span class="p">]</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Hs</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span>
 
 <span class="c"># Gaussian initial conditions</span>
-<span class="n">x0</span> <span class="o">=</span> <span class="mf">1.</span><span class="o">*</span><span class="n">sim</span><span class="o">.</span><span class="n">Lx</span><span class="o">/</span><span class="mf">2.</span>      <span class="c"># Centre</span>
-<span class="n">W</span>  <span class="o">=</span> <span class="mf">200.e3</span>                <span class="c"># Width</span>
+<span class="n">x0</span> <span class="o">=</span> <span class="mf">1.</span><span class="o">*</span><span class="n">sim</span><span class="o">.</span><span class="n">Lx</span><span class="o">/</span><span class="mf">2.</span>         <span class="c"># Centre</span>
+<span class="n">W</span>  <span class="o">=</span> <span class="mf">200.e3</span>               <span class="c"># Width</span>
 <span class="n">amp</span> <span class="o">=</span> <span class="mf">1.</span>                  <span class="c"># Amplitude</span>
-<span class="k">if</span> <span class="n">sim</span><span class="o">.</span><span class="n">Ny</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
-    <span class="n">sim</span><span class="o">.</span><span class="n">soln</span><span class="o">.</span><span class="n">h</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">amp</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">x</span><span class="o">-</span><span class="n">x0</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="n">W</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">sim</span><span class="o">.</span><span class="n">Nx</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
-<span class="k">elif</span> <span class="n">sim</span><span class="o">.</span><span class="n">Nx</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
-    <span class="n">sim</span><span class="o">.</span><span class="n">soln</span><span class="o">.</span><span class="n">h</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">amp</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">y</span><span class="o">-</span><span class="n">x0</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="n">W</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="n">sim</span><span class="o">.</span><span class="n">Ny</span><span class="p">))</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">soln</span><span class="o">.</span><span class="n">h</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">amp</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">Y</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="n">W</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>Solve the problem.</p>
@@ -204,22 +213,31 @@ because there is no <span class="math">\(\beta\)</span>-plane but this will be a
 </pre></div>
 </div>
 <p>Plot the Hovmöller diagram in time versus space.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">if</span> <span class="n">sim</span><span class="o">.</span><span class="n">Ny</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span>
-    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">sim</span><span class="o">.</span><span class="n">end_time</span><span class="o">+</span><span class="n">sim</span><span class="o">.</span><span class="n">plott</span><span class="p">,</span><span class="n">sim</span><span class="o">.</span><span class="n">plott</span><span class="p">)</span><span class="o">/</span><span class="mf">86400.</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Hovmuller plot</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">sim</span><span class="o">.</span><span class="n">end_time</span><span class="o">+</span><span class="n">sim</span><span class="o">.</span><span class="n">plott</span><span class="p">,</span><span class="n">sim</span><span class="o">.</span><span class="n">plott</span><span class="p">)</span><span class="o">/</span><span class="mf">86400.</span>
 
-    <span class="k">for</span> <span class="n">L</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">Nz</span><span class="p">):</span>
-        <span class="n">field</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">hov_h</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,:]</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">Hs</span><span class="p">[</span><span class="n">L</span><span class="p">:])</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">Nz</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">L</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">x</span><span class="o">/</span><span class="mf">1e3</span><span class="p">,</span><span class="n">t</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span>
-            <span class="n">cmap</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">cmap</span><span class="p">,</span> <span class="n">vmin</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span> <span class="o">=</span> <span class="n">amp</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="n">sim</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mf">1e3</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mf">1e3</span><span class="p">])</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">t</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">r&quot;$Hovm{</span><span class="se">\&quot;</span><span class="s">o}ller Plot\, {of} \,\, \eta$&quot;</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">r&quot;$distance \, \, (km)$&quot;</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">r&quot;$Time \, \, (days)$&quot;</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">sim</span><span class="o">.</span><span class="n">Ny</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">x</span><span class="o">/</span><span class="mf">1e3</span>
+<span class="k">elif</span> <span class="n">sim</span><span class="o">.</span><span class="n">Nx</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">y</span><span class="o">/</span><span class="mf">1e3</span>
+
+<span class="k">for</span> <span class="n">L</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">Nz</span><span class="p">):</span>
+    <span class="n">field</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">hov_h</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,:]</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">Hs</span><span class="p">[</span><span class="n">L</span><span class="p">:])</span>
+    <span class="n">cv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">ravel</span><span class="p">()))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">Nz</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">L</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">t</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span>
+        <span class="n">cmap</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">cmap</span><span class="p">,</span> <span class="n">vmin</span> <span class="o">=</span> <span class="o">-</span><span class="n">cv</span><span class="p">,</span> <span class="n">vmax</span> <span class="o">=</span> <span class="n">cv</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s">&#39;tight&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">r&quot;$\mathrm{Hovm{</span><span class="se">\&quot;</span><span class="s">o}ller} \; \mathrm{Plot} \; \mathrm{of} \; \eta$&quot;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">16</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sim</span><span class="o">.</span><span class="n">Nx</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">r&quot;$\mathrm{x} \; \mathrm{(km)}$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">r&quot;$\mathrm{y} \; \mathrm{(km)}$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">r&quot;$\mathrm{Time} \; \mathrm{(days)}$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 <div class="figure" id="id1">
@@ -229,6 +247,55 @@ because there is no <span class="math">\(\beta\)</span>-plane but this will be a
 <div class="figure" id="id2">
 <img alt="Hovmöller plot for the test case." src="_images/ex1_fig2.png" />
 <p class="caption"><span class="caption-text">Hovmöller plot for the test case.</span></p>
+</div>
+<p>Note that to compute the derivatives in the case of a non-periodic
+domain we impose either Dirichlet or Neumann boundary conditions. This
+is done by doing odd and even extensions respectively. That is why in
+1D, the simulation with walls does twice as much work as in the periodic
+case. Similarly, if we have walls in 2D, that is doing four times as
+much work.</p>
+<p>At some point we should change walls to ’slip’ and allow for ’noslip’
+boundary conditions as well.</p>
+</div>
+<div class="section" id="geostrophic-adjustment-two-dimensions">
+<h2>Geostrophic Adjustment: Two-Dimensions<a class="headerlink" href="#geostrophic-adjustment-two-dimensions" title="Permalink to this headline">¶</a></h2>
+<p>The basic script is almost identical to the 1D case and can be found in
+the examples folder with the title example_2D_geoadjust.py. The
+changes are as follows:</p>
+<ul class="simple">
+<li>Set <span class="math">\(Nx\)</span> and <span class="math">\(Ny\)</span> both equal to <span class="math">\(128\)</span>, and from
+this we build a 2D grid.</li>
+<li>Specify the length of the domain in the zonal direction.</li>
+<li>Define the initial conditions on a 2D grid.</li>
+<li>The plotting is different. We plot a 2D field using pcolormesh and we
+don’t do a Hovmöller plot.</li>
+</ul>
+</div>
+<div class="section" id="bickley-jet-two-dimensions">
+<h2>Bickley Jet: Two-Dimensions<a class="headerlink" href="#bickley-jet-two-dimensions" title="Permalink to this headline">¶</a></h2>
+<p>Following Poulin and Flierl (2003) and Irwin and Poulin (2014), we look
+at the instability of a Bickley jet. The script is called
+example_2D_BickleyJet.py.</p>
+<p>In this case we change the code to include the following lines.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Define geometry</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">geomx</span>       <span class="o">=</span> <span class="s">&#39;periodic&#39;</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">geomy</span>       <span class="o">=</span> <span class="s">&#39;walls&#39;</span>
+
+<span class="c"># Define grid and domain size</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">Lx</span>  <span class="o">=</span> <span class="mf">200e3</span>          <span class="c"># Domain extent               (m)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">Ly</span>  <span class="o">=</span> <span class="mf">200e3</span>          <span class="c"># Domain extent               (m)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">Nx</span>  <span class="o">=</span> <span class="mi">128</span>            <span class="c"># Grid points in x</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">Ny</span>  <span class="o">=</span> <span class="mi">128</span>            <span class="c"># Grid points in y</span>
+
+<span class="c"># Bickley Jet initial conditions</span>
+<span class="c"># First we define the jet</span>
+<span class="n">Ljet</span> <span class="o">=</span> <span class="mf">20e3</span>            <span class="c"># Jet width</span>
+<span class="n">amp</span>  <span class="o">=</span> <span class="mf">0.1</span>             <span class="c"># Elevation of free-surface in basic state</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">soln</span><span class="o">.</span><span class="n">h</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="o">-</span><span class="n">amp</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">Y</span><span class="o">/</span><span class="n">Ljet</span><span class="p">)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">soln</span><span class="o">.</span><span class="n">u</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span>  <span class="o">=</span>  <span class="n">sim</span><span class="o">.</span><span class="n">g</span><span class="o">*</span><span class="n">amp</span><span class="o">/</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">f0</span><span class="o">*</span><span class="n">Ljet</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cosh</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">Y</span><span class="o">/</span><span class="n">Ljet</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="c"># Then we add on a random perturbation</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">soln</span><span class="o">.</span><span class="n">u</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span>  <span class="mf">2e-3</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">Y</span><span class="o">/</span><span class="n">Ljet</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">Nx</span><span class="p">,</span><span class="n">sim</span><span class="o">.</span><span class="n">Ny</span><span class="p">)</span>
+</pre></div>
 </div>
 </div>
 </div>
