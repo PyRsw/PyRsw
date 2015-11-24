@@ -43,7 +43,9 @@ class Simulation:
 
         self.dynamics = 'Nonlinear' # Nonlinear or Linear
 
-        self.num_threads = 1
+        self.num_threads = 1        # Number of threads for FFTW
+
+        self.plot_vars = ['u','v','h']         # Which variables to plot
         
         self.g    = 9.81            # gravity
         self.f0   = 1e-4            # Coriolis
@@ -55,9 +57,9 @@ class Simulation:
         self.geomx = 'periodic'     # x boundary condition
         self.geomy = 'periodic'     # y boundary condition
 
-        self.cmap = 'seismic'
+        self.cmap = 'seismic'       # Default colour map
         
-        self.run_name = 'test'
+        self.run_name = 'test'      # Name of variable
 
         self.vanishing = False
         self.fps = 15
@@ -161,7 +163,11 @@ class Simulation:
 
         # If we're going to be plotting, then initialize the plots
         if (self.animate == 'Anim') or (self.animate == 'Save'):
-            self.initialize_plots = Plot_tools.initialize_plots_animsave
+            if (self.Nx > 1) and (self.Ny > 1):
+                self.initialize_plots = Plot_tools.initialize_plots_animsave_2D
+            else:
+                self.initialize_plots = Plot_tools.initialize_plots_animsave_1D
+
         self.next_plot_time = self.plott
         
         num_plot = self.end_time/self.plott+1
@@ -309,13 +315,8 @@ class Simulation:
             Diagnose.plot(self)
         
         if (self.animate == 'Anim'):
-            #if (self.Nx == 1) or (self.Ny == 1):
-            #    Plot_tools.plot_hov(self)
             plt.ioff()
             plt.show()
-
-        if self.animate == 'Save':
-            Plot_tools.end_movie(self)
 
         if self.diagnose:
             Diagnose.save(self)

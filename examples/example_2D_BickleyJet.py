@@ -24,10 +24,10 @@ sim.dynamics    = 'Nonlinear'      # Dynamics: 'Nonlinear' or 'Linear'
 sim.flux_method = Flux.spectral_sw # Flux method: spectral_sw is only option currently
 
 # Specify paramters
-sim.Lx  = 200e3          # Domain extent               (m)
-sim.Ly  = 200e3          # Domain extent               (m)
-sim.Nx  = 128            # Grid points in x
-sim.Ny  = 128            # Grid points in y
+sim.Lx  = 200e3           # Domain extent               (m)
+sim.Ly  = 200e3           # Domain extent               (m)
+sim.Nx  = 128             # Grid points in x
+sim.Ny  = 128             # Grid points in y
 sim.Nz  = 1               # Number of layers
 sim.g   = 9.81            # Gravity                     (m/sec^2)
 sim.f0  = 1.e-4           # Coriolis                    (1/sec)
@@ -42,9 +42,10 @@ sim.num_threads = 4
 
 # Plotting parameters
 sim.plott   = 30.*minute  # Period of plots
-sim.animate = 'Anim'      # 'Save' to create video frames,
+sim.animate = 'Save'      # 'Save' to create video frames,
                           # 'Anim' to animate,
                           # 'None' otherwise
+sim.plot_vars = ['vort']
                          
 # Output parameters
 sim.output = False        # True or False
