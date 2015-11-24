@@ -60,11 +60,13 @@ sim.initialize()
 for ii in range(sim.Nz):  # Set mean depths
     sim.soln.h[:,:,ii] = sim.Hs[ii]
 
-# Gaussian initial conditions
+# Bickley Jet initial conditions
+# First we define the jet
 Ljet = 20e3            # Jet width
 amp  = 0.1             # Elevation of free-surface in basic state
 sim.soln.h[:,:,0] += -amp*np.tanh(sim.Y/Ljet)
 sim.soln.u[:,:,0]  =  sim.g*amp/(sim.f0*Ljet)/(np.cosh(sim.Y/Ljet)**2)
+# Then we add on a random perturbation
 sim.soln.u[:,:,0] +=  2e-3*np.exp(-(sim.Y/Ljet)**2)*np.random.randn(sim.Nx,sim.Ny)
 
 sim.run()                # Run the simulation
