@@ -1,0 +1,263 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Linear Stability Analysis &mdash; PyRsw 0.1 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="PyRsw 0.1 documentation" href="index.html"/>
+        <link rel="prev" title="Examples" href="examples.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="index.html" class="fa fa-home"> PyRsw</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="plan.html">plan</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sw_intro.html">One-Layer Rotating Shallow Water Model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sw_intro.html#classical-form">Classical Form</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sw_intro.html#conservation-form">Conservation Form</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sw_intro.html#vorticity-bernoulli-form">Vorticity-Bernoulli Form</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sw_intro.html#dimensional-limit"><span class="math">\(1 \frac{1}{2}\)</span> Dimensional Limit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sw_intro.html#conserved-quantities">Conserved Quantities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#geostrophic-adjustment-1d-and-1l">Geostrophic Adjustment: 1D and 1L</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Linear Stability Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#one-layer-shallow-water">One-Layer Shallow Water</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#basic-state">Basic State</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#perturbation">Perturbation</a></li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">PyRsw</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Linear Stability Analysis</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/linear_stability.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="linear-stability-analysis">
+<h1>Linear Stability Analysis<a class="headerlink" href="#linear-stability-analysis" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="one-layer-shallow-water">
+<h2>One-Layer Shallow Water<a class="headerlink" href="#one-layer-shallow-water" title="Permalink to this headline">¶</a></h2>
+<p>In this subsection we consider the one-layer reduced gravity RSW model
+with topography below. We define the following:</p>
+<ul class="simple">
+<li><span class="math">\(H\)</span>: mean depth of the layer</li>
+<li><span class="math">\(z=\eta\)</span>: height of the free surface</li>
+<li><span class="math">\(z=-H + \eta_B\)</span>: height of the topography.</li>
+<li><span class="math">\(h = H + \eta - \eta_B\)</span>: total depth of layer</li>
+<li><span class="math">\((u,v)\)</span>: horizontal velocity</li>
+<li><span class="math">\(g'\)</span>: reduced gravity</li>
+<li><span class="math">\(\rho_0\)</span>: reference density</li>
+</ul>
+<p>The governing nonlinear equations are,</p>
+<div class="math">
+\[\begin{split}\begin{aligned}
+\frac{\partial u}{\partial t} + {\vec u} \cdot \vec \nabla u - f v &amp;
+= - g \frac{\partial}{\partial x} \left( h + \eta_B \right) , \\
+ \frac{\partial v}{\partial t} + {\vec u} \cdot \vec \nabla v + f u &amp;
+= - g \frac{\partial}{\partial y} \left( h + \eta_B \right) , \\
+\frac{\partial h}{\partial t} + \vec\nabla \cdot \left( h \vec u_1 \right) &amp; = 0.\end{aligned}\end{split}\]</div>
+</div>
+<div class="section" id="basic-state">
+<h2>Basic State<a class="headerlink" href="#basic-state" title="Permalink to this headline">¶</a></h2>
+<p>To study shear flows in a meridional channel we consider solutions of
+the form,</p>
+<div class="math">
+\[\begin{split}\begin{aligned}
+u &amp; = U_B(y), \\
+v &amp; = 0,\\
+h &amp; = H_B(y).\end{aligned}\end{split}\]</div>
+<p>For this to be an exact solution we require that the flow is in
+geostrophic balance,</p>
+<div class="math">
+\[f U_B = - g \frac{d}{dy}\left( H_B + \eta_B \right).\]</div>
+</div>
+<div class="section" id="perturbation">
+<h2>Perturbation<a class="headerlink" href="#perturbation" title="Permalink to this headline">¶</a></h2>
+<p>We perturb the basic state with infinitesimal quantities,</p>
+<div class="math">
+\[\begin{split}\begin{aligned}
+u &amp; = U_B(y) + u', \\
+v &amp; = 0     + v',\\
+h &amp; = H_B(y) + h'.\end{aligned}\end{split}\]</div>
+<p>We substitute our perturbation into the governing equations and drop the
+primes (for brevity) and cancelling out the geostrophic terms</p>
+<div class="math">
+\[\begin{split}\begin{aligned}
+\frac{\partial u}{\partial t} + (u + U_B) \frac{\partial u}{\partial x} + v \frac{\partial}{\partial y} \left(u + U_B \right)  - f v &amp; = - g \frac{\partial h}{\partial x}, \\
+ \frac{\partial v}{\partial t}   + (u + U_B) \frac{\partial v}{\partial x} + v \frac{\partial v }{\partial y} + f u
+ &amp; = - g \frac{\partial h}{\partial y}, \\
+\frac{\partial h}{\partial t}  + (u + U_B) \frac{\partial h}{\partial x}   + v \frac{\partial}{\partial y}(H_B + h)
++ (H_B + h)  &amp; \left( \frac{\partial u}{\partial x} + \frac{\partial v}{\partial y} \right) =  0.\end{aligned}\end{split}\]</div>
+<p>Now we neglect the quadratic terms to obtain the linearized equations,</p>
+<div class="math">
+\[\begin{split}\begin{aligned}
+\frac{\partial u}{\partial t}
+&amp; = - U_B \frac{\partial u}{\partial x} + \left( f - \frac{d U_B}{d y}  \right) v  - g \frac{\partial h_1}{\partial x}, \\
+ \frac{\partial v}{\partial t}    &amp; =  - f u  - U_B \frac{\partial v}{\partial x}  - g \frac{\partial h_1}{\partial y}, \\
+\frac{\partial h}{\partial t}   &amp; = - H_B \frac{\partial u}{\partial x}    - v \frac{d H_B}{d y}
+ - H_B \frac{\partial v}{\partial y} - U_B \frac{\partial h}{\partial x} .\end{aligned}\end{split}\]</div>
+<p>Finally, we assume a normal mode decomposition in the zonal direction
+and time,</p>
+<div class="math">
+\[\begin{aligned}
+[u, v, h] = \mbox{Re}\left\{ e^{ik(x - c t)} [\hat u, ik \hat v, \hat h] \right\},\end{aligned}\]</div>
+<p>which we can substitute into the above equations to yield in the
+inviscid limit</p>
+<div class="math">
+\[\begin{split}\begin{aligned}
+c \hat u  &amp;  = U_B \hat u - (f - \frac{dU_B}{dy}) \hat v + g \hat h, \\
+c \hat v  &amp;  =- \frac{f}{k^2} \hat u + U_B \hat v -\frac{ g}{k^2} \frac{d h}{d y}, \\
+c \hat h  &amp;=   H_B \hat u  +  \frac{d}{d y}\left(H_B \hat v\right) +  U_B \hat h.\end{aligned}\end{split}\]</div>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="examples.html" class="btn btn-neutral" title="Examples"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, PyRsw team.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

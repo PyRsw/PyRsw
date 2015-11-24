@@ -1,0 +1,218 @@
+\documentclass[11pt]{article}
+\usepackage{geometry}                
+\geometry{a4paper,left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+\usepackage{natbib}
+\usepackage{color}
+\definecolor{mygreen}{RGB}{28,172,0} % color values Red, Green, Blue
+\definecolor{mylilas}{RGB}{170,55,241}
+\usepackage{epsfig}
+\usepackage{amssymb,amsmath}
+\usepackage{enumerate}
+\usepackage{enumitem}
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\usepackage{mathtools}
+
+
+\newcommand{\ssd}{\text{ssd}}
+\newcommand{\sS}{\mathsf{S}}
+\newcommand{\tot}{\text{tot}}
+
+\usepackage[procnames]{listings}
+\usepackage{color}
+
+\begin{document}
+
+\definecolor{keywords}{RGB}{255,0,90}
+\definecolor{comments}{RGB}{0,0,113}
+\definecolor{red}{RGB}{160,0,0}
+\definecolor{green}{RGB}{0,150,0}
+
+\lstset{language=Python, 
+        basicstyle=\ttfamily\small, 
+        keywordstyle=\color{keywords},
+        commentstyle=\color{comments},
+        stringstyle=\color{red},
+        showstringspaces=false,
+        identifierstyle=\color{green},
+        procnamekeys={def,class}}
+ 
+
+\input{symbols}
+
+\section*{Linear Stability Analysis}
+
+\subsection*{One-Layer Shallow Water}
+
+In this subsection we consider the one-layer reduced gravity RSW model with topography below.  
+We define the following:
+\begin{itemize}
+\item $H$: mean depth of the layer
+\item $z=\eta$: height of the free surface
+\item $z=-H + \eta_B$: height of the topography.
+\item $h = H + \eta - \eta_B$: total depth of layer
+\item $(u,v)$: horizontal velocity
+\item $g'$: reduced gravity
+\item $\rho_0$: reference density
+\end{itemize}
+The governing nonlinear equations are,
+\begin{align*}
+\frac{\partial u}{\partial t} + {\vec u} \cdot \vec \nabla u - f v & 
+%= -g \frac{\partial \eta}{\partial x} 
+= - g \frac{\partial}{\partial x} \left( h + \eta_B \right) , \\
+ \frac{\partial v}{\partial t} + {\vec u} \cdot \vec \nabla v + f u & 
+%= -g \frac{\partial \eta}{\partial y} 
+= - g \frac{\partial}{\partial y} \left( h + \eta_B \right) , \\
+\frac{\partial h}{\partial t} + \vec\nabla \cdot \left( h \vec u_1 \right) & = 0.
+\end{align*}
+
+\subsection*{Basic State}
+
+To study shear flows in a meridional channel we consider solutions of the form,
+\begin{align*}
+u & = U_B(y), \\
+v & = 0,\\
+h & = H_B(y).
+\end{align*}
+For this to be an exact solution we require that the flow is in geostrophic balance,
+$$
+f U_B = - g \frac{d}{dy}\left( H_B + \eta_B \right).
+$$
+\subsection*{Perturbation}
+
+We perturb the basic state with infinitesimal quantities,
+\begin{align*}
+u & = U_B(y) + u', \\
+v & = 0     + v',\\
+h & = H_B(y) + h'.
+\end{align*}
+
+We substitute our perturbation into the governing equations and drop the primes (for brevity) and cancelling out the geostrophic terms 
+\begin{align*}
+\frac{\partial u}{\partial t} + (u + U_B) \frac{\partial u}{\partial x} + v \frac{\partial}{\partial y} \left(u + U_B \right)  - f v & = - g \frac{\partial h}{\partial x}, \\
+ \frac{\partial v}{\partial t}   + (u + U_B) \frac{\partial v}{\partial x} + v \frac{\partial v }{\partial y} + f u 
+ & = - g \frac{\partial h}{\partial y}, \\
+\frac{\partial h}{\partial t}  + (u + U_B) \frac{\partial h}{\partial x}   + v \frac{\partial}{\partial y}(H_B + h)
++ (H_B + h)  & \left( \frac{\partial u}{\partial x} + \frac{\partial v}{\partial y} \right) =  0.
+\end{align*}
+Now we neglect the quadratic terms to obtain the linearized equations,
+\begin{align*}
+\frac{\partial u}{\partial t}
+& = - U_B \frac{\partial u}{\partial x} + \left( f - \frac{d U_B}{d y}  \right) v  - g \frac{\partial h_1}{\partial x}, \\
+ \frac{\partial v}{\partial t}    & =  - f u  - U_B \frac{\partial v}{\partial x}  - g \frac{\partial h_1}{\partial y}, \\
+\frac{\partial h}{\partial t}   & = - H_B \frac{\partial u}{\partial x}    - v \frac{d H_B}{d y}
+ - H_B \frac{\partial v}{\partial y} - U_B \frac{\partial h}{\partial x} .
+\end{align*}
+
+Finally, we assume a normal mode decomposition in the zonal direction and time,
+\begin{align}
+[u, v, h] = \mbox{Re}\left\{ e^{ik(x - c t)} [\hat u, ik \hat v, \hat h] \right\},
+\end{align}
+which we can substitute into the above equations to yield in the inviscid limit
+\begin{align*}
+c \hat u  &  = U_B \hat u - (f - \frac{dU_B}{dy}) \hat v + g \hat h, \\
+c \hat v  &  =- \frac{f}{k^2} \hat u + U_B \hat v -\frac{ g}{k^2} \frac{d h}{d y}, \\
+c \hat h  &=   H_B \hat u  +  \frac{d}{d y}\left(H_B \hat v\right) +  U_B \hat h.
+\end{align*}
+
+\end{document}
+
+We assume that the bottom topography is located at $z = \eta_B$, the mean depth of the lower layer is $H_2^M$, the internal interface deformations are described by $z = H_2^M + \eta_2$, the mean depth of the upper layer is $H_1^M$ and the depth fo the free surface is $z = H_1^M + H_2^M + \eta_1$.  
+Our governing equations can be written as
+\begin{align*}
+\frac{\partial u_1}{\partial t} + {\vec u_1} \cdot \vec \nabla u_1 - f v_1 & 
+= -g \frac{\partial \eta_1}{\partial x} 
+= - g \frac{\partial}{\partial x} \left( h_1 + h_2 + \eta_B \right) , \\
+ \frac{\partial v_1}{\partial t} + {\vec u_1} \cdot \vec \nabla v_1 + f u_1 & 
+= -g \frac{\partial \eta_1}{\partial y} 
+= - g \frac{\partial}{\partial y} \left( h_1 + h_2 + \eta_B \right) , \\
+\frac{\partial h_1}{\partial t} + \vec\nabla \cdot \left( h_1 \vec u_1 \right) & = 0, \\
+\frac{\partial u_2}{\partial t} + {\vec u_2} \cdot \vec \nabla u_2 - f v_2 & 
+= -g \frac{\partial \eta_1}{\partial x} - g' \frac{\partial \eta_2}{\partial x} 
+= -  \frac{\partial}{\partial x} \left( g h_1 + (g + g') (h_2 + \eta_B)\right) , \\
+\frac{\partial v_2}{\partial t} + {\vec u_2} \cdot \vec \nabla v_2+ f u_2 & 
+= -g \frac{\partial \eta_1}{\partial y} - g' \frac{\partial \eta_2}{\partial y} 
+= -  \frac{\partial}{\partial y} \left( g h_1 + (g + g') (h_2 + \eta_B)\right) , \\
+\frac{\partial h_2}{\partial t} + \vec\nabla \cdot \left( h_2 \vec u_2 \right) & = 0.
+\end{align*}
+The relation between the interface displacements and the layer depths are,
+\begin{align*}
+h_1 & = H_1^M  + \eta_1 - \eta_2, \\
+h_2 & = H_2^M + \eta_2 - \eta_B.
+\end{align*}
+Note that the reduced gravity between the two active layers is 
+$$ 
+g' = \frac{\rho_2 - \rho_1}{\rho_1} g.
+$$
+
+\subsection{Perturbation}
+
+We perturb the basic state in the standard manner and allow for the possibility of an active lower layer since this was observed to be the case in the laboratory experiments,
+\begin{align*}
+u_1 & = U_1(y) + u_1', \\
+v_1 & = 0     + v_1',\\
+h_1 & = H_1(y) + h_1', \\
+u_2 & = U_2(y) + u_2', \\
+v_2 & = 0     + v_2',\\
+h_2 & = H_2(y) + h_2'.
+\end{align*}
+
+We substitute our perturbation into the governing equations and drop the primes (for brievity) and cancelling out the geostrophic terms 
+\begin{align*}
+\frac{\partial u_1}{\partial t} + (u_1 + U_1) \frac{\partial u_1}{\partial x} + v_1 \frac{\partial}{\partial y} \left(u_1 + U_1\right)  - f v_1 
+& = - g \frac{\partial}{\partial x}(h_1 + h_2)+ \nu \nabla^2_H u_1, \\
+ \frac{\partial v_1}{\partial t}   + (u_1 + U_1) \frac{\partial v_1}{\partial x} + v_1 \frac{\partial v_1 }{\partial y} + f u_1 
+ & = - g \frac{\partial}{\partial y}(h_1 + h_2)+ \nu \nabla^2_H u_1, \\
+\frac{\partial h_1}{\partial t}  + (u_1 + U_1) \frac{\partial h_1}{\partial x}   + v_1 \frac{\partial}{\partial y}(H_1 + h_1)
++ &(H_1 + h_1)  \left( \frac{\partial u_1}{\partial x} + \frac{\partial v_1}{\partial y} \right)  = \kappa \nabla^2_H uh_1, \\
+\frac{\partial u_2}{\partial t} + (u_2 + U_2) \frac{\partial u_2}{\partial x} + v_2 \frac{\partial}{\partial y} \left(u_2 + U_2\right)  - f v_2 & 
+= - g \frac{\partial}{\partial x}\left( \frac{\rho_1}{\rho_2} h_1  + h_2\right)+ \nu \nabla^2_H u_2, \\
+\frac{\partial v_2}{\partial t} + (u_2 + U_2) \frac{\partial v_2}{\partial x} + v_2 \frac{\partial v_2 }{\partial y} + f u_2 & 
+= - g \frac{\partial}{\partial y}\left( \frac{\rho_1}{\rho_2} h_1 + h_2\right)+ \nu \nabla^2_H v_2, \\
+\frac{\partial h_2}{\partial t}  + (u_2 + U_2) \frac{\partial h_2}{\partial x}   + v_2 \frac{\partial}{\partial y}(H_2 + h_2)
++ &(H_2 + h_2)  \left( \frac{\partial u_2}{\partial x} + \frac{\partial v_2}{\partial y} \right)  = \kappa \nabla^2_H h_2.
+\end{align*}
+Now we neglect the quadratic terms to obtain the linearized equations,
+\begin{align*}
+\frac{\partial u_1}{\partial t} + U_1 \frac{\partial u_1}{\partial x} + v_1 \frac{d U_1}{d y}  - f v_1 
+& = - g \frac{\partial}{\partial x}\left(h_1 + h_2\right) + \nu \nabla_H^2 u_1, \\
+ \frac{\partial v_1}{\partial t}   + U_1 \frac{\partial v_1}{\partial x}  + f u_1  & = - g \frac{\partial}{\partial y}\left(h_1 + h_2\right) + \nu \nabla_H^2 v_1, \\
+\frac{\partial h_1}{\partial t}  + U_1 \frac{\partial h_1}{\partial x}   + v_1 \frac{\partial H_1}{\partial y}
++ &H_1 \left( \frac{\partial u_1}{\partial x} + \frac{\partial v_1}{\partial y} \right)  =  \kappa \nabla_H^2 h_1, \\
+\frac{\partial u_2}{\partial t} + U_2 \frac{\partial u_2}{\partial x} + v_2 \frac{d U_2}{d y}  - f v_2 & 
+=  - g \frac{\partial}{\partial x}\left( \frac{\rho_1}{\rho_2} h_1  + h_2\right) + \nu \nabla_H^2 u_2,\\
+\frac{\partial v_2}{\partial t} + U_2 \frac{\partial v_2}{\partial x} + f u_2 & 
+=  - g \frac{\partial}{\partial y}\left( \frac{\rho_1}{\rho_2} h_1  + h_2\right)+ \nu \nabla_H^2 v_2, \\
+\frac{\partial h_2}{\partial t}  + U_2 \frac{\partial h_2}{\partial x}   + v_2 \frac{\partial H_2}{\partial y}
++ &H_2 \left( \frac{\partial u_2}{\partial x} + \frac{\partial v_2}{\partial y} \right)  =  \kappa \nabla_H^2 h_2.
+\end{align*}
+
+Therefore, we can combine the equations and get the following
+\begin{align*}
+\frac{\partial u_1}{\partial t}  &  =-  U_1 \frac{\partial u_1}{\partial x} + \left( f  - \frac{dU_1}{dy} \right) v_1 - g \frac{\partial}{\partial x}(h_1 + h_2) + \nu \nabla_H^2 u_1, \\
+\frac{\partial v_1}{\partial t}  &  = - U_1 \frac{\partial v_1}{\partial x} - f u_1- g \frac{\partial}{\partial y}(h_1 + h_2)+ \nu \nabla_H^2 v_1, \\
+\frac{\partial h_1}{\partial t}  &= - U_1 \frac{\partial h_1}{\partial x}   - v_1 \frac{\partial H_1}{\partial y}
+- H_1 \left( \frac{\partial u_1}{\partial x} + \frac{\partial v_1}{\partial y} \right) + \kappa \nabla_H^2 h_1 , \\
+\frac{\partial u_2}{\partial t}  & =   - U_2 \frac{\partial u_2}{\partial x}  +  \left( f  - \frac{dU_2}{dy} \right) v_2 
+-  g \frac{\partial}{\partial x}\left( \frac{\rho_1}{\rho_2} h_1  + h_2\right) + \nu \nabla_H^2 u_2, \\
+\frac{\partial v_2}{\partial t}  & = - U_2 \frac{\partial v_2}{\partial x} - f u_2 
+-  g \frac{\partial}{\partial y}\left( \frac{\rho_1}{\rho_2} h_1  + h_2\right)+ \nu \nabla_H^2 v_2, \\
+\frac{\partial h_2}{\partial t}  &= - U_2 \frac{\partial h_2}{\partial x}   - v_2 \frac{\partial H_2}{\partial y}
+- H_2 \left( \frac{\partial u_2}{\partial x} + \frac{\partial v_2}{\partial y} \right)  + \kappa \nabla_H^2 h_2.
+\end{align*}
+
+Finally, we assume a normal mode decomposition in the zonal direction and time,
+\begin{align}
+[u_1, v_1, \eta_1, u_2, v_2, \eta_2] = \mbox{Re}\left\{ e^{ik(x - c t)} [\hat u_1, ik \hat v_1, \hat \eta_1, \hat u_2,  ik \hat v_2, \hat \eta_2] \right\},
+\end{align}
+which we can substitute into the above equations to yield in the inviscid limit
+\begin{align*}
+c \hat u_1  &  = U_1 \hat u_1 - (f - \frac{dU_1}{dy}) \hat v_1 + g (\hat h_1 + \hat h_2), \\
+c \hat v_1  &  =- \frac{f}{k^2} \hat u_1 + U_1 \hat v_1 -\frac{ g}{k^2} \frac{d}{d y}(\hat h_1 + \hat h_2), \\
+c \hat h_1  &=   H_1 \hat u_1  +  \frac{d}{d y}\left(H_1 \hat v_1\right) +  U_1 \hat h_1,\\
+c \hat u_2 & =   g \frac{\rho_1}{\rho_2} \hat h_1 +  U_2 \hat u_2 - (f - \frac{dU_2}{dy}) \hat v_2  
++ g \hat h_2, \\
+c \hat v_2  & = -  \frac{g}{k^2} \frac{\rho_1}{\rho2} \frac{d \hat h_1}{d y} - \frac{f}{k^2} \hat u_2 
++ U_2 \hat v_2- \frac{g}{k^2} \frac{d \hat h_2}{d y}, \\
+c \hat h_2  &=  H_2 \hat u_2 + \frac{d}{d y} \left( H_2 \hat v_2 \right)  + U_2 \hat h_2.
+\end{align*}

@@ -14,6 +14,7 @@ Contents:
    plan
    sw_intro
    examples
+   linear_stability
 
 Indices and tables
 ==================
