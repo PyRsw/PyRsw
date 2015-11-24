@@ -12,6 +12,7 @@ def initialize_plots_animsave_2D(sim):
 
     figs = []
     Qs   = []
+    ttls = []
 
     # Create the appropriate grids:
     # extend by a point to handle the way
@@ -31,12 +32,12 @@ def initialize_plots_animsave_2D(sim):
     for var_cnt in range(len(sim.plot_vars)):
 
         Qs   += [[]]
+        ttls += [[]]
 
         var = sim.plot_vars[var_cnt]
 
         fig = plt.figure()
         figs += [fig]
-        fig.suptitle('{0:s} : t = 0'.format(var))
 
         # Plot the data
         for L in range(sim.Nz):
@@ -44,19 +45,27 @@ def initialize_plots_animsave_2D(sim):
             plt.subplot(1,sim.Nz,L+1)
 
             if var == 'u':
+                ttl = fig.suptitle('Zonal Velocity : t = 0')
                 to_plot = sim.soln.u[:,:,L]
             elif var == 'v':
+                ttl = fig.suptitle('Meridional Velocity : t = 0')
                 to_plot = sim.soln.v[:,:,L]
             elif var == 'h':
+                ttl = fig.suptitle('Free Surface Displacement : t = 0')
                 to_plot = sim.soln.h[:,:,L] - sim.Hs[L]
             elif var == 'vort':
                 to_plot =     sim.ddx_v(sim.soln.v[:,:,L],sim) \
                             - sim.ddy_u(sim.soln.u[:,:,L],sim)
+                if sim.f0 != 0:
+                    ttl = fig.suptitle('Vorticity / f_0 : t = 0')
+                    to_plot *= 1./sim.f0
+                else:   
+                    ttl = fig.suptitle('Vorticity : t = 0')
 
             # Has the user specified plot limits?
-            if len(sim.ylims[var_cnt]) == 2:
-                vmin = sim.ylims[var_cnt][0]
-                vmax = sim.ylims[var_cnt][1]
+            if len(sim.clims[var_cnt]) == 2:
+                vmin = sim.clims[var_cnt][0]
+                vmax = sim.clims[var_cnt][1]
             else:
                 cv = np.max(np.abs(to_plot.ravel()))
                 vmin = -cv
@@ -65,6 +74,7 @@ def initialize_plots_animsave_2D(sim):
             Q = plt.pcolormesh(X/1e3, Y/1e3, to_plot, cmap=sim.cmap, 
                         vmin = vmin, vmax = vmax)
             Qs[var_cnt] += [Q]
+            ttls[var_cnt] += [ttl]
 
             plt.colorbar()
 
@@ -85,4 +95,5 @@ def initialize_plots_animsave_2D(sim):
         
     sim.figs = figs
     sim.Qs = Qs
+    sim.ttls = ttls
 
