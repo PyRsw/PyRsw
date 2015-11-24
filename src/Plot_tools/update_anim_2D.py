@@ -29,6 +29,15 @@ def update_anim_2D(sim):
                     to_plot *= 1./sim.f0
                 else:   
                     sim.ttls[var_cnt][L].set_text('Vorticity : {0:s}'.format(smart_time(sim.time)))
+            elif var == 'div':
+                h = sim.soln.u[:,:,L] + sim.Hs[L]
+                to_plot =     sim.ddx_u(h*sim.soln.u[:,:,L],sim) \
+                            + sim.ddy_v(h*sim.soln.v[:,:,L],sim)
+                if sim.f0 != 0:
+                    sim.ttls[var_cnt][L].set_text('Divergence of mass-flux / f_0 : {0:s}'.format(smart_time(sim.time)))
+                    to_plot *= 1./sim.f0
+                else:   
+                    sim.ttls[var_cnt][L].set_text('Divergence of mass-flux : {0:s}'.format(smart_time(sim.time)))
 
             sim.Qs[var_cnt][L].set_array(to_plot.ravel())
             sim.Qs[var_cnt][L].changed()

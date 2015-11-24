@@ -40,7 +40,7 @@ sim.num_threads = 4
 
 # Plotting parameters
 sim.plott   = 20.*minute  # Period of plots
-sim.animate = 'Save'      # 'Save' to create video frames,
+sim.animate = 'Anim'      # 'Save' to create video frames,
                           # 'Anim' to animate,
                           # 'None' otherwise
 

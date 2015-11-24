@@ -61,6 +61,15 @@ def initialize_plots_animsave_2D(sim):
                     to_plot *= 1./sim.f0
                 else:   
                     ttl = fig.suptitle('Vorticity : t = 0')
+            elif var == 'div':
+                h = sim.soln.u[:,:,L] + sim.Hs[L]
+                to_plot =     sim.ddx_u(h*sim.soln.u[:,:,L],sim) \
+                            + sim.ddy_v(h*sim.soln.v[:,:,L],sim)
+                if sim.f0 != 0:
+                    ttl = fig.suptitle('Divergence of mass-flux / f_0 : t = 0')
+                    to_plot *= 1./sim.f0
+                else:   
+                    ttl = fig.suptitle('Divergence of mass-flux : t = 0')
 
             # Has the user specified plot limits?
             if len(sim.clims[var_cnt]) == 2:
