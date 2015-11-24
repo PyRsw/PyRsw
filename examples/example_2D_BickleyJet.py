@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import scipy.linalg as spalg
 import sys
 
 # Add the PyRsw tools to the path
@@ -68,6 +69,63 @@ sim.soln.h[:,:,0] += -amp*np.tanh(sim.Y/Ljet)
 sim.soln.u[:,:,0]  =  sim.g*amp/(sim.f0*Ljet)/(np.cosh(sim.Y/Ljet)**2)
 sim.soln.u[:,:,0] +=  1e-3*np.exp(-(sim.Y/Ljet)**2)*np.random.randn(sim.Nx,sim.Ny)
 
-sim.run()                # Run the simulation
+
+
+
+# Define cheb array
+def cheb(N):
+    if N == 0:
+        D = 0
+        x = 1
+    else:
+        x = np.cos(np.pi*np.array(range(0,N+1))/N).reshape([N+1,1])
+        c = np.ravel(np.vstack([2, np.ones([N-1,1]), 2])) \
+            *(-1)**np.ravel(np.array(range(0,N+1)))
+        c = c.reshape(c.shape[0],1)
+        X = np.tile(x,(1,N+1))
+        dX = X-(X.conj().transpose())
+        D  = (c*(1/c).conj().transpose())/(dX+(np.eye(N+1)))   # off-diagonal entries
+        D  = D - np.diag(np.sum(D,1))   # diagonal entries
+    return D,x
+
+## Specify wavenumber
+Nk  = 200
+kks = np.linspace(0,0.2*np.pi/sim.Ly,Nk+1)[1:-1]
+k = kks[50]
+
+# Define Differentiation Matrix and grid
+Dy,y = cheb(sim.Ny)
+y   = (y[:,0]+1.)*sim.Ly/2
+Dy = Dy*(2/sim.Ly)
+ 
+# Define Basic State
+UB  = sim.g*amp/(sim.f0*Ljet)/(np.cosh(y/Ljet)**2)
+dUB = np.dot(Dy,UB) 
+HB  = sim.Hs[0] - amp*np.tanh(y/Ljet)
+
+# Build matrices
+Z1 = np.zeros((sim.Ny+1,sim.Ny+1))
+I1 = np.eye(sim.Ny+1)
+
+A = np.vstack(( np.hstack((          np.diag(UB,0), (np.diag(dUB - sim.f0))[:,1:-1],  sim.g*I1)),
+                np.hstack(( -sim.f0/k**2*I1[1:-1,:],        np.diag(UB,0)[1:-1,1:-1], -sim.g/k**2*Dy[1:-1,:])),
+                np.hstack((             np.diag(HB),                 (Dy*HB)[:,1:-1],  np.diag(UB,0)))))
+
+# Compute linear stability
+eigVals, eigVecs = spalg.eig(A)
+
+# Sort eigenvalues and eigenvectors
+ind = (-np.imag(eigVals)).argsort()
+eigVecs = eigVecs[:,ind]
+eigVals = k*eigVals[ind]
+
+print np.real(eigVals[0:10])#*k*3600.*24.
+print np.imag(eigVals[0:10])#*k*3600.*24.
+#self.eigVecs[:,0:Ne,cnt] = eigVecs[:,0:Ne]
+#self.eigVals[0:Ne,cnt]   = eigVals[0:Ne]
+
+sys.exit()
+
+#sim.run()                # Run the simulation
 
 
