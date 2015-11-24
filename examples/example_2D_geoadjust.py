@@ -42,11 +42,11 @@ sim.num_threads = 4
 
 # Plotting parameters
 sim.plott   = 15.*minute  # Period of plots
-sim.animate = 'Save'      # 'Save' to create video frames,
+sim.animate = 'Anim'      # 'Save' to create video frames,
                           # 'Anim' to animate,
                           # 'None' otherwise
 sim.plot_vars = ['h', 'u']
-sim.ylims = [[0,0.75], []]
+sim.ylims = [[-0.5,0.5], []]
                          
 # Output parameters
 sim.output = False        # True or False

@@ -62,9 +62,8 @@ def initialize_plots_animsave_2D(sim):
                 vmin = -cv
                 vmax =  cv
 
-            Q = plt.pcolormesh(X/1e3, Y/1e3, to_plot, cmap=sim.cmap)
-            #Q = plt.pcolormesh(X/1e3, Y/1e3, to_plot, cmap=sim.cmap, 
-            #            vmin = -vmin, vmax = vmax)
+            Q = plt.pcolormesh(X/1e3, Y/1e3, to_plot, cmap=sim.cmap, 
+                        vmin = vmin, vmax = vmax)
             Qs[var_cnt] += [Q]
 
             plt.colorbar()
