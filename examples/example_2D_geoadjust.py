@@ -45,6 +45,8 @@ sim.plott   = 15.*minute  # Period of plots
 sim.animate = 'Anim'      # 'Save' to create video frames,
                           # 'Anim' to animate,
                           # 'None' otherwise
+sim.plot_vars = ['vort','div']
+sim.clims = [[-0.015, 0.015],[-0.001, 0.001]]
                          
 # Output parameters
 sim.output = False        # True or False

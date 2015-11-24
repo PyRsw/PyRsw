@@ -24,27 +24,28 @@ sim.dynamics    = 'Nonlinear'      # Dynamics: 'Nonlinear' or 'Linear'
 sim.flux_method = Flux.spectral_sw # Flux method: spectral_sw is only option currently
 
 # Specify paramters
-sim.Lx  = 200e3          # Domain extent               (m)
-sim.Ly  = 200e3          # Domain extent               (m)
-sim.Nx  = 128            # Grid points in x
-sim.Ny  = 128            # Grid points in y
+sim.Lx  = 200e3           # Domain extent               (m)
+sim.Ly  = 200e3           # Domain extent               (m)
+sim.Nx  = 256             # Grid points in x
+sim.Ny  = 256             # Grid points in y
 sim.Nz  = 1               # Number of layers
 sim.g   = 9.81            # Gravity                     (m/sec^2)
 sim.f0  = 1.e-4           # Coriolis                    (1/sec)
 sim.beta = 0e-10          # Coriolis beta               (1/m/sec)
-sim.cfl = 0.1             # CFL coefficient             (m)
+sim.cfl = 0.2             # CFL coefficient             (m)
 sim.Hs  = [100.]          # Vector of mean layer depths (m)
 sim.rho = [1025.]         # Vector of layer densities   (kg/m^3)
-sim.end_time = 8*24.*hour   # End Time                    (sec)
+sim.end_time = 14*24.*hour   # End Time                    (sec)
 
 # Parallel? Only applies to the FFTWs
 sim.num_threads = 4
 
 # Plotting parameters
 sim.plott   = 30.*minute  # Period of plots
-sim.animate = 'Anim'      # 'Save' to create video frames,
+sim.animate = 'Save'      # 'Save' to create video frames,
                           # 'Anim' to animate,
                           # 'None' otherwise
+sim.plot_vars = ['vort']
                          
 # Output parameters
 sim.output = False        # True or False
@@ -62,12 +63,13 @@ for ii in range(sim.Nz):  # Set mean depths
 
 # Bickley Jet initial conditions
 # First we define the jet
-Ljet = 20e3            # Jet width
+Ljet = 10e3            # Jet width
 amp  = 0.1             # Elevation of free-surface in basic state
 sim.soln.h[:,:,0] += -amp*np.tanh(sim.Y/Ljet)
 sim.soln.u[:,:,0]  =  sim.g*amp/(sim.f0*Ljet)/(np.cosh(sim.Y/Ljet)**2)
+
 # Then we add on a random perturbation
-sim.soln.u[:,:,0] +=  2e-3*np.exp(-(sim.Y/Ljet)**2)*np.random.randn(sim.Nx,sim.Ny)
+sim.soln.u[:,:,0] +=  1e-3*np.exp(-(sim.Y/Ljet)**2)*np.random.randn(sim.Nx,sim.Ny)
 
 sim.run()                # Run the simulation
 
