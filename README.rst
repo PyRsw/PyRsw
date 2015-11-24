@@ -1,4 +1,4 @@
-.. figure:: https://github.com/PyRsw/PyRsw/tree/master/docs/_static/height_jet.png
+.. figure:: https://github.com/PyRsw/PyRsw/blob/master/docs/_static/height_jet.png
    :alt:
 
 PyRsw: Python Rotating Shallow Water Model
