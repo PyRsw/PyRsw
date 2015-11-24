@@ -48,7 +48,7 @@ sim.plot_vars = ['u','v','h']   # Specify which variables to plot
                                 # Specify manual ylimits if desired
                                 # An empty list uses default limits
 sim.ylims=[[-0.18,0.18],[-0.18,0.18],[-0.5,1.0]] 
-                         
+
 # Output parameters
 sim.output = False        # True or False
 sim.savet  = 1.*hour      # Time between saves

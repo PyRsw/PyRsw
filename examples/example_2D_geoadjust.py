@@ -46,7 +46,7 @@ sim.animate = 'Anim'      # 'Save' to create video frames,
                           # 'Anim' to animate,
                           # 'None' otherwise
 sim.plot_vars = ['vort','div']
-sim.clims = [[-0.015, 0.015],[-1.5, 1.5]]
+sim.clims = [[-0.015, 0.015],[-0.001, 0.001]]
                          
 # Output parameters
 sim.output = False        # True or False

@@ -26,6 +26,13 @@ def update_save_1D(sim):
             elif var == 'vort':
                 to_plot =     sim.ddx_v(sim.soln.v[:,:,L],sim) \
                             - sim.ddy_u(sim.soln.u[:,:,L],sim)
+            elif var == 'div':
+                h = sim.soln.u[:,:,L]
+                to_plot =     sim.ddx_u(h*sim.soln.u[:,:,L],sim) \
+                            + sim.ddy_v(h*sim.soln.v[:,:,L],sim)
+                if sim.f0 != 0:
+                    to_plot *= 1./sim.f0
+
 
             sim.Qs[var_cnt][L].set_ydata(to_plot)
 

@@ -46,6 +46,8 @@ class Simulation:
         self.num_threads = 1        # Number of threads for FFTW
 
         self.plot_vars = ['u','v','h']         # Which variables to plot
+        self.ylims = []
+        self.clims = []
         
         self.g    = 9.81            # gravity
         self.f0   = 1e-4            # Coriolis
@@ -65,7 +67,6 @@ class Simulation:
         self.fps = 15
         self.dpi = 150
         self.frame_count = 0
-        self.ylims = [[],[],[]]
 
         self.topo_func = null_topo  # Default to no topograpy
         
@@ -164,8 +165,10 @@ class Simulation:
         # If we're going to be plotting, then initialize the plots
         if (self.animate == 'Anim') or (self.animate == 'Save'):
             if (self.Nx > 1) and (self.Ny > 1):
+                self.clims += [[]]*(len(self.plot_vars) - len(self.clims))
                 self.initialize_plots = Plot_tools.initialize_plots_animsave_2D
             else:
+                self.ylims += [[]]*(len(self.plot_vars) - len(self.ylims))
                 self.initialize_plots = Plot_tools.initialize_plots_animsave_1D
 
         self.next_plot_time = self.plott
