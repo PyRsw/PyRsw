@@ -25,8 +25,8 @@ sim.dynamics    = 'Nonlinear'      # Dynamics: 'Nonlinear' or 'Linear'
 sim.flux_method = Flux.spectral_sw # Flux method: spectral_sw is only option currently
 
 # Specify paramters
-sim.Lx  = 200e3           # Domain extent               (m)
-sim.Ly  = 200e3           # Domain extent               (m)
+sim.Lx  = 350e3           # Domain extent               (m)
+sim.Ly  = 350e3           # Domain extent               (m)
 sim.Nx  = 256             # Grid points in x
 sim.Ny  = 256             # Grid points in y
 sim.Nz  = 1               # Number of layers
@@ -34,7 +34,7 @@ sim.g   = 9.81            # Gravity                     (m/sec^2)
 sim.f0  = 1.e-4           # Coriolis                    (1/sec)
 sim.beta = 0e-10          # Coriolis beta               (1/m/sec)
 sim.cfl = 0.2             # CFL coefficient             (m)
-sim.Hs  = [100.]          # Vector of mean layer depths (m)
+sim.Hs  = [500.]          # Vector of mean layer depths (m)
 sim.rho = [1025.]         # Vector of layer densities   (kg/m^3)
 sim.end_time = 14*24.*hour   # End Time                    (sec)
 
@@ -63,69 +63,52 @@ for ii in range(sim.Nz):  # Set mean depths
     sim.soln.h[:,:,ii] = sim.Hs[ii]
 
 # Gaussian initial conditions
-Ljet = 10e3            # Jet width
-amp  = 0.1             # Elevation of free-surface in basic state
+Ljet = 20e3            # Jet width
+Umax = 0.5
+amp  = Umax*sim.f0*Ljet/sim.g    # Elevation of free-surface in basic state
 sim.soln.h[:,:,0] += -amp*np.tanh(sim.Y/Ljet)
 sim.soln.u[:,:,0]  =  sim.g*amp/(sim.f0*Ljet)/(np.cosh(sim.Y/Ljet)**2)
 sim.soln.u[:,:,0] +=  1e-3*np.exp(-(sim.Y/Ljet)**2)*np.random.randn(sim.Nx,sim.Ny)
 
-
-
-
-# Define cheb array
-def cheb(N):
-    if N == 0:
-        D = 0
-        x = 1
-    else:
-        x = np.cos(np.pi*np.array(range(0,N+1))/N).reshape([N+1,1])
-        c = np.ravel(np.vstack([2, np.ones([N-1,1]), 2])) \
-            *(-1)**np.ravel(np.array(range(0,N+1)))
-        c = c.reshape(c.shape[0],1)
-        X = np.tile(x,(1,N+1))
-        dX = X-(X.conj().transpose())
-        D  = (c*(1/c).conj().transpose())/(dX+(np.eye(N+1)))   # off-diagonal entries
-        D  = D - np.diag(np.sum(D,1))   # diagonal entries
-    return D,x
-
 ## Specify wavenumber
-Nk  = 200
-kks = np.linspace(0,0.2*np.pi/sim.Ly,Nk+1)[1:-1]
-k = kks[50]
+dkk = 2e-2
+kk = np.arange(dkk,2+dkk,dkk)/Ljet
+Nk = len(kk)
+
+## Storage Arrays
+# FJP: store eigenvectors too
+ne = 2                           # number of eigenvalues to store
+growsw = np.zeros((ne,Nk))
+freqsw = np.zeros((ne,Nk))
 
 # Define Differentiation Matrix and grid
+from Stability_tools import cheb
 Dy,y = cheb(sim.Ny)
-y   = (y[:,0]+1.)*sim.Ly/2
+y   = (y[:,0]+1)*sim.Ly/2
 Dy = Dy*(2/sim.Ly)
- 
+
 # Define Basic State
-UB  = sim.g*amp/(sim.f0*Ljet)/(np.cosh(y/Ljet)**2)
-dUB = np.dot(Dy,UB) 
-HB  = sim.Hs[0] - amp*np.tanh(y/Ljet)
+sim.UB  =  sim.g*amp/(sim.f0*Ljet)/(np.cosh((y-sim.Ly/2.)/Ljet)**2)
+sim.HB  = sim.Hs[0] - amp*np.tanh((y-sim.Ly/2.)/Ljet)
+sim.dUB = np.dot(Dy,sim.UB) 
 
-# Build matrices
-Z1 = np.zeros((sim.Ny+1,sim.Ny+1))
-I1 = np.eye(sim.Ny+1)
+# Test Geostrophy
+if np.amax(sim.f0*sim.UB+sim.g*np.dot(Dy,sim.HB)) > 1e-8:
+    print "Geostrophic balance not satisfied.  Exit"
+    sys.exit()    
 
-A = np.vstack(( np.hstack((          np.diag(UB,0), (np.diag(dUB - sim.f0))[:,1:-1],  sim.g*I1)),
-                np.hstack(( -sim.f0/k**2*I1[1:-1,:],        np.diag(UB,0)[1:-1,1:-1], -sim.g/k**2*Dy[1:-1,:])),
-                np.hstack((             np.diag(HB),                 (Dy*HB)[:,1:-1],  np.diag(UB,0)))))
+# Compute spectrum
+from Stability_tools import stability_sw
+growsw, freqsw = stability_sw(sim, Dy, y, kk, ne)
 
-# Compute linear stability
-eigVals, eigVecs = spalg.eig(A)
+print growsw*3600.*24
 
-# Sort eigenvalues and eigenvectors
-ind = (-np.imag(eigVals)).argsort()
-eigVecs = eigVecs[:,ind]
-eigVals = k*eigVals[ind]
-
-print np.real(eigVals[0:10])#*k*3600.*24.
-print np.imag(eigVals[0:10])#*k*3600.*24.
-#self.eigVecs[:,0:Ne,cnt] = eigVecs[:,0:Ne]
-#self.eigVals[0:Ne,cnt]   = eigVals[0:Ne]
-
+plt.clf
+plt.plot(kk, 3600*24.*growsw[0,:],'ob')
+plt.plot(kk, 3600*24.*growsw[1,:],'or')
+plt.show()
 sys.exit()
 
-#sim.run()                # Run the simulation
+sim.run()                # Run the simulation
 
 
