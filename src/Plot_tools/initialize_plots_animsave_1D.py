@@ -44,16 +44,19 @@ def initialize_plots_animsave_1D(sim):
             elif var == 'h':
                 to_plot = sim.soln.h[:,:,L].ravel() - sim.Hs[L]
             elif var == 'vort':
-                to_plot =     sim.ddx_v(sim.soln.v[:,:,L],sim) \
-                            - sim.ddy(sim.soln.u[:,:,L],sim)
+                to_plot = sim.ddx_v(sim.soln.v[:,:,L],sim) \
+                        - sim.ddy_u(sim.soln.u[:,:,L],sim)
+                to_plot = to_plot.ravel()
+                if sim.f0 != 0:
+                    to_plot *= 1./sim.f0
             elif var == 'div':
-                h = sim.soln.u[:,:,L] 
-                to_plot =     sim.ddx_u(h*sim.soln.u[:,:,L],sim) \
-                            + sim.ddy_v(h*sim.soln.v[:,:,L],sim)
+                h = sim.soln.h[:,:,L].ravel() 
+                to_plot = sim.ddx_u(h*sim.soln.u[:,:,L],sim) \
+                        + sim.ddy_v(h*sim.soln.v[:,:,L],sim)
                 if sim.f0 != 0:
                     to_plot *= 1./sim.f0
                 to_plot = to_plot.ravel()
-
+            
             l, = plt.plot(x, to_plot, linewidth=2)
 
             # Has the user specified plot limits?

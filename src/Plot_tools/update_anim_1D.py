@@ -24,12 +24,16 @@ def update_anim_1D(sim):
             elif var == 'h':
                 to_plot = sim.soln.h[:,:,L].ravel() - sim.Hs[L]
             elif var == 'vort':
-                to_plot =     sim.ddx_v(sim.soln.v[:,:,L],sim) \
-                            - sim.ddy_u(sim.soln.u[:,:,L],sim)
+                to_plot = sim.ddx_v(sim.soln.v[:,:,L],sim) \
+                        - sim.ddy_u(sim.soln.u[:,:,L],sim)
+                to_plot = to_plot.ravel()
+                if sim.f0 != 0:
+                    to_plot *= 1./sim.f0
             elif var == 'div':
-                h = sim.soln.u[:,:,L] 
-                to_plot =     sim.ddx_u(h*sim.soln.u[:,:,L],sim) \
-                            + sim.ddy_v(h*sim.soln.v[:,:,L],sim)
+                h = sim.soln.h[:,:,L] 
+                to_plot = sim.ddx_u(h*sim.soln.u[:,:,L],sim) \
+                        + sim.ddy_v(h*sim.soln.v[:,:,L],sim)
+                to_plot = to_plot.ravel()
                 if sim.f0 != 0:
                     to_plot *= 1./sim.f0
 

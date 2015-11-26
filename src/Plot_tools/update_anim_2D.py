@@ -30,7 +30,7 @@ def update_anim_2D(sim):
                 else:   
                     sim.ttls[var_cnt][L].set_text('Vorticity : {0:s}'.format(smart_time(sim.time)))
             elif var == 'div':
-                h = sim.soln.u[:,:,L] 
+                h = sim.soln.h[:,:,L] 
                 to_plot =     sim.ddx_u(h*sim.soln.u[:,:,L],sim) \
                             + sim.ddy_v(h*sim.soln.v[:,:,L],sim)
                 if sim.f0 != 0:

@@ -62,7 +62,7 @@ def initialize_plots_animsave_2D(sim):
                 else:   
                     ttl = fig.suptitle('Vorticity : t = 0')
             elif var == 'div':
-                h = sim.soln.u[:,:,L] 
+                h = sim.soln.h[:,:,L] 
                 to_plot =     sim.ddx_u(h*sim.soln.u[:,:,L],sim) \
                             + sim.ddy_v(h*sim.soln.v[:,:,L],sim)
                 if sim.f0 != 0:
