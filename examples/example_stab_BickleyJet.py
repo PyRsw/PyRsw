@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import scipy.linalg as spalg
 import sys
 
 # Add the PyRsw tools to the path
@@ -12,6 +13,9 @@ import Steppers as Step
 import Fluxes as Flux
 from PyRsw import Simulation
 from constants import minute, hour, day
+
+from Stability_tools import cheb
+from Stability_tools import stability_sw
 
 sim = Simulation()  # Create a simulation object
 
@@ -26,52 +30,60 @@ sim.flux_method = Flux.spectral_sw # Flux method: spectral_sw is only option cur
 # Specify paramters
 sim.Lx  = 200e3           # Domain extent               (m)
 sim.Ly  = 200e3           # Domain extent               (m)
-sim.Nx  = 128             # Grid points in x
+#sim.Nx  = 128             # Grid points in x
 sim.Ny  = 128             # Grid points in y
 sim.Nz  = 1               # Number of layers
 sim.g   = 9.81            # Gravity                     (m/sec^2)
 sim.f0  = 1.e-4           # Coriolis                    (1/sec)
 sim.beta = 0e-10          # Coriolis beta               (1/m/sec)
-sim.cfl = 0.1             # CFL coefficient             (m)
+sim.cfl = 0.2             # CFL coefficient             (m)
 sim.Hs  = [100.]          # Vector of mean layer depths (m)
 sim.rho = [1025.]         # Vector of layer densities   (kg/m^3)
 sim.end_time = 14*24.*hour   # End Time                    (sec)
 
-# Parallel? Only applies to the FFTWs
-sim.num_threads = 32
-
-# Plotting parameters
-sim.plott   = 30.*minute  # Period of plots
-sim.animate = 'Save'      # 'Save' to create video frames,
-                          # 'Anim' to animate,
-                          # 'None' otherwise
-sim.plot_vars = ['vort','div']
-sim.clims = [ [-0.8, 0.8],[-0.1, 0.1]]                         
-
-# Output parameters
-sim.output = False        # True or False
-sim.savet  = 1.*hour      # Time between saves
-
-# Diagnostics parameters
-sim.diagt    = 2.*minute  # Time for output
-sim.diagnose = False      # True or False
-
 # Initialize the grid and zero solutions
 sim.initialize()
 
-for ii in range(sim.Nz):  # Set mean depths
-    sim.soln.h[:,:,ii] = sim.Hs[ii]
 
-# Bickley Jet initial conditions
-# First we define the jet
-Ljet = 10e3            # Jet width
-amp  = 0.1             # Elevation of free-surface in basic state
-sim.soln.h[:,:,0] += -amp*np.tanh(sim.Y/Ljet)
-sim.soln.u[:,:,0]  =  sim.g*amp/(sim.f0*Ljet)/(np.cosh(sim.Y/Ljet)**2)
+# Define Differentiation Matrix and grid
+Dy,y = cheb(sim.Ny)
+y   = (y[:,0]+1)*sim.Ly/2
+Dy = Dy*(2/sim.Ly)
 
-# Then we add on a random perturbation
-sim.soln.u[:,:,0] +=  1e-3*np.exp(-(sim.Y/Ljet)**2)*np.random.randn(sim.Nx,sim.Ny)
+# Define Basic State: Bickley Jet
+Ljet = 20e3            # Jet width
+Umax = 0.5             # Maximum speed
+amp  = Umax*sim.f0*Ljet/sim.g    # Elevation of free-surface in basic state
+sim.UB  =  sim.g*amp/(sim.f0*Ljet)/(np.cosh((y-sim.Ly/2.)/Ljet)**2)
+sim.HB  = sim.Hs[0] - amp*np.tanh((y-sim.Ly/2.)/Ljet)
+sim.dUB = np.dot(Dy,sim.UB) 
 
-sim.run()                # Run the simulation
+# Test Geostrophy
+#if np.amax(sim.f0*sim.UB+sim.g*np.dot(Dy,sim.HB)) > 1e-10:
+#    print "Geostrophic balance not satisfied.  Exit"
+#    sys.exit()    
+
+## Specify wavenumber
+dkk = 2e-2
+kk = np.arange(dkk,2+dkk,dkk)/Ljet
+Nk = len(kk)
+
+## Storage Arrays
+# FJP: store eigenvectors too
+ne = 2                           # number of eigenvalues to store
+growsw = np.zeros((ne,Nk))
+freqsw = np.zeros((ne,Nk))
+
+# Compute spectrum
+growsw, freqsw = stability_sw(sim, Dy, y, kk, ne)
+
+plt.clf
+plt.plot(kk*Ljet, 3600*24.*growsw[0,:],'ob')
+plt.plot(kk*Ljet, 3600*24.*growsw[1,:],'or')
+plt.xlabel('k*Ljet')
+plt.title('Growth Rates for Bickley Jet')
+plt.legend(['1st unstable','2nd unstable'])
+plt.show()
+
 
 

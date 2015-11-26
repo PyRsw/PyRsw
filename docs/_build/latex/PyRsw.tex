@@ -19,7 +19,11 @@
 
 
 \title{PyRsw Documentation}
+<<<<<<< HEAD
+\date{November 26, 2015}
+=======
 \date{November 24, 2015}
+>>>>>>> master
 \release{0.1}
 \author{PyRsw Team}
 \newcommand{\sphinxlogo}{}
@@ -512,6 +516,17 @@ Plot the Hovmöller diagram in time versus space.
 \includegraphics{ex1_fig2.png}
 \caption{Hovmöller plot for the test case.}\end{figure}
 
+<<<<<<< HEAD
+There is a second example called example\_1D\_geoadjust2.py that begins
+with a hyperbolic tangent profile instead if a Gaussian initial
+condition.
+
+
+\section{Geostrophic Adjustment: 2D and 1L}
+\label{examples:geostrophic-adjustment-2d-and-1l}
+The basic script is almost identical to the 1D case. The changes are as
+follows:
+=======
 Note that to compute the derivatives in the case of a non-periodic
 domain we impose either Dirichlet or Neumann boundary conditions. This
 is done by doing odd and even extensions respectively. That is why in
@@ -528,12 +543,129 @@ boundary conditions as well.
 The basic script is almost identical to the 1D case and can be found in
 the examples folder with the title example\_2D\_geoadjust.py. The
 changes are as follows:
+>>>>>>> master
 \begin{itemize}
 \item {} 
 Set \(Nx\) and \(Ny\) both equal to \(128\), and from
 this we build a 2D grid.
 
 \item {} 
+<<<<<<< HEAD
+Define the initial conditions on a 2D grid.
+
+\item {} 
+The plotting is different. We plot a 2D field using and we don’t do a
+Hovmöller plot.
+
+\end{itemize}
+
+
+\section{Bickley Jet: 2D and 1L}
+\label{examples:bickley-jet-2d-and-1l}
+Following Poulin and Flierl (2003) and Irwin and Poulin (2014), we look
+at the instability of a jet.
+
+
+\chapter{Linear Stability Analysis}
+\label{linear_stability::doc}\label{linear_stability:linear-stability-analysis}
+
+\section{One-Layer Shallow Water}
+\label{linear_stability:one-layer-shallow-water}
+In this subsection we consider the one-layer reduced gravity RSW model
+with topography below. We define the following:
+\begin{itemize}
+\item {} 
+\(H\): mean depth of the layer
+
+\item {} 
+\(z=\eta\): height of the free surface
+
+\item {} 
+\(z=-H + \eta_B\): height of the topography.
+
+\item {} 
+\(h = H + \eta - \eta_B\): total depth of layer
+
+\item {} 
+\((u,v)\): horizontal velocity
+
+\item {} 
+\(g'\): reduced gravity
+
+\item {} 
+\(\rho_0\): reference density
+
+\end{itemize}
+
+The governing nonlinear equations are,
+\begin{gather}
+\begin{split}\begin{aligned}
+\frac{\partial u}{\partial t} + {\vec u} \cdot \vec \nabla u - f v &
+= - g \frac{\partial}{\partial x} \left( h + \eta_B \right) , \\
+ \frac{\partial v}{\partial t} + {\vec u} \cdot \vec \nabla v + f u &
+= - g \frac{\partial}{\partial y} \left( h + \eta_B \right) , \\
+\frac{\partial h}{\partial t} + \vec\nabla \cdot \left( h \vec u_1 \right) & = 0.\end{aligned}\end{split}\notag
+\end{gather}
+
+\section{Basic State}
+\label{linear_stability:basic-state}
+To study shear flows in a meridional channel we consider solutions of
+the form,
+\begin{gather}
+\begin{split}\begin{aligned}
+u & = U_B(y), \\
+v & = 0,\\
+h & = H_B(y).\end{aligned}\end{split}\notag
+\end{gather}
+For this to be an exact solution we require that the flow is in
+geostrophic balance,
+\begin{gather}
+\begin{split}f U_B = - g \frac{d}{dy}\left( H_B + \eta_B \right).\end{split}\notag
+\end{gather}
+
+\section{Perturbation}
+\label{linear_stability:perturbation}
+We perturb the basic state with infinitesimal quantities,
+\begin{gather}
+\begin{split}\begin{aligned}
+u & = U_B(y) + u', \\
+v & = 0     + v',\\
+h & = H_B(y) + h'.\end{aligned}\end{split}\notag
+\end{gather}
+We substitute our perturbation into the governing equations and drop the
+primes (for brevity) and cancelling out the geostrophic terms
+\begin{gather}
+\begin{split}\begin{aligned}
+\frac{\partial u}{\partial t} + (u + U_B) \frac{\partial u}{\partial x} + v \frac{\partial}{\partial y} \left(u + U_B \right)  - f v & = - g \frac{\partial h}{\partial x}, \\
+ \frac{\partial v}{\partial t}   + (u + U_B) \frac{\partial v}{\partial x} + v \frac{\partial v }{\partial y} + f u
+ & = - g \frac{\partial h}{\partial y}, \\
+\frac{\partial h}{\partial t}  + (u + U_B) \frac{\partial h}{\partial x}   + v \frac{\partial}{\partial y}(H_B + h)
++ (H_B + h)  & \left( \frac{\partial u}{\partial x} + \frac{\partial v}{\partial y} \right) =  0.\end{aligned}\end{split}\notag
+\end{gather}
+Now we neglect the quadratic terms to obtain the linearized equations,
+\begin{gather}
+\begin{split}\begin{aligned}
+\frac{\partial u}{\partial t}
+& = - U_B \frac{\partial u}{\partial x} + \left( f - \frac{d U_B}{d y}  \right) v  - g \frac{\partial h_1}{\partial x}, \\
+ \frac{\partial v}{\partial t}    & =  - f u  - U_B \frac{\partial v}{\partial x}  - g \frac{\partial h_1}{\partial y}, \\
+\frac{\partial h}{\partial t}   & = - H_B \frac{\partial u}{\partial x}    - v \frac{d H_B}{d y}
+ - H_B \frac{\partial v}{\partial y} - U_B \frac{\partial h}{\partial x} .\end{aligned}\end{split}\notag
+\end{gather}
+Finally, we assume a normal mode decomposition in the zonal direction
+and time,
+\begin{gather}
+\begin{split}\begin{aligned}
+[u, v, h] = \mbox{Re}\left\{ e^{ik(x - c t)} [\hat u, ik \hat v, \hat h] \right\},\end{aligned}\end{split}\notag
+\end{gather}
+which we can substitute into the above equations to yield in the
+inviscid limit
+\begin{gather}
+\begin{split}\begin{aligned}
+c \hat u  &  = U_B \hat u - (f - \frac{dU_B}{dy}) \hat v + g \hat h, \\
+c \hat v  &  =- \frac{f}{k^2} \hat u + U_B \hat v -\frac{ g}{k^2} \frac{d h}{d y}, \\
+c \hat h  &=   H_B \hat u  +  \frac{d}{d y}\left(H_B \hat v\right) +  U_B \hat h.\end{aligned}\end{split}\notag
+\end{gather}
+=======
 Specify the length of the domain in the zonal direction.
 
 \item {} 
@@ -575,6 +707,7 @@ In this case we change the code to include the following lines.
 \PYG{n}{sim}\PYG{o}{.}\PYG{n}{soln}\PYG{o}{.}\PYG{n}{u}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{+}\PYG{o}{=}  \PYG{l+m+mf}{2e\PYGZhy{}3}\PYG{o}{*}\PYG{n}{np}\PYG{o}{.}\PYG{n}{exp}\PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{p}{(}\PYG{n}{sim}\PYG{o}{.}\PYG{n}{Y}\PYG{o}{/}\PYG{n}{Ljet}\PYG{p}{)}\PYG{o}{*}\PYG{o}{*}\PYG{l+m+mi}{2}\PYG{p}{)}\PYG{o}{*}\PYG{n}{np}\PYG{o}{.}\PYG{n}{random}\PYG{o}{.}\PYG{n}{randn}\PYG{p}{(}\PYG{n}{sim}\PYG{o}{.}\PYG{n}{Nx}\PYG{p}{,}\PYG{n}{sim}\PYG{o}{.}\PYG{n}{Ny}\PYG{p}{)}
 \end{Verbatim}
 
+>>>>>>> master
 
 \chapter{Indices and tables}
 \label{index:indices-and-tables}\begin{itemize}

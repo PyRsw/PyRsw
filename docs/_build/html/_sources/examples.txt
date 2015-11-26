@@ -164,6 +164,11 @@ Plot the Hovmöller diagram in time versus space.
    :alt: Hovmöller plot for the test case.
 
    Hovmöller plot for the test case.
+<<<<<<< HEAD
+There is a second example called example\_1D\_geoadjust2.py that begins
+with a hyperbolic tangent profile instead if a Gaussian initial
+condition.
+=======
 Note that to compute the derivatives in the case of a non-periodic
 domain we impose either Dirichlet or Neumann boundary conditions. This
 is done by doing odd and even extensions respectively. That is why in
@@ -220,4 +225,24 @@ In this case we change the code to include the following lines.
     sim.soln.u[:,:,0]  =  sim.g*amp/(sim.f0*Ljet)/(np.cosh(sim.Y/Ljet)**2)
     # Then we add on a random perturbation
     sim.soln.u[:,:,0] +=  2e-3*np.exp(-(sim.Y/Ljet)**2)*np.random.randn(sim.Nx,sim.Ny)
+>>>>>>> master
 
+Geostrophic Adjustment: 2D and 1L
+---------------------------------
+
+The basic script is almost identical to the 1D case. The changes are as
+follows:
+
+-  Set :math:`Nx` and :math:`Ny` both equal to :math:`128`, and from
+   this we build a 2D grid.
+
+-  Define the initial conditions on a 2D grid.
+
+-  The plotting is different. We plot a 2D field using and we don’t do a
+   Hovmöller plot.
+
+Bickley Jet: 2D and 1L
+----------------------
+
+Following Poulin and Flierl (2003) and Irwin and Poulin (2014), we look
+at the instability of a jet.
