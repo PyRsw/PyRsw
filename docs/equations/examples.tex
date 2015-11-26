@@ -42,13 +42,13 @@
 
 \section*{Examples}
 
-\subsection*{Geostrophic Adjustment: 1D and 1L}
+\subsection*{Geostrophic Adjustment: One-Dimension}
 
-In the directory \texttt{src} you will find an example entitled \texttt{example\_1D\_1L\_spectral.py}
+In the directory \texttt{examples} you will find an example entitled \texttt{example\_1D\_geoadjust.py}
 
 First, libraries are imported.  Two standard ones are numpy, for calculations, and matplotlib.pyplot for plotting.  Those are standard to numpy.  Then, there are four other things that are imported:
 \begin{itemize}
-\item {\bf Steppers} This contains different time-stepping functions.  At the moment we have Euler, Adams-Bashforth 2 (AB2) and Runge-Kutta 4 (RK4).  PyRsw uses adaptive time stepping to try and be more efficient in how the solution is marched forward.
+\item {\bf Steppers} This contains different time-stepping functions.  At the moment we have Euler, Adams-Bashforth 2 (AB2), Adams-Bashforth 3 (AB3) and Runge-Kutta 4 (RK4).  PyRsw uses adaptive time stepping to try and be more efficient in how the solution is marched forward.
 \item {\bf Fluxes} This contains the fluxes for the RSW model.  At the moment there is only the option for a pseudo-spectral model but this will be generalized to include a Finite Volume method as well.
 \item {\bf PyRsw} This is the main library and importing Simulation imports the core of the library.  
 \item {\bf constants}  This has some useful constants, more can be added if desired.
@@ -61,35 +61,50 @@ sim = Simulation()
 
 \noindent  Below specifies the geometry in $x$ and $y$: [Options 'periodic', 'walls']
 
-\noindent We use AB2, a spectral method: [Options: Euler, AB2, RK4]
+\noindent We use AB3, a spectral method: [Options: Euler, AB2, AB3, RK4]
 
-\noindent We solve the nonlinear dynamics (can be Linear) 
+\noindent We solve the nonlinear dynamics: [Options: Linear and Nonlinear]
 
-\noindent  Use spectral sw model (no other choices).  Maybe hide this.
+\noindent  Use spectral sw model (no other choices at present).  
+
 \begin{lstlisting}
-sim.geomx       = 'walls'            
 sim.geomy       = 'periodic'
-sim.stepper     = Step.AB2       
+sim.stepper     = Step.AB3       
 sim.method      = 'Spectral'       
 sim.dynamics    = 'Nonlinear'    
 sim.flux_method = Flux.spectral_sw
 \end{lstlisting}
 
 We specify a lot of parameters.  There are some default values that are specified in {\tt PyRsw}.
+<<<<<<< HEAD
+=======
 \begin{lstlisting}
-sim.Lx  = 4000e3          # Domain extent               (m)
-sim.Ly  = 4000e3          # Domain extent               (m)
-sim.geomx = 'periodic'    # Boundary Conditions
-sim.geomy = 'periodic'    # Boundary Conditions
-sim.Nx  = 128             # Grid points in x
-sim.Ny  = 1               # Grid points in y
-sim.Nz  = 1               # Number of layers
-sim.g   = 9.81            # Gravity                     (m/sec^2)
-sim.f0  = 1.e-4           # Coriolis                    (1/sec)
-sim.cfl = 0.05            # CFL coefficient             (m)
-sim.Hs  = [100.]          # Vector of mean layer depths (m)
-sim.rho = [1025.]         # Vector of layer densities   (kg/m^3)
-sim.end_time = 36.*hour   # End Time                    (sec)
+sim.Ly  = 4000e3            # Domain extent               (m)
+sim.Nx  = 1                 # Grid points in x
+sim.Ny  = 128               # Grid points in y
+sim.Nz  = 1                 # Number of layers
+sim.g   = 9.81              # Gravity                     (m/sec^2)
+sim.f0  = 1.e-4             # Coriolis                    (1/sec)
+sim.beta = 0e-10            # Coriolis beta parameter     (1/m/sec)
+sim.cfl = 0.05              # CFL coefficient             (m)
+sim.Hs  = [100.]            # Vector of mean layer depths (m)
+sim.rho = [1025.]           # Vector of layer densities   (kg/m^3)
+sim.end_time = 2*24.*hour   # End Time                    (sec)
+\end{lstlisting}
+
+There is an option to thread the FFTW's if using {\tt pyfftw}.
+>>>>>>> master
+\begin{lstlisting}
+sim.num_threads = 4
+\end{lstlisting}
+
+Below we specify the plotting interval, what kind of plotting to do, and the limits on the three figures.
+\begin{lstlisting}
+sim.plott   = 20.*minute  # Period of plots
+sim.animate = 'Anim'      # 'Save' to create video frames,
+                          # 'Anim' to animate,
+                          # 'None' otherwise
+sim.ylims=[[-0.18,0.18],[-0.18,0.18],[-0.5,1.0]]
 \end{lstlisting}
 
 We can specify the periodicity of plotting and whether we want a life animation or make a video.  More on this this later.
@@ -115,13 +130,10 @@ for ii in range(sim.Nz):  # Set mean depths
     sim.soln.h[:,:,ii] = sim.Hs[ii]
 
 # Gaussian initial conditions
-x0 = 1.*sim.Lx/2.      # Centre
-W  = 200.e3                # Width
+x0 = 1.*sim.Lx/2.         # Centre
+W  = 200.e3               # Width
 amp = 1.                  # Amplitude
-if sim.Ny==1:
-    sim.soln.h[:,:,0] += amp*np.exp(-(sim.x-x0)**2/(W**2)).reshape((sim.Nx,1))
-elif sim.Nx==1:
-    sim.soln.h[:,:,0] += amp*np.exp(-(sim.y-x0)**2/(W**2)).reshape((1,sim.Ny))
+sim.soln.h[:,:,0] += amp*np.exp(-(sim.Y)**2/(W**2))
 \end{lstlisting}
 
 Solve the problem.
@@ -131,22 +143,31 @@ sim.run()
 
 Plot the Hovm\"oller diagram in time versus space.
 \begin{lstlisting}
+# Hovmuller plot
+plt.figure()
+t = np.arange(0,sim.end_time+sim.plott,sim.plott)/86400.
+
 if sim.Ny==1:
-    plt.figure               
-    t = np.arange(0,sim.end_time+sim.plott,sim.plott)/86400.
-        
-    for L in range(sim.Nz):
-        field = sim.hov_h[:,0,:].T - np.sum(sim.Hs[L:])
-        plt.subplot(sim.Nz,1,L+1)
-        plt.pcolormesh(sim.x/1e3,t, field,
-            cmap=sim.cmap, vmin = 0, vmax = amp)
-        plt.xlim([sim.x[0]/1e3, sim.x[-1]/1e3])
-        plt.ylim([t[0], t[-1]])
-        plt.title(r"$Hovm{\"o}ller Plot\, {of} \,\, \eta$")
-        plt.xlabel(r"$distance \, \, (km)$")
-        plt.ylabel(r"$Time \, \, (days)$")
-        plt.colorbar()
-    plt.show()
+    x = sim.x/1e3
+elif sim.Nx == 1:
+    x = sim.y/1e3
+
+for L in range(sim.Nz):
+    field = sim.hov_h[:,0,:].T - np.sum(sim.Hs[L:])
+    cv = np.max(np.abs(field.ravel()))
+    plt.subplot(sim.Nz,1,L+1)
+    plt.pcolormesh(x,t, field,
+        cmap=sim.cmap, vmin = -cv, vmax = cv)
+    plt.axis('tight')
+    plt.title(r"$\mathrm{Hovm{\"o}ller} \; \mathrm{Plot} \; \mathrm{of} \; \eta$", fontsize = 16)
+    if sim.Nx > 1:
+        plt.xlabel(r"$\mathrm{x} \; \mathrm{(km)}$", fontsize=14)
+    else:
+        plt.xlabel(r"$\mathrm{y} \; \mathrm{(km)}$", fontsize=14)
+    plt.ylabel(r"$\mathrm{Time} \; \mathrm{(days)}$", fontsize=14)
+    plt.colorbar()
+
+plt.show()
 \end{lstlisting}
 
 \begin{figure}[h]
@@ -163,18 +184,52 @@ if sim.Ny==1:
 \end{center}
 \end{figure}
 
+<<<<<<< HEAD
 There is a second example called {\tt example\_1D\_geoadjust2.py} that begins with a hyperbolic tangent profile instead if a Gaussian initial condition.
 
 \subsection*{Geostrophic Adjustment: 2D and 1L}
+=======
+Note that to compute the derivatives in the case of a non-periodic domain we impose either Dirichlet or Neumann boundary conditions.  This is done by doing odd and even extensions respectively.  That is why in 1D, the simulation with walls does twice as much work as in the periodic case.  Similarly, if we have walls in 2D, that is doing four times as much work.
 
-The basic script is almost identical to the 1D case.  The changes are as follows:
+At some point we should change walls to 'slip' and allow for 'noslip' boundary conditions as well.
+>>>>>>> master
+
+\subsection*{Geostrophic Adjustment: Two-Dimensions}
+
+The basic script is almost identical to the 1D case and can be found in the examples folder with the title {\tt example\_2D\_geoadjust.py}.  The changes are as follows:
 \begin{itemize}
-\item[1.] Set $Nx$ and $Ny$ both equal to $128$, and from this we build a 2D grid.   
-\item[2.] Define the initial conditions on a 2D grid.
-\item[3.] The plotting is different.  We plot a 2D field using \tt{pcolormesh} and we don't do a Hovm\"oller plot.
+\item Set $Nx$ and $Ny$ both equal to $128$, and from this we build a 2D grid.   
+\item Specify the length of the domain in the zonal direction.
+\item Define the initial conditions on a 2D grid.
+\item The plotting is different.  We plot a 2D field using {\tt pcolormesh} and we don't do a Hovm\"oller plot.
 \end{itemize}
 
-\subsection*{Bickley Jet: 2D and 1L}
+\subsection*{Bickley Jet: Two-Dimensions}
 
-Following Poulin and Flierl (2003) and Irwin and Poulin (2014), we look at the instability of a jet.
+Following Poulin and Flierl (2003) and Irwin and Poulin (2014), we look at the instability of a Bickley jet.  The script is called {\tt example\_2D\_BickleyJet.py}.
+
+In this case we change the code to include the following lines.
+\begin{lstlisting}
+# Define geometry
+sim.geomx       = 'periodic'
+sim.geomy       = 'walls'
+
+# Define grid and domain size
+sim.Lx  = 200e3          # Domain extent               (m)
+sim.Ly  = 200e3          # Domain extent               (m)
+sim.Nx  = 128            # Grid points in x
+sim.Ny  = 128            # Grid points in y
+
+# Bickley Jet initial conditions
+# First we define the jet
+Ljet = 20e3            # Jet width
+amp  = 0.1             # Elevation of free-surface in basic state
+sim.soln.h[:,:,0] += -amp*np.tanh(sim.Y/Ljet)
+sim.soln.u[:,:,0]  =  sim.g*amp/(sim.f0*Ljet)/(np.cosh(sim.Y/Ljet)**2)
+# Then we add on a random perturbation
+sim.soln.u[:,:,0] +=  2e-3*np.exp(-(sim.Y/Ljet)**2)*np.random.randn(sim.Nx,sim.Ny)
+\end{lstlisting}
+
+%FJP: change plotting
+
 \end{document}
