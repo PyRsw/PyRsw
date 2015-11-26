@@ -75,7 +75,7 @@ sim.dynamics    = 'Nonlinear'
 sim.flux_method = Flux.spectral_sw
 \end{lstlisting}
 
-We specify a lot of parameters.  There are some default values that are specified in \tt{PyRsw}.
+We specify a lot of parameters.  There are some default values that are specified in {\tt PyRsw}.
 \begin{lstlisting}
 sim.Lx  = 4000e3          # Domain extent               (m)
 sim.Ly  = 4000e3          # Domain extent               (m)
@@ -162,6 +162,8 @@ if sim.Ny==1:
 \caption{Hovm\"oller plot for the test case.}
 \end{center}
 \end{figure}
+
+There is a second example called {\tt example\_1D\_geoadjust2.py} that begins with a hyperbolic tangent profile instead if a Gaussian initial condition.
 
 \subsection*{Geostrophic Adjustment: 2D and 1L}
 

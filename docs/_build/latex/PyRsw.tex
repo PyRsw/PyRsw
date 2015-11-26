@@ -19,7 +19,7 @@
 
 
 \title{PyRsw Documentation}
-\date{November 24, 2015}
+\date{November 26, 2015}
 \release{0.1}
 \author{PyRsw Team}
 \newcommand{\sphinxlogo}{}
@@ -395,7 +395,7 @@ Use spectral sw model (no other choices). Maybe hide this.
 \end{Verbatim}
 
 We specify a lot of parameters. There are some default values that are
-specified in .
+specified in PyRsw.
 
 \begin{Verbatim}[commandchars=\\\{\}]
 \PYG{n}{sim}\PYG{o}{.}\PYG{n}{Lx}  \PYG{o}{=} \PYG{l+m+mf}{4000e3}          \PYG{c}{\PYGZsh{} Domain extent               (m)}
@@ -491,6 +491,35 @@ Plot the Hovmöller diagram in time versus space.
 
 \includegraphics{ex1_fig2.png}
 \caption{Hovmöller plot for the test case.}\end{figure}
+
+There is a second example called example\_1D\_geoadjust2.py that begins
+with a hyperbolic tangent profile instead if a Gaussian initial
+condition.
+
+
+\section{Geostrophic Adjustment: 2D and 1L}
+\label{examples:geostrophic-adjustment-2d-and-1l}
+The basic script is almost identical to the 1D case. The changes are as
+follows:
+\begin{itemize}
+\item {} 
+Set \(Nx\) and \(Ny\) both equal to \(128\), and from
+this we build a 2D grid.
+
+\item {} 
+Define the initial conditions on a 2D grid.
+
+\item {} 
+The plotting is different. We plot a 2D field using and we don’t do a
+Hovmöller plot.
+
+\end{itemize}
+
+
+\section{Bickley Jet: 2D and 1L}
+\label{examples:bickley-jet-2d-and-1l}
+Following Poulin and Flierl (2003) and Irwin and Poulin (2014), we look
+at the instability of a jet.
 
 
 \chapter{Linear Stability Analysis}

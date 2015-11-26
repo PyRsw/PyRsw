@@ -51,7 +51,7 @@ Use spectral sw model (no other choices). Maybe hide this.
     sim.flux_method = Flux.spectral_sw
 
 We specify a lot of parameters. There are some default values that are
-specified in .
+specified in PyRsw.
 
 ::
 
@@ -144,4 +144,26 @@ Plot the Hovmöller diagram in time versus space.
    :alt: Hovmöller plot for the test case.
 
    Hovmöller plot for the test case.
+There is a second example called example\_1D\_geoadjust2.py that begins
+with a hyperbolic tangent profile instead if a Gaussian initial
+condition.
 
+Geostrophic Adjustment: 2D and 1L
+---------------------------------
+
+The basic script is almost identical to the 1D case. The changes are as
+follows:
+
+-  Set :math:`Nx` and :math:`Ny` both equal to :math:`128`, and from
+   this we build a 2D grid.
+
+-  Define the initial conditions on a 2D grid.
+
+-  The plotting is different. We plot a 2D field using and we don’t do a
+   Hovmöller plot.
+
+Bickley Jet: 2D and 1L
+----------------------
+
+Following Poulin and Flierl (2003) and Irwin and Poulin (2014), we look
+at the instability of a jet.
