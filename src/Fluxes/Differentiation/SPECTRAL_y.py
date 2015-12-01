@@ -26,6 +26,7 @@ def SPECTRAL_y(sim):       # Set the differentiation operators
 
         # If possible, use pyfftw to preserve wisdom.
         try:
+
             tmp_in_u  = pyfftw.n_byte_align_empty((sim.Nx,sim.Nky),16,dtype='complex128')
             tmp_out_u = pyfftw.n_byte_align_empty((sim.Nx,sim.Nky),16,dtype='complex128')
             sim.ffty_u  = pyfftw.FFTW(tmp_in_u, tmp_out_u, axes=[1], direction='FFTW_FORWARD', threads = sim.num_threads)
