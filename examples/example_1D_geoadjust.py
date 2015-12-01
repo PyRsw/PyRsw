@@ -14,6 +14,7 @@ from PyRsw import Simulation
 from constants import minute, hour, day
 
 sim = Simulation()  # Create a simulation object
+sim.run_name = '1D GeoAdjust'
 
 # Geometry and Model Equations
 sim.geomy       = 'periodic'       # Geometry Types: 'periodic' or 'walls'

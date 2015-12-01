@@ -14,6 +14,7 @@ from PyRsw import Simulation
 from constants import minute, hour, day
 
 sim = Simulation()  # Create a simulation object
+sim.run_name = '2D Bickley Jet'
 
 # Geometry and Model Equations
 sim.geomx       = 'periodic'       # Geometry Types: 'periodic' or 'walls'
@@ -45,8 +46,8 @@ sim.plott   = 30.*minute  # Period of plots
 sim.animate = 'Save'      # 'Save' to create video frames,
                           # 'Anim' to animate,
                           # 'None' otherwise
-sim.plot_vars = ['vort','div']
-sim.clims = [ [-0.8, 0.8],[-0.1, 0.1]]                         
+sim.plot_vars = ['vort', 'v']
+sim.clims = [ [-0.8, 0.8], []]                         
 
 # Output parameters
 sim.output = False        # True or False

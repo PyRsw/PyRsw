@@ -68,6 +68,9 @@ class Simulation:
         self.dpi = 150
         self.frame_count = 0
 
+        self.num_steps = 0
+        self.mean_dt = 0.
+
         self.topo_func = null_topo  # Default to no topograpy
         
     # Full initialization for once the user has specified parameters
@@ -91,8 +94,6 @@ class Simulation:
             else:
                 print('Coriolis = f-plane')
         print ' '
-        
-        self.frame_count = 0
         
         # Initialize grids and cell centres
         dxs = [1,1]
@@ -212,7 +213,7 @@ class Simulation:
             nt = min([self.next_save_time, nt])
 
         if nt < t:
-            self.dt = t - nt
+            self.dt = nt - self.time
 
         t = self.time + self.dt
 
@@ -263,6 +264,10 @@ class Simulation:
             self.save_state()
             self.next_save_time += self.otime
 
+        # Update the records
+        self.mean_dt = (self.mean_dt*self.num_steps + self.dt)/(self.num_steps+1)
+        self.num_steps += 1
+
         if do_plot or self.time == self.dt:
 
             h0 = self.soln.h[:,:,0] - self.soln.h[:,:,1]
@@ -280,10 +285,7 @@ class Simulation:
             if self.Nz == 1:
                 pstr  = 't = {0: <5.4g}s'.format(self.time)
                 pstr += ' '*(13-len(pstr))
-                try:
-                    pstr += ', dt = {0:0<7.1e}'.format(np.mean(self.dts))
-                except:
-                    pstr += ', dt = {0:0<7.1e}'.format(self.dt)
+                pstr += ', dt = {0:0<7.1e}'.format(self.mean_dt)
                 L = len(pstr) - 11
                 pstr += ', min(u,v,h) = ({0: < 8.4e},{1: < 8.4e},{2: < 8.4e})'.format(minu,minv,minh)
                 pstr += ', del_mass = {0: .2g}'.format(mass/self.Ms[0]-1)
@@ -303,7 +305,7 @@ class Simulation:
                 pstr += ', del_enrg = {0:+.2g}'.format(enrg/(self.KEs[0]+self.PEs[0])-1)
                 pstr += '\n'
                 pstr += '  = {0:.3%}'.format(self.time/self.end_time)
-            print('\n{0:s}: {1:d}'.format(self.run_name, int(self.time/self.plott)))
+            print('\n{0:s}: output {1:d} : step {2:d}'.format(self.run_name, int(self.time/self.plott),self.num_steps))
             print(pstr)
 
     # Step until end-time achieved.
