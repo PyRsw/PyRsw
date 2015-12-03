@@ -3,7 +3,7 @@ div:
 vort:
 	ffmpeg -i Frames/vort_%05d.png -q 1 -y vort_animation.mp4
 u:
-	ffmpeg -i Frames/u_%05d.png -q 1 -y v_animation.mp4
+	ffmpeg -i Frames/u_%05d.png -q 1 -y u_animation.mp4
 v:
 	ffmpeg -i Frames/v_%05d.png -q 1 -y v_animation.mp4
 h:

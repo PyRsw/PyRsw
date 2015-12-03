@@ -63,6 +63,10 @@ class Simulation:
         
         self.run_name = 'test'      # Name of variable
 
+        self.fcut = 0.6             # Filter cutoff
+        self.ford = 2.0             # Filter order
+        self.fstr = 20.0            # Filter strength
+
         self.vanishing = False
         self.fps = 15
         self.dpi = 150
@@ -142,8 +146,10 @@ class Simulation:
         self.curr_flux = Solution(self.Nx,self.Ny,self.Nz)
         self.topo_func(self)
 
-        # Default parameters as Chris Suggests from his thesis
-        fcut, ford, fstr = 0.6, 2.0, 20.0
+        # Construct the spectral filter
+        fcut = self.fcut
+        ford = self.ford
+        fstr = self.fstr
         if self.Nx>1:
             k = self.kx/max(self.kx.ravel())
             filtx = np.exp(-fstr*((np.abs(k)-fcut)/(1-fcut))**ford)*(np.abs(k)>fcut) + (np.abs(k)<fcut)
@@ -283,7 +289,7 @@ class Simulation:
             enrg = Diagnose.compute_PE(self) + Diagnose.compute_KE(self)
 
             if self.Nz == 1:
-                pstr  = 't = {0: <5.4g}s'.format(self.time)
+                pstr  = '{0:s}'.format(Plot_tools.smart_time(self.time))
                 pstr += ' '*(13-len(pstr))
                 pstr += ', dt = {0:0<7.1e}'.format(self.mean_dt)
                 L = len(pstr) - 11
