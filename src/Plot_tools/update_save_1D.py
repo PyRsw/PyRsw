@@ -48,6 +48,6 @@ def update_save_1D(sim):
 
     plt.draw()
 
-    sim.fig.savefig('Frames/{0:05d}.png'.format(sim.frame_count))
+    sim.fig.savefig('Outputs/{0:s}/Frames/frame_{1:05d}.png'.format(sim.run_name,sim.frame_count))
     sim.frame_count += 1
 

@@ -14,7 +14,7 @@ from PyRsw import Simulation
 from constants import minute, hour, day
 
 sim = Simulation()  # Create a simulation object
-sim.run_name = '2D Bickley Jet'
+sim.run_name = '2D_Bickley_Jet'
 
 # Geometry and Model Equations
 sim.geomx       = 'periodic'       # Geometry Types: 'periodic' or 'walls'
@@ -33,7 +33,7 @@ sim.Nz  = 1               # Number of layers
 sim.g   = 9.81            # Gravity                     (m/sec^2)
 sim.f0  = 1.e-4           # Coriolis                    (1/sec)
 sim.beta = 0e-10          # Coriolis beta               (1/m/sec)
-sim.cfl = 0.4             # CFL coefficient             (m)
+sim.cfl = 0.5             # CFL coefficient             (m)
 sim.Hs  = [100.]          # Vector of mean layer depths (m)
 sim.rho = [1025.]         # Vector of layer densities   (kg/m^3)
 sim.end_time = 30*24.*hour   # End Time                    (sec)
@@ -42,7 +42,7 @@ sim.end_time = 30*24.*hour   # End Time                    (sec)
 sim.num_threads = 32
 
 # Plotting parameters
-sim.plott   = 90.*minute  # Period of plots
+sim.plott   = 120.*minute  # Period of plots
 sim.animate = 'Save'      # 'Save' to create video frames,
                           # 'Anim' to animate,
                           # 'None' otherwise
@@ -50,8 +50,8 @@ sim.plot_vars = ['vort', 'v', 'u', 'h']
 sim.clims = [ [-0.8, 0.8], [-0.5,0.5], [], []]                         
 
 # Output parameters
-sim.output = False        # True or False
-sim.savet  = 1.*hour      # Time between saves
+sim.output = True        # True or False
+sim.savet  = 2.*hour      # Time between saves
 
 # Diagnostics parameters
 sim.diagt    = 2.*minute  # Time for output
@@ -71,6 +71,7 @@ sim.soln.h[:,:,0] += -amp*np.tanh(sim.Y/Ljet)
 sim.soln.u[:,:,0]  =  sim.g*amp/(sim.f0*Ljet)/(np.cosh(sim.Y/Ljet)**2)
 
 # Then we add on a random perturbation
+np.random.seed(seed=100)
 sim.soln.u[:,:,0] +=  1e-3*np.exp(-(sim.Y/Ljet)**2)*np.random.randn(sim.Nx,sim.Ny)
 
 sim.run()                # Run the simulation

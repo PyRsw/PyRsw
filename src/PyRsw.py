@@ -71,6 +71,7 @@ class Simulation:
         self.fps = 15
         self.dpi = 150
         self.frame_count = 0
+        self.out_counter = 0
 
         self.num_steps = 0
         self.mean_dt = 0.
@@ -169,38 +170,39 @@ class Simulation:
         
     def prepare_for_run(self):
 
+        # If we're going to be diagnosing, initialize those
+        Diagnose.initialize_diagnostics(self)
+    
+        # If we're saving, initialize those too
+        if self.output:
+            self.next_save_time = self.savet
+    
+        # If we're saving, initialize the directory
+        if self.output or (self.animate == 'Save') or self.diagnose:
+            self.initialize_saving()
+
         # If we're going to be plotting, then initialize the plots
-        if (self.animate == 'Anim') or (self.animate == 'Save'):
+        if self.animate != 'None':
             if (self.Nx > 1) and (self.Ny > 1):
                 self.clims += [[]]*(len(self.plot_vars) - len(self.clims))
                 self.initialize_plots = Plot_tools.initialize_plots_animsave_2D
             else:
                 self.ylims += [[]]*(len(self.plot_vars) - len(self.ylims))
                 self.initialize_plots = Plot_tools.initialize_plots_animsave_1D
-
-        self.next_plot_time = self.plott
         
-        num_plot = self.end_time/self.plott+1
-        if (self.Nx > 1) and (self.Ny == 1):
-            self.hov_h = np.zeros((self.Nx,self.Nz,num_plot))
-            self.hov_h[:,:,0] = self.soln.h[:,0,:-1]
-        elif (self.Nx == 1) and (self.Ny > 1):
-            self.hov_h = np.zeros((self.Ny,self.Nz,num_plot))
-            self.hov_h[:,:,0] = self.soln.h[0,:,:-1]
-        self.hov_count = 1
+            num_plot = self.end_time/self.plott+1
+            if (self.Nx > 1) and (self.Ny == 1):
+                self.hov_h = np.zeros((self.Nx,self.Nz,num_plot))
+                self.hov_h[:,:,0] = self.soln.h[:,0,:-1]
+            elif (self.Nx == 1) and (self.Ny > 1):
+                self.hov_h = np.zeros((self.Ny,self.Nz,num_plot))
+                self.hov_h[:,:,0] = self.soln.h[0,:,:-1]
+            self.hov_count = 1
 
-        if self.animate != 'None':
             self.initialize_plots(self)
+            self.update_plots(self)
+            self.next_plot_time = self.plott
 
-        # If we're going to be diagnosing, initialize those
-        Diagnose.initialize_diagnostics(self)
-    
-        # If we're saving, initialize those too
-        if self.output:
-            self.out_counter = 0
-            self.initialize_saving()
-            self.next_save_time = self.otime
-    
     # Compute the current flux
     def flux(self):
         return self.flux_function(self)
@@ -268,7 +270,7 @@ class Simulation:
 
         if do_save:
             self.save_state()
-            self.next_save_time += self.otime
+            self.next_save_time += self.savet
 
         # Update the records
         self.mean_dt = (self.mean_dt*self.num_steps + self.dt)/(self.num_steps+1)
@@ -354,14 +356,17 @@ class Simulation:
            print('Output directory {0:s} already exists. '.format(path) + \
                  'Warning, deleting everything in the directory.') 
            shutil.rmtree(path)
-
         # Make directory.
         os.mkdir(path)
 
+        if self.animate == 'Save':
+            os.mkdir(path+'/Frames')
+
         # Initialize saving stuff
-        self.save_state()
         self.save_info()
-        self.save_grid()
+        if self.output:
+            self.save_state()
+            self.save_grid()
 
     # Save information
     def save_info(self):
@@ -375,8 +380,10 @@ class Simulation:
         fp.write('Nx         = {0:d}\n'.format(self.Nx))
         fp.write('Ny         = {0:d}\n'.format(self.Ny))
         fp.write('Nz         = {0:d}\n'.format(self.Nz))
-        fp.write('min_dt     = {0:g}\n'.format(self.min_dt))
-        fp.write('min_depth  = {0:g}\n'.format(self.min_depth))
+        if self.f0 > 0:
+            fp.write('f0         = {0:g}\n'.format(self.f0))
+        if self.beta > 0:
+            fp.write('beta       = {0:g}\n'.format(self.beta))
 
         fp.close()
 
@@ -384,16 +391,16 @@ class Simulation:
     def save_grid(self):
         fname = 'Outputs/{0:s}/grid'.format(self.run_name) 
         if self.Nx > 1 and self.Ny > 1:
-            np.savez_compressed(fname, x = self.x, y = self.y, xs = self.xs, ys = self.ys)
+            np.savez_compressed(fname, x = self.x, y = self.y, X = self.X, Y = self.Y)
         elif self.Nx > 1:
-            np.savez_compressed(fname, x = self.x, xs = self.xs)
+            np.savez_compressed(fname, x = self.x, X = self.X)
         elif self.Ny > 1:
-            np.savez_compressed(fname, y = self.y, ys = self.ys)
+            np.savez_compressed(fname, y = self.y, Y = self.Y)
 
     # Save current state
     def save_state(self):
-        np.savez_compressed('Outputs/{0:s}/{1:04d}'.format(self.run_name,self.out_counter),
-                    soln = self.soln, t = self.time)
+        np.savez_compressed('Outputs/{0:s}/{1:05d}'.format(self.run_name,self.out_counter),
+                    u = self.soln.u, v = self.soln.v, h = self.soln.h, t = self.time)
 
         self.out_counter += 1
 
