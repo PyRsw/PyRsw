@@ -52,7 +52,7 @@ class Simulation:
         self.g    = 9.81            # gravity
         self.f0   = 1e-4            # Coriolis
         self.beta = 0.
-        self.cfl  = 0.1             # default CFL
+        self.cfl  = 0.5             # default CFL
         self.time = 0               # initial time
         self.min_dt = 1e-3          # minimum timestep
 
@@ -67,6 +67,9 @@ class Simulation:
         self.fps = 15
         self.dpi = 150
         self.frame_count = 0
+
+        self.plott = np.inf
+        self.diagt = np.inf
 
         self.num_steps = 0
         self.mean_dt = 0.
