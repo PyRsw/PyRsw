@@ -371,6 +371,10 @@ class Simulation:
 
         self.dt = max([self.cfl*min([dt_x,dt_y]),self.min_dt])
 
+        # Slowly ramp-up the dt for the first 20 steps
+        if self.num_steps <= 20:
+            self.dt *= 1./(5*(21-self.num_steps))
+
     # Initialize the saving
     def initialize_saving(self):
         

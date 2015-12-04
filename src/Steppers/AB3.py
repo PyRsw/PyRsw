@@ -10,12 +10,10 @@ def AB3(sim):
 
     if len(sim.fluxes.u) == 0:
 
-        sim.dt *= 0.1
         Euler(sim)
 
     elif len(sim.fluxes.u) == 1:
 
-        sim.dt *= 0.1
         AB2(sim)
 
     elif len(sim.fluxes.u) == 2:

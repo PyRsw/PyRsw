@@ -8,7 +8,6 @@ def AB2(sim):
 
     if len(sim.fluxes.u) == 0:
 
-        sim.dt *= 0.1
         Euler(sim)
 
     elif len(sim.fluxes.u) == 1:
