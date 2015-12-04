@@ -2,6 +2,7 @@
 examples/*.png
 examples/Frames
 examples/*.mp4
+examples/Outputs
 
 # Ignore latex-related files
 *.synctex.gz
