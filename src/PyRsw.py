@@ -354,6 +354,9 @@ class Simulation:
     def initialize_saving(self):
         
         path = 'Outputs/{0:s}'.format(self.run_name)
+        if not(os.path.isdir('Outputs')):
+            os.mkdir('Outputs')
+
         # If directory already exists, delete it.
         if os.path.isdir(path):
            print('Output directory {0:s} already exists. '.format(path) + \
