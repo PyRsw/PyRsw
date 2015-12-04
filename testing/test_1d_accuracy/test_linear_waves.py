@@ -23,9 +23,9 @@ def test():
 
     # Specify paramters
     sim.Ly  = 4000e3   
-    sim.Ny  = 128       
+    sim.Ny  = 256       
     sim.f0  = 0.
-    sim.cfl = 0.5        
+    sim.cfl = 0.1         
     sim.Hs  = [100.]      
     sim.rho = [1025.]      
     sim.end_time = sim.Ly/(np.sqrt(sim.Hs[0]*sim.g))
@@ -46,13 +46,14 @@ def test():
     W  = 200.e3          
     amp = 1.            
     sim.soln.h[:,:,0] += amp*np.exp(-(sim.Y)**2/(W**2))
-    IC = sim.soln.h[:,:,0]
+    IC = sim.soln.h[:,:,0].copy()
 
     sim.run()       
 
     # Compare final state to initial conditions
-    error = np.linalg.norm(IC - sim.soln.h[:,:,0])
-    assert (error < 1e-10) 
+    error_h = np.linalg.norm(IC - sim.soln.h[:,:,0])
+    error_u = np.linalg.norm(sim.soln.u[:,:,0])
+    assert (error_h < 2e-5) and (error_u < 1e-10)
 
 
 test()

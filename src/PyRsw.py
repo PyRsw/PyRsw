@@ -215,7 +215,7 @@ class Simulation:
         
         t = self.time + self.dt
 
-        nt = np.Inf # next time for doing stuff
+        nt = self.end_time # next time for doing stuff
         if self.animate != 'None':
             nt = min([self.next_plot_time, nt])
         if self.diagnose:
