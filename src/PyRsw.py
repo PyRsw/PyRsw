@@ -269,8 +269,10 @@ class Simulation:
     # Advance the simulation one time-step.
     def step(self):
 
-        self.compute_dt() 
-
+        #FJP: comment this back in
+        #self.compute_dt() 
+        self.dt = 6.25
+        
         # Check if we need to adjust the time-step
         # to match an output time
         do_plot, do_diag, do_save = self.adjust_dt()
