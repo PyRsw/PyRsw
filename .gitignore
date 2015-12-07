@@ -1,4 +1,5 @@
 *.pyc
+*.swp
 examples/*.png
 examples/Frames
 examples/*.mp4

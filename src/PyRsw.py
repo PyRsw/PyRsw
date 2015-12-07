@@ -54,7 +54,7 @@ class Simulation:
         self.f0   = 1e-4            # Coriolis
         self.beta = 0.
         self.cfl  = 0.5             # default CFL
-        self.time = 0               # initial time
+        self.time = 0.              # initial time
         self.min_dt = 1e-3          # minimum timestep
         self.adaptive = True        # Adaptive (True) or fixed (False) timestep
         self.fixed_dt = 1.
@@ -78,9 +78,13 @@ class Simulation:
 
         self.plott = np.inf
         self.diagt = np.inf
+        self.savet = np.inf
 
         self.num_steps = 0
         self.mean_dt = 0.
+
+        self.restarting = False
+        self.restart_index = 0
 
         self.topo_func = null_topo  # Default to no topograpy
         
@@ -113,6 +117,8 @@ class Simulation:
                 print('Coriolis = beta-plane')
             else:
                 print('Coriolis = f-plane')
+        if self.restarting:
+            print('Restarting from index {0:d}'.format(self.restart_index))
         print ' '
         
         # Initialize grids and cell centres
@@ -197,6 +203,18 @@ class Simulation:
                 sys.exit()
 
             
+        # If we're restarting load the appropriate files
+        if self.restarting:
+            try:
+                restart_file = np.load('Outputs/{0:s}/{1:05d}.npz'.format(self.run_name,self.restart_index))
+                self.soln.u = restart_file['u']
+                self.soln.v = restart_file['v']
+                self.soln.h = restart_file['h']
+                self.time = restart_file['t']
+            except:
+                print('Restarting failed. Exiting.')
+                sys.exit()
+
         
     def prepare_for_run(self):
 
@@ -205,7 +223,8 @@ class Simulation:
     
         # If we're saving, initialize those too
         if self.output:
-            self.next_save_time = self.savet
+            self.next_save_time = (self.restart_index+1)*self.savet
+            self.out_counter = self.restart_index
     
         # If we're saving, initialize the directory
         if self.output or (self.animate == 'Save') or self.diagnose:
@@ -230,8 +249,10 @@ class Simulation:
             self.hov_count = 1
 
             self.initialize_plots(self)
-            self.update_plots(self)
-            self.next_plot_time = self.plott
+            if not(self.restarting):
+                self.update_plots(self)
+            self.frame_count = int(np.floor(self.time/self.plott) + 1)
+            self.next_plot_time = self.frame_count*self.plott
 
     # Compute the current flux
     def flux(self):
@@ -275,8 +296,10 @@ class Simulation:
     # Advance the simulation one time-step.
     def step(self):
 
-        self.compute_dt() 
-
+        #FJP: comment this back in
+        #self.compute_dt() 
+        self.dt = 6.25
+        
         # Check if we need to adjust the time-step
         # to match an output time
         do_plot, do_diag, do_save = self.adjust_dt()
@@ -399,23 +422,28 @@ class Simulation:
             self.dt = self.fixed_dt
 
 
+        # Slowly ramp-up the dt for the first 20 steps
+        if self.num_steps <= 20:
+            self.dt *= 1./(5*(21-self.num_steps))
+
     # Initialize the saving
     def initialize_saving(self):
         
-        path = 'Outputs/{0:s}'.format(self.run_name)
-        if not(os.path.isdir('Outputs')):
-            os.mkdir('Outputs')
+        if not(self.restarting):
+            path = 'Outputs/{0:s}'.format(self.run_name)
+            if not(os.path.isdir('Outputs')):
+                os.mkdir('Outputs')
 
-        # If directory already exists, delete it.
-        if os.path.isdir(path):
-           print('Output directory {0:s} already exists. '.format(path) + \
-                 'Warning, deleting everything in the directory.') 
-           shutil.rmtree(path)
-        # Make directory.
-        os.mkdir(path)
+            # If directory already exists, delete it.
+            if os.path.isdir(path):
+               print('Output directory {0:s} already exists. '.format(path) + \
+                     'Warning, deleting everything in the directory.') 
+               shutil.rmtree(path)
+            # Make directory.
+            os.mkdir(path)
 
-        if self.animate == 'Save':
-            os.mkdir(path+'/Frames')
+            if self.animate == 'Save':
+                os.mkdir(path+'/Frames')
 
         # Initialize saving stuff
         self.save_info()

@@ -25,7 +25,6 @@ def test():
     sim.Ly  = 4000e3   
     sim.Ny  = 256       
     sim.f0  = 0.
-    sim.cfl = 0.1         
     sim.Hs  = [100.]      
     sim.rho = [1025.]      
     sim.end_time = sim.Ly/(np.sqrt(sim.Hs[0]*sim.g))
@@ -54,6 +53,5 @@ def test():
     error_h = np.linalg.norm(IC - sim.soln.h[:,:,0])
     error_v = np.linalg.norm(sim.soln.v[:,:,0])
     assert (error_h < 2e-5) and (error_v < 1e-7)
-
 
 test()

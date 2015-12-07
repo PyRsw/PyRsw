@@ -33,7 +33,6 @@ sim.Nz  = 1               # Number of layers
 sim.g   = 9.81            # Gravity                     (m/sec^2)
 sim.f0  = 1.e-4           # Coriolis                    (1/sec)
 sim.beta = 0e-10          # Coriolis beta               (1/m/sec)
-sim.cfl = 0.5             # CFL coefficient             (m)
 sim.Hs  = [100.]          # Vector of mean layer depths (m)
 sim.rho = [1025.]         # Vector of layer densities   (kg/m^3)
 sim.end_time = 500*24.*hour   # End Time                    (sec)
