@@ -14,6 +14,7 @@ from PyRsw import Simulation
 from constants import minute, hour, day
 
 sim = Simulation()  # Create a simulation object
+sim.run_name = '1D GeoAdjust'
 
 # Geometry and Model Equations
 sim.geomy       = 'periodic'       # Geometry Types: 'periodic' or 'walls'
@@ -25,12 +26,11 @@ sim.flux_method = Flux.spectral_sw # Flux method: spectral_sw is only option cur
 # Specify paramters
 sim.Ly  = 4000e3          # Domain extent               (m)
 sim.Nx  = 1               # Grid points in x
-sim.Ny  = 128             # Grid points in y
+sim.Ny  = 1024             # Grid points in y
 sim.Nz  = 1               # Number of layers
 sim.g   = 9.81            # Gravity                     (m/sec^2)
 sim.f0  = 1.e-4           # Coriolis                    (1/sec)
 sim.beta = 0e-10          # Coriolis beta parameter     (1/m/sec)
-sim.cfl = 0.05            # CFL coefficient             (m)
 sim.Hs  = [100.]          # Vector of mean layer depths (m)
 sim.rho = [1025.]         # Vector of layer densities   (kg/m^3)
 sim.end_time = 2*24.*hour   # End Time                    (sec)

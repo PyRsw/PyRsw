@@ -44,12 +44,12 @@ sim.animate = 'Anim'      # 'Save' to create video frames,
                           # 'Anim' to animate,
                           # 'None' otherwise
 
-#sim.plot_vars = ['vort','div','h']   # Specify which variables to plot
-sim.plot_vars = ['u','v','h']   # Specify which variables to plot
+sim.plot_vars = ['vort','div','h']   # Specify which variables to plot
+#sim.plot_vars = ['u','v','h']   # Specify which variables to plot
                                 # Specify manual ylimits if desired
                                 # An empty list uses default limits
-#sim.ylims=[[-0.01,0.01],[-2.0,2.0],[-1.0,1.0]] 
-sim.ylims=[[-0.3,0.3],[-0.2,0.2],[-1.0,1.0]] 
+sim.ylims=[[-0.01,0.01],[-2.0,2.0],[-1.0,1.0]] 
+#sim.ylims=[[-0.3,0.3],[-0.2,0.2],[-1.0,1.0]] 
 
 # Output parameters
 sim.output = False        # True or False

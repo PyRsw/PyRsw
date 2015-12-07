@@ -14,6 +14,7 @@ from PyRsw import Simulation
 from constants import minute, hour, day
 
 sim = Simulation()  # Create a simulation object
+sim.run_name = '2D GeoAdjust'
 
 # Geometry and Model Equations
 sim.geomx       = 'periodic'       # Geometry Types: 'periodic' or 'walls'
@@ -45,8 +46,9 @@ sim.plott   = 15.*minute  # Period of plots
 sim.animate = 'Anim'      # 'Save' to create video frames,
                           # 'Anim' to animate,
                           # 'None' otherwise
-sim.plot_vars = ['vort','div']
-sim.clims = [[-0.015, 0.015],[-0.001, 0.001]]
+sim.plot_vars = ['h']
+#sim.plot_vars = ['vort','div']
+#sim.clims = [[-0.015, 0.015],[-0.001, 0.001]]
                          
 # Output parameters
 sim.output = False        # True or False

@@ -1,6 +1,5 @@
 import numpy as np
 from Euler import Euler
-import matplotlib.pyplot as plt
 
 def AB2(sim):
     if sim.nfluxes < 1:
@@ -8,7 +7,6 @@ def AB2(sim):
 
     if len(sim.fluxes.u) == 0:
 
-        sim.dt *= 0.1
         Euler(sim)
 
     elif len(sim.fluxes.u) == 1:
@@ -16,9 +14,14 @@ def AB2(sim):
         # Compute the fluxes
         sim.flux()
 
-        # The AB2 weights
-        w1 = sim.dt*(1. + 0.5*sim.dt/sim.dts[0])
-        w2 = -0.5*sim.dt**2/sim.dts[0]
+        if sim.adaptive:
+            # The AB2 weights for adaptive delta(t)
+            w1 = sim.dt*(1. + 0.5*sim.dt/sim.dts[0])
+            w2 = -0.5*sim.dt**2/sim.dts[0]
+        else:
+            # The AB2 weights for fixed delta(t)
+            w1 =  3./2.*sim.dt
+            w2 = -1./2.*sim.dt
         
         # Evolve the system
         sim.soln.u += w1*sim.curr_flux.u + w2*sim.fluxes.u[0]

@@ -1,6 +1,5 @@
 # Create Hovmuller plot at end of anim simulation
 import matplotlib.pyplot as plt
-import matplotlib.animation as anim
 import numpy as np
 
 def plot_hov(sim):

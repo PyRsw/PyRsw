@@ -11,7 +11,7 @@ def initialize_diagnostics(sim):
     sim.PEs = []
     sim.ENs = []
     sim.Ms  = []
-    sim.next_diag_time = sim.diagt
+    sim.next_diag_time = (np.floor(sim.time/sim.diagt)+1)*sim.diagt
 
     # Compute the initial values
     area = sim.dx[0]*sim.dx[1]
@@ -157,7 +157,7 @@ def plot(sim):
     plt.locator_params(nbins=5)
 
     fig.tight_layout()
-    fig.savefig(sim.run_name + '_diagnostics')
+    fig.savefig('Outputs/{0:s}/diagnostics.pdf'.format(sim.run_name))
     
     return fig
 

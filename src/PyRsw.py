@@ -3,9 +3,10 @@
 ##
 
 import numpy as np
-import matplotlib.pyplot as plt
+import matplotlib
 import Plot_tools
 import Diagnose
+import Steppers
 from scipy.fftpack import fftn, ifftn, fftfreq
 import os, sys, shutil
 
@@ -52,9 +53,11 @@ class Simulation:
         self.g    = 9.81            # gravity
         self.f0   = 1e-4            # Coriolis
         self.beta = 0.
-        self.cfl  = 0.1             # default CFL
-        self.time = 0               # initial time
+        self.cfl  = 0.5             # default CFL
+        self.time = 0.              # initial time
         self.min_dt = 1e-3          # minimum timestep
+        self.adaptive = True        # Adaptive (True) or fixed (False) timestep
+        self.fixed_dt = 1.
 
         self.geomx = 'periodic'     # x boundary condition
         self.geomy = 'periodic'     # y boundary condition
@@ -63,15 +66,38 @@ class Simulation:
         
         self.run_name = 'test'      # Name of variable
 
+        self.fcut = 0.6             # Filter cutoff
+        self.ford = 2.0             # Filter order
+        self.fstr = 20.0            # Filter strength
+
         self.vanishing = False
         self.fps = 15
         self.dpi = 150
         self.frame_count = 0
+        self.out_counter = 0
+
+        self.plott = np.inf
+        self.diagt = np.inf
+        self.savet = np.inf
+
+        self.num_steps = 0
+        self.mean_dt = 0.
+
+        self.restarting = False
+        self.restart_index = 0
 
         self.topo_func = null_topo  # Default to no topograpy
         
     # Full initialization for once the user has specified parameters
     def initialize(self):
+
+        # Determine the CFL value based on the time-stepping scheme
+        if self.stepper.__name__ == 'AB3':
+            self.cfl = 0.5
+        elif self.stepper.__name__ == 'AB2':
+            self.cfl = 0.05 # Needs to be confirmed!!
+        elif self.stepper.__name__ == 'Euler':
+            self.cfl = 0.005 # Needs to be confirmed!!
 
         print('Parameters:')
         print('-----------')
@@ -80,6 +106,7 @@ class Simulation:
         if self.Ny > 1:
             print('geomy    = {0:s}'.format(self.geomy))
         print('stepper  = {0:s}'.format(self.stepper.__name__))
+        print('CFL      = {0:g}'.format(self.cfl))
         print('method   = {0:s}'.format(self.method))
         print('dynamics = {0:s}'.format(self.dynamics))
         print('Nx       = {0:d}'.format(self.Nx))
@@ -90,9 +117,9 @@ class Simulation:
                 print('Coriolis = beta-plane')
             else:
                 print('Coriolis = f-plane')
+        if self.restarting:
+            print('Restarting from index {0:d}'.format(self.restart_index))
         print ' '
-        
-        self.frame_count = 0
         
         # Initialize grids and cell centres
         dxs = [1,1]
@@ -141,8 +168,10 @@ class Simulation:
         self.curr_flux = Solution(self.Nx,self.Ny,self.Nz)
         self.topo_func(self)
 
-        # Default parameters as Chris Suggests from his thesis
-        fcut, ford, fstr = 0.6, 2.0, 20.0
+        # Construct the spectral filter
+        fcut = self.fcut
+        ford = self.ford
+        fstr = self.fstr
         if self.Nx>1:
             k = self.kx/max(self.kx.ravel())
             filtx = np.exp(-fstr*((np.abs(k)-fcut)/(1-fcut))**ford)*(np.abs(k)>fcut) + (np.abs(k)<fcut)
@@ -158,42 +187,73 @@ class Simulation:
             filty = np.array([1.0])
                 
         self.sfilt = np.tile(filtx,(1,self.Nky))*np.tile(filty,(self.Nkx,1))
+
+        # If we're using a fixed dt, check that it matches plott, savet, and diagt
+        if self.animate.lower() != 'none':
+            if self.plott/self.fixed_dt != int(self.plott/self.fixed_dt):
+                print('Error: Plot interval not integer multiple of fixed dt.')
+                sys.exit()
+        if self.diagnose:
+            if self.diagt/self.fixed_dt != int(self.diagt/self.fixed_dt):
+                print('Error: Diagnostic interval not integer multiple of fixed dt.')
+                sys.exit()
+        if self.output:
+            if self.savet/self.fixed_dt != int(self.savet/self.fixed_dt):
+                print('Error: Output interval not integer multiple of fixed dt.')
+                sys.exit()
+
             
+        # If we're restarting load the appropriate files
+        if self.restarting:
+            try:
+                restart_file = np.load('Outputs/{0:s}/{1:05d}.npz'.format(self.run_name,self.restart_index))
+                self.soln.u = restart_file['u']
+                self.soln.v = restart_file['v']
+                self.soln.h = restart_file['h']
+                self.time = restart_file['t']
+            except:
+                print('Restarting failed. Exiting.')
+                sys.exit()
+
         
     def prepare_for_run(self):
-
-        # If we're going to be plotting, then initialize the plots
-        if (self.animate == 'Anim') or (self.animate == 'Save'):
-            if (self.Nx > 1) and (self.Ny > 1):
-                self.clims += [[]]*(len(self.plot_vars) - len(self.clims))
-                self.initialize_plots = Plot_tools.initialize_plots_animsave_2D
-            else:
-                self.ylims += [[]]*(len(self.plot_vars) - len(self.ylims))
-                self.initialize_plots = Plot_tools.initialize_plots_animsave_1D
-
-        self.next_plot_time = self.plott
-        
-        num_plot = self.end_time/self.plott+1
-        if (self.Nx > 1) and (self.Ny == 1):
-            self.hov_h = np.zeros((self.Nx,self.Nz,num_plot))
-            self.hov_h[:,:,0] = self.soln.h[:,0,:-1]
-        elif (self.Nx == 1) and (self.Ny > 1):
-            self.hov_h = np.zeros((self.Ny,self.Nz,num_plot))
-            self.hov_h[:,:,0] = self.soln.h[0,:,:-1]
-        self.hov_count = 1
-
-        if self.animate != 'None':
-            self.initialize_plots(self)
 
         # If we're going to be diagnosing, initialize those
         Diagnose.initialize_diagnostics(self)
     
         # If we're saving, initialize those too
         if self.output:
-            self.out_counter = 0
-            self.initialize_saving()
-            self.next_save_time = self.otime
+            self.next_save_time = (self.restart_index+1)*self.savet
+            self.out_counter = self.restart_index
     
+        # If we're saving, initialize the directory
+        if self.output or (self.animate == 'Save') or self.diagnose:
+            self.initialize_saving()
+
+        # If we're going to be plotting, then initialize the plots
+        if self.animate != 'None':
+            if (self.Nx > 1) and (self.Ny > 1):
+                self.clims += [[]]*(len(self.plot_vars) - len(self.clims))
+                self.initialize_plots = Plot_tools.initialize_plots_animsave_2D
+            else:
+                self.ylims += [[]]*(len(self.plot_vars) - len(self.ylims))
+                self.initialize_plots = Plot_tools.initialize_plots_animsave_1D
+        
+            num_plot = self.end_time/self.plott+1
+            if (self.Nx > 1) and (self.Ny == 1):
+                self.hov_h = np.zeros((self.Nx,self.Nz,num_plot))
+                self.hov_h[:,:,0] = self.soln.h[:,0,:-1]
+            elif (self.Nx == 1) and (self.Ny > 1):
+                self.hov_h = np.zeros((self.Ny,self.Nz,num_plot))
+                self.hov_h[:,:,0] = self.soln.h[0,:,:-1]
+            self.hov_count = 1
+
+            self.initialize_plots(self)
+            if not(self.restarting):
+                self.update_plots(self)
+            self.frame_count = int(np.floor(self.time/self.plott) + 1)
+            self.next_plot_time = self.frame_count*self.plott
+
     # Compute the current flux
     def flux(self):
         return self.flux_function(self)
@@ -203,7 +263,7 @@ class Simulation:
         
         t = self.time + self.dt
 
-        nt = np.Inf # next time for doing stuff
+        nt = self.end_time # next time for doing stuff
         if self.animate != 'None':
             nt = min([self.next_plot_time, nt])
         if self.diagnose:
@@ -211,8 +271,8 @@ class Simulation:
         if self.output:
             nt = min([self.next_save_time, nt])
 
-        if nt < t:
-            self.dt = t - nt
+        if (nt < t) and self.adaptive:
+            self.dt = nt - self.time
 
         t = self.time + self.dt
 
@@ -236,8 +296,9 @@ class Simulation:
     # Advance the simulation one time-step.
     def step(self):
 
+        #FJP: comment this back in
         self.compute_dt() 
-
+        
         # Check if we need to adjust the time-step
         # to match an output time
         do_plot, do_diag, do_save = self.adjust_dt()
@@ -261,7 +322,11 @@ class Simulation:
 
         if do_save:
             self.save_state()
-            self.next_save_time += self.otime
+            self.next_save_time += self.savet
+
+        # Update the records
+        self.mean_dt = (self.mean_dt*self.num_steps + self.dt)/(self.num_steps+1)
+        self.num_steps += 1
 
         if do_plot or self.time == self.dt:
 
@@ -278,20 +343,21 @@ class Simulation:
             enrg = Diagnose.compute_PE(self) + Diagnose.compute_KE(self)
 
             if self.Nz == 1:
-                pstr  = 't = {0: <5.4g}s'.format(self.time)
+                pstr  = '{0:s}'.format(Plot_tools.smart_time(self.time))
                 pstr += ' '*(13-len(pstr))
                 try:
-                    pstr += ', dt = {0:0<7.1e}'.format(np.mean(self.dts))
+                    pstr += ',  dt = {0:0<7.1e}'.format(mean(self.dts))
                 except:
-                    pstr += ', dt = {0:0<7.1e}'.format(self.dt)
-                L = len(pstr) - 11
+                    pstr += ',  dt = {0:0<7.1e}'.format(self.dt)
+                L = len(pstr) - 13
                 pstr += ', min(u,v,h) = ({0: < 8.4e},{1: < 8.4e},{2: < 8.4e})'.format(minu,minv,minh)
                 pstr += ', del_mass = {0: .2g}'.format(mass/self.Ms[0]-1)
                 pstr += '\n'
                 tmp = '  = {0:.3%}'.format(self.time/self.end_time)
                 pstr += tmp
-                pstr += ' '*(L + 13 - len(tmp))            
-                pstr += 'max(u,v,h) = ({0: < 8.4e},{1: < 8.4e},{2: < 8.4e})'.format(maxu,maxv,maxh)
+                pstr += ' '*(L - len(tmp))            
+                pstr += 'avg = {0:0<7.1e}'.format(self.mean_dt)
+                pstr += ', max(u,v,h) = ({0: < 8.4e},{1: < 8.4e},{2: < 8.4e})'.format(maxu,maxv,maxh)
                 pstr += ', del_enrg = {0: .2g}'.format(enrg/(self.KEs[0]+self.PEs[0])-1)
             else:
                 pstr  = 't = {0:.4g}s'.format(self.time)
@@ -303,7 +369,15 @@ class Simulation:
                 pstr += ', del_enrg = {0:+.2g}'.format(enrg/(self.KEs[0]+self.PEs[0])-1)
                 pstr += '\n'
                 pstr += '  = {0:.3%}'.format(self.time/self.end_time)
-            print('\n{0:s}: {1:d}'.format(self.run_name, int(self.time/self.plott)))
+
+            head_str = ('\n{0:s}'.format(self.run_name))
+            if self.animate != 'None':
+                head_str += ': frame {0:d}'.format(self.frame_count-1)
+            if self.output:
+                head_str += ': output {0:d}'.format(self.out_counter-1)
+            head_str += ': step {0:d}'.format(self.num_steps)
+
+            print(head_str)
             print(pstr)
 
     # Step until end-time achieved.
@@ -318,42 +392,63 @@ class Simulation:
             Diagnose.plot(self)
         
         if (self.animate == 'Anim'):
-            plt.ioff()
-            plt.show()
+            matplotlib.pyplot.ioff()
+            matploblib.show()
 
         if self.diagnose:
             Diagnose.save(self)
 
     # Compute time-step using CFL condition.
     def compute_dt(self):
-        c = np.sqrt(self.g*np.sum(self.Hs))
-        eps = 1e-8
 
-        max_u = np.max(np.abs(self.soln.u.ravel()))
-        max_v = np.max(np.abs(self.soln.v.ravel()))
+        if self.adaptive:
+            c = np.sqrt(self.g*np.sum(self.Hs))
+            eps = 1e-8
 
-        dt_x = self.end_time - ((self.Nx-1)/(self.Nx-1+eps))*(self.end_time - self.dx[0]/(max_u+2*c))
-        dt_y = self.end_time - ((self.Ny-1)/(self.Ny-1+eps))*(self.end_time - self.dx[1]/(max_v+2*c))
+            max_u = np.max(np.abs(self.soln.u.ravel()))
+            max_v = np.max(np.abs(self.soln.v.ravel()))
 
-        self.dt = max([self.cfl*min([dt_x,dt_y]),self.min_dt])
+            dt_x = self.end_time - ((self.Nx-1)/(self.Nx-1+eps))*(self.end_time - self.dx[0]/(max_u+2*c))
+            dt_y = self.end_time - ((self.Ny-1)/(self.Ny-1+eps))*(self.end_time - self.dx[1]/(max_v+2*c))
+
+            self.dt = max([self.cfl*min([dt_x,dt_y]),self.min_dt])
+
+            # If using an adaptive timestep, slowing increase dt
+            # over the first 20 steps.
+            if self.num_steps <= 20:
+                self.dt *= 1./(5*(21 - self.num_steps))
+        else:
+            self.dt = self.fixed_dt
+
+
+        # Slowly ramp-up the dt for the first 20 steps
+        if self.num_steps <= 20:
+            self.dt *= 1./(5*(21-self.num_steps))
 
     # Initialize the saving
     def initialize_saving(self):
         
-        path = 'Outputs/{0:s}'.format(self.run_name)
-        # If directory already exists, delete it.
-        if os.path.isdir(path):
-           print('Output directory {0:s} already exists. '.format(path) + \
-                 'Warning, deleting everything in the directory.') 
-           shutil.rmtree(path)
+        if not(self.restarting):
+            path = 'Outputs/{0:s}'.format(self.run_name)
+            if not(os.path.isdir('Outputs')):
+                os.mkdir('Outputs')
 
-        # Make directory.
-        os.mkdir(path)
+            # If directory already exists, delete it.
+            if os.path.isdir(path):
+               print('Output directory {0:s} already exists. '.format(path) + \
+                     'Warning, deleting everything in the directory.') 
+               shutil.rmtree(path)
+            # Make directory.
+            os.mkdir(path)
+
+            if self.animate == 'Save':
+                os.mkdir(path+'/Frames')
 
         # Initialize saving stuff
-        self.save_state()
         self.save_info()
-        self.save_grid()
+        if self.output:
+            self.save_state()
+            self.save_grid()
 
     # Save information
     def save_info(self):
@@ -367,8 +462,10 @@ class Simulation:
         fp.write('Nx         = {0:d}\n'.format(self.Nx))
         fp.write('Ny         = {0:d}\n'.format(self.Ny))
         fp.write('Nz         = {0:d}\n'.format(self.Nz))
-        fp.write('min_dt     = {0:g}\n'.format(self.min_dt))
-        fp.write('min_depth  = {0:g}\n'.format(self.min_depth))
+        if self.f0 > 0:
+            fp.write('f0         = {0:g}\n'.format(self.f0))
+        if self.beta > 0:
+            fp.write('beta       = {0:g}\n'.format(self.beta))
 
         fp.close()
 
@@ -376,16 +473,16 @@ class Simulation:
     def save_grid(self):
         fname = 'Outputs/{0:s}/grid'.format(self.run_name) 
         if self.Nx > 1 and self.Ny > 1:
-            np.savez_compressed(fname, x = self.x, y = self.y, xs = self.xs, ys = self.ys)
+            np.savez_compressed(fname, x = self.x, y = self.y, X = self.X, Y = self.Y)
         elif self.Nx > 1:
-            np.savez_compressed(fname, x = self.x, xs = self.xs)
+            np.savez_compressed(fname, x = self.x, X = self.X)
         elif self.Ny > 1:
-            np.savez_compressed(fname, y = self.y, ys = self.ys)
+            np.savez_compressed(fname, y = self.y, Y = self.Y)
 
     # Save current state
     def save_state(self):
-        np.savez_compressed('Outputs/{0:s}/{1:04d}'.format(self.run_name,self.out_counter),
-                    soln = self.soln, t = self.time)
+        np.savez_compressed('Outputs/{0:s}/{1:05d}'.format(self.run_name,self.out_counter),
+                    u = self.soln.u, v = self.soln.v, h = self.soln.h, t = self.time)
 
         self.out_counter += 1
 

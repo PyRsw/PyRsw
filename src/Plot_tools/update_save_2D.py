@@ -1,8 +1,7 @@
 # Update plot objects if saving
-import matplotlib.pyplot as plt
-import matplotlib.animation as anim
 import numpy as np
 from smart_time import smart_time
+import matplotlib.pyplot as plt
 
 def update_save_2D(sim):
 
@@ -43,7 +42,7 @@ def update_save_2D(sim):
             sim.Qs[var_cnt][L].changed()
 
         plt.draw()
-        sim.figs[var_cnt].savefig('Frames/{0:s}_{1:05d}.png'.format(var,sim.frame_count))
+        sim.figs[var_cnt].savefig('Outputs/{0:s}/Frames/{1:s}_{2:05d}.png'.format(sim.run_name,var,sim.frame_count))
 
     sim.frame_count += 1
 

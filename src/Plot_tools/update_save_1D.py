@@ -2,7 +2,6 @@
 # Assume the field is 1-dimensional
 
 import matplotlib.pyplot as plt
-import matplotlib.animation as anim
 import numpy as np
 from smart_time import smart_time
 
@@ -48,6 +47,6 @@ def update_save_1D(sim):
 
     plt.draw()
 
-    sim.fig.savefig('Frames/{0:05d}.png'.format(sim.frame_count))
+    sim.fig.savefig('Outputs/{0:s}/Frames/frame_{1:05d}.png'.format(sim.run_name,sim.frame_count))
     sim.frame_count += 1
 
