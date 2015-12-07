@@ -297,8 +297,7 @@ class Simulation:
     def step(self):
 
         #FJP: comment this back in
-        #self.compute_dt() 
-        self.dt = 6.25
+        self.compute_dt() 
         
         # Check if we need to adjust the time-step
         # to match an output time
