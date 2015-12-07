@@ -50,8 +50,9 @@ def test():
     sim.run()       
 
     # Compare final state to initial conditions
-    error_h = np.linalg.norm(IC - sim.soln.h[:,:,0])
+    # error_h is normalized using the triangle inequality
+    error_h = np.linalg.norm(IC - sim.soln.h[:,:,0])/(np.linalg.norm(IC) + np.linalg.norm(sim.soln.h[:,:,0]))
     error_v = np.linalg.norm(sim.soln.v[:,:,0])
-    assert (error_h < 2e-5) and (error_v < 1e-7)
+    assert (error_h < 1e-6) and (error_v < 5e-5)
 
 test()

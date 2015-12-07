@@ -53,7 +53,7 @@ class Simulation:
         self.g    = 9.81            # gravity
         self.f0   = 1e-4            # Coriolis
         self.beta = 0.
-        self.cfl  = 0.5             # default CFL
+        self.cfl  = -1             # default CFL
         self.time = 0.              # initial time
         self.min_dt = 1e-3          # minimum timestep
         self.adaptive = True        # Adaptive (True) or fixed (False) timestep
@@ -92,12 +92,13 @@ class Simulation:
     def initialize(self):
 
         # Determine the CFL value based on the time-stepping scheme
-        if self.stepper.__name__ == 'AB3':
-            self.cfl = 0.5
-        elif self.stepper.__name__ == 'AB2':
-            self.cfl = 0.05 # Needs to be confirmed!!
-        elif self.stepper.__name__ == 'Euler':
-            self.cfl = 0.005 # Needs to be confirmed!!
+        if self.cfl == -1:
+            if self.stepper.__name__ == 'AB3':
+                self.cfl = 0.5
+            elif self.stepper.__name__ == 'AB2':
+                self.cfl = 0.05 # Needs to be confirmed!!
+            elif self.stepper.__name__ == 'Euler':
+                self.cfl = 0.005 # Needs to be confirmed!!
 
         print('Parameters:')
         print('-----------')
