@@ -6,6 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import Plot_tools
 import Diagnose
+import Steppers
 from scipy.fftpack import fftn, ifftn, fftfreq
 import os, sys, shutil
 
@@ -55,6 +56,8 @@ class Simulation:
         self.cfl  = 0.5             # default CFL
         self.time = 0               # initial time
         self.min_dt = 1e-3          # minimum timestep
+        self.adaptive = True        # Adaptive (True) or fixed (False) timestep
+        self.fixed_dt = 1.
 
         self.geomx = 'periodic'     # x boundary condition
         self.geomy = 'periodic'     # y boundary condition
@@ -84,6 +87,14 @@ class Simulation:
     # Full initialization for once the user has specified parameters
     def initialize(self):
 
+        # Determine the CFL value based on the time-stepping scheme
+        if self.stepper.__name__ == 'AB3':
+            self.cfl = 0.5
+        elif self.stepper.__name__ == 'AB2':
+            self.cfl = 0.05 # Needs to be confirmed!!
+        elif self.stepper.__name__ == 'Euler':
+            self.cfl = 0.005 # Needs to be confirmed!!
+
         print('Parameters:')
         print('-----------')
         if self.Nx > 1:
@@ -91,6 +102,7 @@ class Simulation:
         if self.Ny > 1:
             print('geomy    = {0:s}'.format(self.geomy))
         print('stepper  = {0:s}'.format(self.stepper.__name__))
+        print('CFL      = {0:g}'.format(self.cfl))
         print('method   = {0:s}'.format(self.method))
         print('dynamics = {0:s}'.format(self.dynamics))
         print('Nx       = {0:d}'.format(self.Nx))
@@ -169,6 +181,21 @@ class Simulation:
             filty = np.array([1.0])
                 
         self.sfilt = np.tile(filtx,(1,self.Nky))*np.tile(filty,(self.Nkx,1))
+
+        # If we're using a fixed dt, check that it matches plott, savet, and diagt
+        if self.animate.lower() != 'none':
+            if self.plott/self.fixed_dt != int(self.plott/self.fixed_dt):
+                print('Error: Plot interval not integer multiple of fixed dt.')
+                sys.exit()
+        if self.diagnose:
+            if self.diagt/self.fixed_dt != int(self.diagt/self.fixed_dt):
+                print('Error: Diagnostic interval not integer multiple of fixed dt.')
+                sys.exit()
+        if self.output:
+            if self.savet/self.fixed_dt != int(self.savet/self.fixed_dt):
+                print('Error: Output interval not integer multiple of fixed dt.')
+                sys.exit()
+
             
         
     def prepare_for_run(self):
@@ -223,7 +250,7 @@ class Simulation:
         if self.output:
             nt = min([self.next_save_time, nt])
 
-        if nt < t:
+        if (nt < t) and self.adaptive:
             self.dt = nt - self.time
 
         t = self.time + self.dt
@@ -351,16 +378,26 @@ class Simulation:
 
     # Compute time-step using CFL condition.
     def compute_dt(self):
-        c = np.sqrt(self.g*np.sum(self.Hs))
-        eps = 1e-8
 
-        max_u = np.max(np.abs(self.soln.u.ravel()))
-        max_v = np.max(np.abs(self.soln.v.ravel()))
+        if self.adaptive:
+            c = np.sqrt(self.g*np.sum(self.Hs))
+            eps = 1e-8
 
-        dt_x = self.end_time - ((self.Nx-1)/(self.Nx-1+eps))*(self.end_time - self.dx[0]/(max_u+2*c))
-        dt_y = self.end_time - ((self.Ny-1)/(self.Ny-1+eps))*(self.end_time - self.dx[1]/(max_v+2*c))
+            max_u = np.max(np.abs(self.soln.u.ravel()))
+            max_v = np.max(np.abs(self.soln.v.ravel()))
 
-        self.dt = max([self.cfl*min([dt_x,dt_y]),self.min_dt])
+            dt_x = self.end_time - ((self.Nx-1)/(self.Nx-1+eps))*(self.end_time - self.dx[0]/(max_u+2*c))
+            dt_y = self.end_time - ((self.Ny-1)/(self.Ny-1+eps))*(self.end_time - self.dx[1]/(max_v+2*c))
+
+            self.dt = max([self.cfl*min([dt_x,dt_y]),self.min_dt])
+
+            # If using an adaptive timestep, slowing increase dt
+            # over the first 20 steps.
+            if self.num_steps <= 20:
+                self.dt *= 1./(5*(21 - self.num_steps))
+        else:
+            self.dt = self.fixed_dt
+
 
     # Initialize the saving
     def initialize_saving(self):
