@@ -3,7 +3,7 @@
 ##
 
 import numpy as np
-import matplotlib.pyplot as plt
+import matplotlib
 import Plot_tools
 import Diagnose
 import Steppers
@@ -393,8 +393,8 @@ class Simulation:
             Diagnose.plot(self)
         
         if (self.animate == 'Anim'):
-            plt.ioff()
-            plt.show()
+            matplotlib.pyplot.ioff()
+            matploblib.show()
 
         if self.diagnose:
             Diagnose.save(self)

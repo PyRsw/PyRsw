@@ -1,9 +1,8 @@
 # Initialize plot objects for anim or save
 # Assume that hte field is 2-dimensional
 
-import matplotlib.pyplot as plt
-import matplotlib.animation as anim
 import numpy as np
+import matplotlib.pyplot as plt
 
 from update_anim_2D import update_anim_2D
 from update_save_2D import update_save_2D
@@ -89,12 +88,12 @@ def initialize_plots_animsave_2D(sim):
 
             plt.axis('tight')
             plt.gca().set_aspect('equal')
-            
 
     if sim.animate == 'Anim':
         sim.update_plots = update_anim_2D
     elif sim.animate == 'Save':
         sim.update_plots = update_save_2D
+        plt.ioff()
         plt.pause(0.01)
 
     if sim.animate == 'Anim':

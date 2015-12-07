@@ -1,8 +1,6 @@
 import numpy as np
 from Euler import Euler
 from AB2 import AB2
-import matplotlib.pyplot as plt
-
 
 def AB3(sim):
     if sim.nfluxes < 2:
