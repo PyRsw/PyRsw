@@ -28,32 +28,24 @@ def AB3(sim):
         tp = sim.time + sim.dt
         tn = sim.time
 
+        gam1 = 3*tn**2 + 3*tn*sim.dt + sim.dt**2 # (tp**3 - tn**3)/dt
+        gam2 = 2*sim.time + sim.dt # (tp**2 - tn**2)/dt
+        gam3 = 1.   # (tp - tn)/dt
+
         a  = sim.time - sim.dts[0]
         b  = sim.time - sim.dts[0] - sim.dts[1]
-        ts = sim.time
 
-        w0 = (   (1./3)*(tp**3 - tn**3) \
-                -   0.5*(tp**2 - tn**2)*(a+b) \
-                +   a*b*(tp    - tn))   \
-             /((ts-a)*(ts-b))
+        w0 = sim.dt*((1./3)*gam1 - 0.5*gam2*(a+b) + a*b*gam3) / (sim.dts[0]*(sim.dts[0]+sim.dts[1]))
 
         a  = sim.time
         b  = sim.time - sim.dts[0] - sim.dts[1]
-        ts = sim.time - sim.dts[0]
 
-        w1 = (   (1./3)*(tp**3 - tn**3) \
-                -   0.5*(tp**2 - tn**2)*(a+b) \
-                +   a*b*(tp    - tn))   \
-             /((ts-a)*(ts-b))
+        w1 = sim.dt*((1./3)*gam1 - 0.5*gam2*(a+b) + a*b*gam3) / (-sim.dts[0]*sim.dts[1])
 
         a  = sim.time
         b  = sim.time - sim.dts[0]
-        ts = sim.time - sim.dts[0] - sim.dts[1]
 
-        w2 = (   (1./3)*(tp**3 - tn**3) \
-                -   0.5*(tp**2 - tn**2)*(a+b) \
-                +   a*b*(tp    - tn))   \
-             /((ts-a)*(ts-b))
+        w2 = sim.dt*((1./3)*gam1 - 0.5*gam2*(a+b) + a*b*gam3) / ((sim.dts[0]+sim.dts[1])*sim.dts[1])
 
         # Evolve the system
         sim.soln.u += w0*sim.curr_flux.u + w1*sim.fluxes.u[0] + w2*sim.fluxes.u[1]

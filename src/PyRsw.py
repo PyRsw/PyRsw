@@ -296,15 +296,19 @@ class Simulation:
             if self.Nz == 1:
                 pstr  = '{0:s}'.format(Plot_tools.smart_time(self.time))
                 pstr += ' '*(13-len(pstr))
-                pstr += ', dt = {0:0<7.1e}'.format(self.mean_dt)
-                L = len(pstr) - 11
+                try:
+                    pstr += ',  dt = {0:0<7.1e}'.format(mean(self.dts))
+                except:
+                    pstr += ',  dt = {0:0<7.1e}'.format(self.dt)
+                L = len(pstr) - 13
                 pstr += ', min(u,v,h) = ({0: < 8.4e},{1: < 8.4e},{2: < 8.4e})'.format(minu,minv,minh)
                 pstr += ', del_mass = {0: .2g}'.format(mass/self.Ms[0]-1)
                 pstr += '\n'
                 tmp = '  = {0:.3%}'.format(self.time/self.end_time)
                 pstr += tmp
-                pstr += ' '*(L + 13 - len(tmp))            
-                pstr += 'max(u,v,h) = ({0: < 8.4e},{1: < 8.4e},{2: < 8.4e})'.format(maxu,maxv,maxh)
+                pstr += ' '*(L - len(tmp))            
+                pstr += 'avg = {0:0<7.1e}'.format(self.mean_dt)
+                pstr += ', max(u,v,h) = ({0: < 8.4e},{1: < 8.4e},{2: < 8.4e})'.format(maxu,maxv,maxh)
                 pstr += ', del_enrg = {0: .2g}'.format(enrg/(self.KEs[0]+self.PEs[0])-1)
             else:
                 pstr  = 't = {0:.4g}s'.format(self.time)
@@ -316,7 +320,15 @@ class Simulation:
                 pstr += ', del_enrg = {0:+.2g}'.format(enrg/(self.KEs[0]+self.PEs[0])-1)
                 pstr += '\n'
                 pstr += '  = {0:.3%}'.format(self.time/self.end_time)
-            print('\n{0:s}: output {1:d} : step {2:d}'.format(self.run_name, int(self.time/self.plott),self.num_steps))
+
+            head_str = ('\n{0:s}'.format(self.run_name))
+            if self.animate != 'None':
+                head_str += ': frame {0:d}'.format(self.frame_count-1)
+            if self.output:
+                head_str += ': output {0:d}'.format(self.out_counter-1)
+            head_str += ': step {0:d}'.format(self.num_steps)
+
+            print(head_str)
             print(pstr)
 
     # Step until end-time achieved.

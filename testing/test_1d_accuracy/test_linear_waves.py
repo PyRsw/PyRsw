@@ -52,8 +52,8 @@ def test():
 
     # Compare final state to initial conditions
     error_h = np.linalg.norm(IC - sim.soln.h[:,:,0])
-    error_u = np.linalg.norm(sim.soln.u[:,:,0])
-    assert (error_h < 2e-5) and (error_u < 1e-10)
+    error_v = np.linalg.norm(sim.soln.v[:,:,0])
+    assert (error_h < 2e-5) and (error_v < 1e-7)
 
 
 test()
