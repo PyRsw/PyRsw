@@ -12,7 +12,7 @@ endif
 		$(subst _00000.png, , \
 			$(subst Outputs/$(RUN)/Frames/, , \
 				$(wildcard Outputs/$(RUN)/Frames/*_00000.png))), \
-		ffmpeg -i Outputs/$(RUN)/Frames/$(var)_\%05d.png -q 1 -y Outputs/$(RUN)/$(var)_animation.mp4;)
+		ffmpeg -i Outputs/$(RUN)/Frames/$(var)_\%05d.png -q 1 -pix_fmt yuv420p -y Outputs/$(RUN)/$(var)_animation.mp4;)
 
 # Usage: make clean RUN=<run_name>
 # 		<run_name> gives the directory i.e. Outputs/<run_name>
