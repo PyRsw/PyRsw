@@ -1,4 +1,6 @@
 numpy
 matplotlib
 scipy
-pyfftw
+
+# Remove this for now
+#pyfftw
