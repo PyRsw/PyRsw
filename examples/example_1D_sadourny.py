@@ -26,9 +26,10 @@ sim.method      = 'Sadourny'       # Numerical method: 'Sadourny'
 sim.flux_method = Flux.sadourny_sw # Flux method: 
 
 # Specify paramters
+sim.Lx  = 4000e3          # Domain extent               (m)
 sim.Ly  = 4000e3          # Domain extent               (m)
 sim.Nx  = 1               # Grid points in x
-sim.Ny  = 128             # Grid points in y
+sim.Ny  = 128               # Grid points in y
 sim.Nz  = 1               # Number of layers
 sim.g   = 9.81            # Gravity                     (m/sec^2)
 sim.f0  = 1.e-4           # Coriolis                    (1/sec)
@@ -74,6 +75,7 @@ if sim.method == 'Spectral':
     sim.soln.h[:,:,0] += amp*np.exp(-(sim.Y)**2/(W**2))
 elif sim.method == 'Sadourny':
     sim.soln.h[:,:,0] += amp*np.exp(-(sim.Ye)**2/(W**2))
+    #sim.soln.h[:,:,0] += amp*np.exp(-(sim.Xe)**2/(W**2))
     # FJP: Set Periodic BC
     sim.soln.h[-1,:,0] = sim.soln.h[0,:,0] 
     sim.soln.h[:,-1,0] = sim.soln.h[:,0,0]

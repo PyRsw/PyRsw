@@ -51,8 +51,6 @@ def sadourny_sw_flux(sim):
 
     Nx, Ny, Nz = sim.Nx, sim.Ny, sim.Nz
     dx, dy     = sim.dx[0], sim.dx[1]
-    ddx, ddy   = sim.ddx, sim.ddy
-    avx, avy   = sim.avx, sim.avy
     
     # Loop through each layer and compute the flux
     for ii in range(Nz):
@@ -62,29 +60,24 @@ def sadourny_sw_flux(sim):
         u = sim.soln.u[:,:,ii]
         v = sim.soln.v[:,:,ii]
 
-        # FJP: try in the x-direction
-        # FJP: try in x-y plane
-        # FJP: work on BCx
         # Compute secondary varibles
-        U = avx(h)*u                  
-        V = avy(h)*v
-        B = sim.gs[ii]*h[0:Nx,0:Ny] + 0.5*(avx(u**2)[:,0:Ny] + avy(np.concatenate([v[:,-1:]**2,v**2],axis=1)))
-        q = (ddx(v,dx) - ddy(u,dy)  + sim.F)/(avy(avx(h)))  
+        U = sim.avx_h(h)*u                  
+        V = sim.avy_h(h)*v
+        B = sim.gs[ii]*h + 0.5*(sim.avx_u(u**2) + sim.avy_v(v**2))
+        q = (sim.ddx_v(v,dx) - sim.ddy_u(u,dy)  + sim.F)/(sim.avy_u(sim.avx_h(h)))  
 
         # Flux
-        tmp = q*avx(V)
-        sim.curr_flux.u[:,   0:Ny,ii] =   avy(np.concatenate([tmp[:,-1:],tmp],axis=1)) - ddx(B,dx)
-        sim.curr_flux.v[0:Nx, :,  ii] = - avx(q*avy(U)) - ddy(np.concatenate([B,B[:,0:1]],axis=1),dy)
-        sim.curr_flux.h[0:Nx,0:Ny,ii] = - ddx(U,dx)     - ddy(np.concatenate([V[:,-1:],V],axis=1),dy)
-
+        sim.curr_flux.u[:,:,ii] =   sim.avy_v(q*sim.avx_v(V)) - sim.ddx_h(B,dx)
+        sim.curr_flux.v[:,:,ii] = - sim.avx_u(q*sim.avy_u(U)) - sim.ddy_h(B,dy)
+        sim.curr_flux.h[:,:,ii] = - sim.ddx_u(U,dx) - sim.ddy_v(V,dy)
     return
 
 def sadourny_sw_linear_flux(sim):
 
     Nx, Ny, Nz = sim.Nx, sim.Ny, sim.Nz
     dx, dy     = sim.dx[0], sim.dx[1]
-    ddx, ddy   = sim.ddx, sim.ddy
-    avx, avy   = sim.avx, sim.avy
+    #ddx, ddy   = sim.ddx, sim.ddy
+    #avx, avy   = sim.avx, sim.avy
     Hs         = sim.Hs[0]
     
     # Loop through each layer and compute the flux
@@ -96,30 +89,21 @@ def sadourny_sw_linear_flux(sim):
         v = sim.soln.v[:,:,ii]
 
         # Compute secondary varibles
-        #   [U,V] = h[u,v]                  Transport velocities
-        #   B = g*h + 0.5*(u**2 + v**2)     Bernoulli function
-        #   q = (v_x - u_y + f)/h           Potential Vorticity
         U = Hs*u             
         V = Hs*v
         q = sim.F/Hs
-        B = sim.gs[ii]*h[0:Nx,0:Ny]
-        #FJP: maybe extend avy term so it's easier later?
+        B = sim.gs[ii]*h
 
-        # Evolution Eqns:
-        #	u_t =   (q*V^x)^y - d_x B
-        #	v_t = - (q*U^y)^x - d_y B
-        #	h_t = - H*u_x     - H*v_y
         # Flux
-        tmp = q*avx(V)
-        sim.curr_flux.u[:,   0:Ny,ii] =   avy(np.concatenate([tmp[:,-1:],tmp],axis=1)) - ddx(B,dx)
-        sim.curr_flux.v[0:Nx, :,  ii] = - avx(q*avy(U)) - ddy(np.concatenate([B,B[:,0:1]],axis=1),dy)
-        sim.curr_flux.h[0:Nx,0:Ny,ii] = - ddx(U,dx)     - ddy(np.concatenate([V[:,-1:],V],axis=1),dy)
+        sim.curr_flux.u[:,   0:Ny,ii] =   sim.avy_v(q*sim.avx_v(V)) - sim.ddx_h(B,dx)
+        sim.curr_flux.v[0:Nx, :,  ii] = - sim.avx_u(q*sim.avy_u(U)) - sim.ddy_h(B,dy)
+        sim.curr_flux.h[0:Nx,0:Ny,ii] = - sim.ddx_u(U,dx) - sim.ddy_v(V,dy)
 
     return
 
 def sadourny_sw(sim):
 
-    #FJP: impose ghost cells?
+    # FJP: work on BCs
     if sim.Nx == 1:
         sim.Nkx = 1
     else:
