@@ -37,11 +37,12 @@ def initialize_plots_animsave_1D(sim):
         for L in range(sim.Nz):
 
             if var == 'u':
-                to_plot = sim.soln.u[:,:,L].ravel()
+                to_plot = sim.soln.u[0:sim.Nx,0:sim.Ny,L].ravel()
             elif var == 'v':
-                to_plot = sim.soln.v[:,:,L].ravel()
+                to_plot = sim.soln.v[0:sim.Nx,0:sim.Ny,L].ravel()
             elif var == 'h':
-                to_plot = sim.soln.h[:,:,L].ravel() - sim.Hs[L]
+                #FJP: bandaid solution
+                to_plot = sim.soln.h[0:sim.Nx,0:sim.Ny,L].ravel() - sim.Hs[L]
             elif var == 'vort':
                 to_plot = sim.ddx_v(sim.soln.v[:,:,L],sim) \
                         - sim.ddy_u(sim.soln.u[:,:,L],sim)
@@ -55,7 +56,7 @@ def initialize_plots_animsave_1D(sim):
                 if sim.f0 != 0:
                     to_plot *= 1./sim.f0
                 to_plot = to_plot.ravel()
-            
+
             l, = plt.plot(x, to_plot, linewidth=2)
 
             # Has the user specified plot limits?

@@ -14,7 +14,7 @@ from PyRsw import Simulation
 from constants import minute, hour, day
 
 sim = Simulation()  # Create a simulation object
-sim.run_name = '2D_Bickley_Jet'
+sim.run_name = '2D_Bickley_Jet_H500'
 
 # Geometry and Model Equations
 sim.geomx       = 'periodic'       # Geometry Types: 'periodic' or 'walls'
@@ -27,15 +27,15 @@ sim.flux_method = Flux.spectral_sw # Flux method: spectral_sw is only option cur
 # Specify paramters
 sim.Lx  = 200e3           # Domain extent               (m)
 sim.Ly  = 200e3           # Domain extent               (m)
-sim.Nx  = 64             # Grid points in x
-sim.Ny  = 64             # Grid points in y
+sim.Nx  = 128             # Grid points in x
+sim.Ny  = 128             # Grid points in y
 sim.Nz  = 1               # Number of layers
 sim.g   = 9.81            # Gravity                     (m/sec^2)
 sim.f0  = 1.e-4           # Coriolis                    (1/sec)
 sim.beta = 0e-10          # Coriolis beta               (1/m/sec)
-sim.Hs  = [100.]          # Vector of mean layer depths (m)
+sim.Hs  = [500.]          # Vector of mean layer depths (m)
 sim.rho = [1025.]         # Vector of layer densities   (kg/m^3)
-sim.end_time = 500*24.*hour   # End Time                    (sec)
+sim.end_time = 20*24.*hour   # End Time                    (sec)
 
 # Parallel? Only applies to the FFTWs
 sim.num_threads = 32
