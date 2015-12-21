@@ -141,6 +141,22 @@ class Simulation:
             print('Restarting from index {0:d}'.format(self.restart_index))
         print ' '
         
+
+        # Initial conditions and topography
+        if self.method == 'Spectral':
+            self.soln      = Solution(self.Nx,self.Ny,self.Nz)
+            self.curr_flux = Solution(self.Nx,self.Ny,self.Nz)
+            self.grid_x    = Solution(self.Nx,self.Ny,self.Nz)
+            self.grid_y    = Solution(self.Nx,self.Ny,self.Nz)
+        elif self.method == 'Sadourny':
+            self.soln      = SolutionSd(self.Nx,self.Ny,self.Nz)
+            self.curr_flux = SolutionSd(self.Nx,self.Ny,self.Nz)
+            self.grid_x    = SolutionSd(self.Nx,self.Ny,self.Nz)
+            self.grid_y    = SolutionSd(self.Nx,self.Ny,self.Nz)
+        else:
+            print('Flux Method must be Spectral or Sadourny.')
+            sys.exit()
+
         # Initialize grids and cell centres
         dxs = [1,1]
 
@@ -166,9 +182,17 @@ class Simulation:
                 ye = np.arange(0.0, self.Ly+dy,dy) - self.Ly/2.
             else:
                 ye = 0.0
-            [self.Xe,self.Ye] = np.meshgrid(xe, ye, indexing='ij')
 
         self.dx = dxs
+
+        if self.method.lower() == 'sadourny':
+            [self.grid_x.u, self.grid_y.u] = np.meshgrid(xe,self.y)
+            [self.grid_x.v, self.grid_y.v] = np.meshgrid(self.x,ye)
+            [self.grid_x.h, self.grid_y.h] = np.meshgrid(xe,ye)
+        elif self.method.lower() == 'spectral':
+            [self.grid_x.u, self.grid_y.u] = np.meshgrid(self.x,self.y)
+            [self.grid_x.v, self.grid_y.v] = np.meshgrid(self.x,self.y)
+            [self.grid_x.h, self.grid_y.h] = np.meshgrid(self.x,self.y)
 
         if self.beta != 0.:
             if self.geomy != 'walls':
@@ -191,16 +215,6 @@ class Simulation:
         else:
             self.gs = np.array([[self.g]])
 
-        # Initial conditions and topography
-        if self.method == 'Spectral':
-            self.soln = Solution(self.Nx,self.Ny,self.Nz)
-            self.curr_flux = Solution(self.Nx,self.Ny,self.Nz)
-        elif self.method == 'Sadourny':
-            self.soln =      SolutionSd(self.Nx,self.Ny,self.Nz)
-            self.curr_flux = SolutionSd(self.Nx,self.Ny,self.Nz)
-        else:
-            print('Flux Method must be Spectral or Sadourny.')
-            sys.exit()
 
         self.topo_func(self)
 

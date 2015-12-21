@@ -71,12 +71,7 @@ x0 = 1.*sim.Lx/2.          # Centre
 W  = 200.e3                # Width
 amp = 1.                   # Amplitude
 
-if sim.method == 'Spectral':
-    #sim.soln.h[:,:,0] += amp*np.exp(-(sim.Y)**2/(W**2))
-    sim.soln.h[:,:,0] += amp*np.exp(-(sim.X)**2/(W**2))
-elif sim.method == 'Sadourny':
-    sim.soln.h[:,:,0] += amp*np.exp(-(sim.Ye)**2/(W**2))
-    #sim.soln.h[:,:,0] += amp*np.exp(-(sim.Xe)**2/(W**2))
+sim.soln.h[:,:,0] += amp*np.exp(-(sim.grid_y.h)**2/(W**2))
 
 # Run the simulation
 sim.run()                
