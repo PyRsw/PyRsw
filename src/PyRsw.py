@@ -71,7 +71,7 @@ class Simulation:
         self.g    = 9.81            # gravity
         self.f0   = 1e-4            # Coriolis
         self.beta = 0.
-        self.cfl  = -1             # default CFL
+        self.cfl  = -1              # default CFL
         self.time = 0.              # initial time
         self.min_dt = 1e-3          # minimum timestep
         self.adaptive = True        # Adaptive (True) or fixed (False) timestep
@@ -173,26 +173,28 @@ class Simulation:
 
         [self.X, self.Y]  = np.meshgrid(self.x, self.y, indexing='ij')
 
-        if self.method == 'Sadourny':
+        if self.method.lower() == 'sadourny':
             if self.Nx > 1:
                 xe = np.arange(0.0, self.Lx+dx,dx) - self.Lx/2.
+                #xe.reshape((self.Nx+1,1))
             else:
-                xe = 0.0
+                xe = np.array([0.0])
             if self.Ny > 1:
                 ye = np.arange(0.0, self.Ly+dy,dy) - self.Ly/2.
+                #ye.reshape((1,self.Ny+1))
             else:
-                ye = 0.0
+                ye = np.array([0.0])
 
         self.dx = dxs
 
         if self.method.lower() == 'sadourny':
-            [self.grid_x.u, self.grid_y.u] = np.meshgrid(xe,self.y)
-            [self.grid_x.v, self.grid_y.v] = np.meshgrid(self.x,ye)
-            [self.grid_x.h, self.grid_y.h] = np.meshgrid(xe,ye)
+            [self.grid_x.u, self.grid_y.u] = np.meshgrid(self.x,ye, indexing='ij')
+            [self.grid_x.v, self.grid_y.v] = np.meshgrid(xe,self.y, indexing='ij')
+            [self.grid_x.h, self.grid_y.h] = np.meshgrid(xe,ye,     indexing='ij')
         elif self.method.lower() == 'spectral':
-            [self.grid_x.u, self.grid_y.u] = np.meshgrid(self.x,self.y)
-            [self.grid_x.v, self.grid_y.v] = np.meshgrid(self.x,self.y)
-            [self.grid_x.h, self.grid_y.h] = np.meshgrid(self.x,self.y)
+            [self.grid_x.u, self.grid_y.u] = np.meshgrid(self.x,self.y, indexing='ij')
+            [self.grid_x.v, self.grid_y.v] = np.meshgrid(self.x,self.y, indexing='ij')
+            [self.grid_x.h, self.grid_y.h] = np.meshgrid(self.x,self.y, indexing='ij')
 
         if self.beta != 0.:
             if self.geomy != 'walls':

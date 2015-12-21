@@ -70,7 +70,7 @@ x0 = 1.*sim.Lx/2.          # Centre
 W  = 200.e3                # Width
 amp = 1.                   # Amplitude
 
-sim.soln.h[:,:,0] += amp*np.exp(-(sim.Ye)**2/(W**2))
+sim.soln.h[:,:,0] += amp*np.exp(-(sim.grid_y.h)**2/(W**2))
 
 # Run the simulation
 sim.run()                

@@ -55,8 +55,12 @@ def initialize_plots_animsave_2D(sim):
                 X = sim.grid_x.h
                 Y = sim.grid_y.h
             elif var == 'vort':
-                to_plot =     sim.ddx_v(sim.soln.v[0:sim.Nx,0:sim.Ny,L],sim) \
-                            - sim.ddy_u(sim.soln.u[0:sim.Nx,0:sim.Ny,L],sim)
+                if sim.method.lower() == 'sadourny':
+                    to_plot =     sim.ddx_v(sim.soln.v[0:sim.Nx+1,0:sim.Ny,L],sim) \
+                                - sim.ddy_u(sim.soln.u[0:sim.Nx,0:sim.Ny+1,L],sim)
+                elif sim.method.lower() == 'spectral':
+                    to_plot =     sim.ddx_v(sim.soln.v[0:sim.Nx,0:sim.Ny,L],sim) \
+                                - sim.ddy_u(sim.soln.u[0:sim.Nx,0:sim.Ny,L],sim)
                 if sim.f0 != 0:
                     ttl = fig.suptitle('Vorticity / f_0 : t = 0')
                     to_plot *= 1./sim.f0
@@ -81,8 +85,21 @@ def initialize_plots_animsave_2D(sim):
                 vmin = -cv
                 vmax =  cv
 
-            print(X.shape,Y.shape,sim.X.shape,sim.Y.shape,to_plot.shape)
-            Q = plt.pcolormesh(X/1e3, Y/1e3, to_plot, cmap=sim.cmap, 
+            # Extend the grid to account for pcolor peculiarities
+            Nx = X.shape[0]
+            Ny = Y.shape[1]
+            X_plot = np.zeros((Nx+1,Ny+1))
+            Y_plot = np.zeros((Nx+1,Ny+1))
+
+            X_plot[1:,1:] = X + sim.dx[0]/2.
+            X_plot[1:,0]  = X[:,0] + sim.dx[0]/2.
+            X_plot[0,:]   = X[0,0] - sim.dx[0]/2.
+
+            Y_plot[1:,1:] = Y + sim.dx[1]/2.
+            Y_plot[0,1:]  = Y[0,:] + sim.dx[1]/2.
+            Y_plot[:,0]   = Y[0,0] - sim.dx[1]/2.
+
+            Q = plt.pcolormesh(X_plot/1e3, Y_plot/1e3, to_plot, cmap=sim.cmap, 
                         vmin = vmin, vmax = vmax)
             Qs[var_cnt] += [Q]
             ttls[var_cnt] += [ttl]

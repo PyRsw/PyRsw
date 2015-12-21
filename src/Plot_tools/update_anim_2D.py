@@ -1,22 +1,15 @@
 # Update plot objects if animating
-import matplotlib.pyplot as plt
 import numpy as np
 from smart_time import smart_time
+import matplotlib.pyplot as plt
 
 def update_anim_2D(sim):
-
-    if sim.method.lower() == 'sadourny':
-        off = 1
-    else:
-        off = 0
-    off = 0
 
     Nx, Ny = sim.Nx, sim.Ny
     for var_cnt in range(len(sim.plot_vars)):
 
         var = sim.plot_vars[var_cnt]
 
-    
         for L in range(sim.Nz):
 
             if var == 'u':

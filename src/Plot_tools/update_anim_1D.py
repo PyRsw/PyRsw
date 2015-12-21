@@ -17,11 +17,20 @@ def update_anim_1D(sim):
         for L in range(sim.Nz):
 
             if var == 'u':
-                to_plot = sim.soln.u[0:sim.Nx,0:sim.Ny,L].ravel()
+                if sim.method.lower() == 'sadourny':
+                    to_plot = sim.soln.u[0:sim.Nx,0:sim.Ny+1,L]
+                elif sim.method.lower() == 'spectral':
+                    to_plot = sim.soln.u[0:sim.Nx,0:sim.Ny,L]
             elif var == 'v':
-                to_plot = sim.soln.v[0:sim.Nx,0:sim.Ny,L].ravel()
+                if sim.method.lower() == 'sadourny':
+                    to_plot = sim.soln.v[0:sim.Nx+1,0:sim.Ny,L]
+                elif sim.method.lower() == 'spectral':
+                    to_plot = sim.soln.v[0:sim.Nx,0:sim.Ny,L]
             elif var == 'h':
-                to_plot = sim.soln.h[0:sim.Nx,0:sim.Ny,L].ravel() - sim.Hs[L]
+                if sim.method.lower() == 'sadourny':
+                    to_plot = sim.soln.h[0:sim.Nx+1,0:sim.Ny+1,L] - sim.Hs[L]
+                elif sim.method.lower() == 'spectral':
+                    to_plot = sim.soln.h[0:sim.Nx,0:sim.Ny,L] - sim.Hs[L]
             elif var == 'vort':
                 to_plot = sim.ddx_v(sim.soln.v[:,:,L],sim) \
                         - sim.ddy_u(sim.soln.u[:,:,L],sim)

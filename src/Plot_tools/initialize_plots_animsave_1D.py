@@ -14,10 +14,8 @@ def initialize_plots_animsave_1D(sim):
     fig.suptitle('t = 0')
 
     if sim.Nx > 1:
-        x = sim.x/1e3
         xlabel = 'x (km)'
     else:
-        x = sim.y/1e3
         xlabel = 'y (km)'
 
     Qs  = []
@@ -37,12 +35,38 @@ def initialize_plots_animsave_1D(sim):
         for L in range(sim.Nz):
 
             if var == 'u':
-                to_plot = sim.soln.u[0:sim.Nx,0:sim.Ny,L].ravel()
+                if sim.method.lower() == 'sadourny':
+                    to_plot = sim.soln.u[0:sim.Nx,0:sim.Ny+1,L]
+                elif sim.method.lower() == 'spectral':
+                    to_plot = sim.soln.u[0:sim.Nx,0:sim.Ny,L]
+
+                if sim.Nx > 1:
+                    x = sim.grid_x.u/1e3
+                else:
+                    x = sim.grid_y.u/1e3
+
             elif var == 'v':
-                to_plot = sim.soln.v[0:sim.Nx,0:sim.Ny,L].ravel()
+                if sim.method.lower() == 'sadourny':
+                    to_plot = sim.soln.v[0:sim.Nx+1,0:sim.Ny,L]
+                elif sim.method.lower() == 'spectral':
+                    to_plot = sim.soln.v[0:sim.Nx,0:sim.Ny,L]
+
+                if sim.Nx > 1:
+                    x = sim.grid_x.v/1e3
+                else:
+                    x = sim.grid_y.v/1e3
+
             elif var == 'h':
-                #FJP: bandaid solution
-                to_plot = sim.soln.h[0:sim.Nx,0:sim.Ny,L].ravel() - sim.Hs[L]
+                if sim.method.lower() == 'sadourny':
+                    to_plot = sim.soln.h[0:sim.Nx+1,0:sim.Ny+1,L] - sim.Hs[L]
+                elif sim.method.lower() == 'spectral':
+                    to_plot = sim.soln.h[0:sim.Nx,0:sim.Ny,L] - sim.Hs[L]
+
+                if sim.Nx > 1:
+                    x = sim.grid_x.h/1e3
+                else:
+                    x = sim.grid_y.h/1e3
+
             elif var == 'vort':
                 to_plot = sim.ddx_v(sim.soln.v[:,:,L],sim) \
                         - sim.ddy_u(sim.soln.u[:,:,L],sim)
@@ -57,7 +81,8 @@ def initialize_plots_animsave_1D(sim):
                     to_plot *= 1./sim.f0
                 to_plot = to_plot.ravel()
 
-            l, = plt.plot(x, to_plot, linewidth=2)
+            print(x.shape, to_plot.shape)
+            l, = plt.plot(x.ravel(), to_plot.ravel(), linewidth=2)
 
             # Has the user specified plot limits?
             if len(sim.ylims[var_cnt]) == 2:
