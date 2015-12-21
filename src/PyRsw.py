@@ -9,6 +9,8 @@ import Diagnose
 import Steppers
 from scipy.fftpack import fftn, ifftn, fftfreq
 import os, sys, shutil
+#FJP
+import matplotlib.pyplot as plt
 
 def null_topo(a_sim):
     return
@@ -174,12 +176,8 @@ class Simulation:
                 sys.exit()
 
         self.F  = self.f0 + self.beta*self.Y
-        if self.method == 'Sadourny':
-            self.Fe = self.f0 + self.beta*self.Ye
 
         # Initialize differentiation and averaging operators
-        # FJP: continue here
-        # FJP: create flux functions and means to compute derivatives
         self.flux_method(self)
         self.x_derivs(self)
         self.y_derivs(self)
@@ -353,14 +351,15 @@ class Simulation:
         self.time += self.dt
        
         if do_plot:
+            print "in step t = ", self.time
             self.update_plots(self)
             self.next_plot_time += self.plott
             #FJP
             #if (self.Nx == 1) or (self.Ny == 1):
                 #Plot_tools.update_hov(self)
 
-        if do_diag:
-            Diagnose.update(self)
+        #if do_diag:
+        #    Diagnose.update(self)
 
         if do_save:
             self.save_state()
@@ -429,22 +428,32 @@ class Simulation:
 
         while self.time < self.end_time:
             self.step()
+            #plt.clf()
+            #plt.pcolormesh(self.Xe/1e3, self.Ye/1e3, self.soln.h[:,:,0],cmap='seismic')
+            #plt.title('t = ')
+            #plt.colorbar
+            #plt.pause(0.01)
+            #plt.draw()
+            #plt.show()
 
-            # Set Perioidic BCs
-            self.soln.u[:,-1,0] = self.soln.u[:,0,0]
-            self.soln.v[-1,:,0] = self.soln.v[0,:,0] 
-            self.soln.h[-1,:,0] = self.soln.h[0,:,0] 
-            self.soln.h[:,-1,0] = self.soln.h[:,0,0]
-
-        if self.diagnose:
-            Diagnose.plot(self)
+        #if self.diagnose:
+        #    Diagnose.plot(self)
         
-        if (self.animate == 'Anim'):
-            matplotlib.pyplot.ioff()
-            matplotlib.show()
+        #if (self.animate == 'Anim'):
+            #print "h at x = 0 and t = ", self.time
+            #plt.figure()
+            #plt.clf()
+            #plt.pcolormesh(self.Xe/1e3, self.Ye/1e3, self.soln.h[:,:,0])
+            #plt.colorbar
+            #plt.pause(0.01)
+            ##plt.show()
+            #plt.ioff()
+            #plt.show()
+            ##matplotlib.pyplot.ioff()
+            ##matplotlib.show()
 
-        if self.diagnose:
-            Diagnose.save(self)
+        #if self.diagnose:
+        #    Diagnose.save(self)
 
     # Compute time-step using CFL condition.
     def compute_dt(self):

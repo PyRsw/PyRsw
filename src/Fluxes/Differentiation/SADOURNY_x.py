@@ -13,7 +13,7 @@ def ddx(f,dx):
             
     return df
 
-def ddx_bdry(f,dx):
+def ddx_periodic(f,dx):
 
     fs = np.concatenate([f[-1:,:],f,f[0:1,:]],axis=0)
     df = (fs[1:,:] - fs[0:-1,:])/dx
@@ -33,7 +33,7 @@ def avx(f):
             
     return af
 
-def avx_bdry(f):
+def avx_periodic(f):
 
     fs = np.concatenate([f[-1:,:],f,f[0:1,:]],axis=0)
     af = 0.5*(fs[1:,:] + fs[0:-1,:])
@@ -53,10 +53,10 @@ def SADOURNY_x(sim):       # Set the differentiation operators
 
     else:
 
-        sim.ddx_u = ddx_bdry
+        sim.ddx_u = ddx_periodic
         sim.ddx_v = ddx
         sim.ddx_h = ddx
-        sim.avx_u = avx_bdry
+        sim.avx_u = avx_periodic
         sim.avx_v = avx
         sim.avx_h = avx
 

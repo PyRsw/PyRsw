@@ -13,7 +13,7 @@ def ddy(f,dy):
             
     return df
 
-def ddy_bdry(f,dy):
+def ddy_periodic(f,dy):
 
     fs = np.concatenate([f[:,-1:],f,f[:,0:1]],axis=1)
     df = (fs[:,1:] - fs[:,0:-1])/dy
@@ -32,7 +32,7 @@ def avy(f):
             
     return af
 
-def avy_bdry(f):
+def avy_periodic(f):
 
     fs = np.concatenate([f[:,-1:],f,f[:,0:1]],axis=1)
     af = 0.5*(fs[:,1:] + fs[:,0:-1])
@@ -53,9 +53,9 @@ def SADOURNY_y(sim):       # Set the differentiation operators
     else:
 
         sim.ddy_u = ddy
-        sim.ddy_v = ddy_bdry
+        sim.ddy_v = ddy_periodic
         sim.ddy_h = ddy
         sim.avy_u = avy
-        sim.avy_v = avy_bdry
+        sim.avy_v = avy_periodic
         sim.avy_h = avy
 

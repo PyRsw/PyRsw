@@ -13,19 +13,6 @@ def initialize_plots_animsave_2D(sim):
     Qs   = []
     ttls = []
 
-    # Create the appropriate grids:
-    # extend by a point to handle the way
-    # that pcolor removes boundaries
-    x = np.zeros((sim.Nx+1))
-    x[1:] = sim.x + (sim.x[1] - sim.x[0])/2.
-    x[0]  = sim.x[0] - (sim.x[1] - sim.x[0])/2.
-
-    y = np.zeros((sim.Ny+1))
-    y[1:] = sim.y + (sim.y[1] - sim.y[0])/2.
-    y[0]  = sim.y[0] - (sim.y[1] - sim.y[0])/2.
-
-    X,Y = np.meshgrid(x,y,indexing='ij')
-
     # Loop through each element of plot_vars
     # Each field will be given its own figure
     for var_cnt in range(len(sim.plot_vars)):
@@ -45,16 +32,16 @@ def initialize_plots_animsave_2D(sim):
 
             if var == 'u':
                 ttl = fig.suptitle('Zonal Velocity : t = 0')
-                to_plot = sim.soln.u[:,:,L]
+                to_plot = sim.soln.u[0:sim.Nx,0:sim.Ny,L]
             elif var == 'v':
                 ttl = fig.suptitle('Meridional Velocity : t = 0')
-                to_plot = sim.soln.v[:,:,L]
+                to_plot = sim.soln.v[0:sim.Nx,0:sim.Ny,L]
             elif var == 'h':
                 ttl = fig.suptitle('Free Surface Displacement : t = 0')
-                to_plot = sim.soln.h[:,:,L] - sim.Hs[L]
+                to_plot = sim.soln.h[0:sim.Nx,0:sim.Ny,L] - sim.Hs[L]
             elif var == 'vort':
-                to_plot =     sim.ddx_v(sim.soln.v[:,:,L],sim) \
-                            - sim.ddy_u(sim.soln.u[:,:,L],sim)
+                to_plot =     sim.ddx_v(sim.soln.v[0:sim.Nx,0:sim.Ny,L],sim) \
+                            - sim.ddy_u(sim.soln.u[0:sim.Nx,0:sim.Ny,L],sim)
                 if sim.f0 != 0:
                     ttl = fig.suptitle('Vorticity / f_0 : t = 0')
                     to_plot *= 1./sim.f0
@@ -62,8 +49,8 @@ def initialize_plots_animsave_2D(sim):
                     ttl = fig.suptitle('Vorticity : t = 0')
             elif var == 'div':
                 h = sim.soln.h[:,:,L] 
-                to_plot =     sim.ddx_u(h*sim.soln.u[:,:,L],sim) \
-                            + sim.ddy_v(h*sim.soln.v[:,:,L],sim)
+                to_plot =     sim.ddx_u(h*sim.soln.u[0:sim.Nx,0:sim.Ny,L],sim) \
+                            + sim.ddy_v(h*sim.soln.v[0:sim.Nx,0:sim.Ny,L],sim)
                 if sim.f0 != 0:
                     ttl = fig.suptitle('Divergence of mass-flux / f_0 : t = 0')
                     to_plot *= 1./sim.f0
@@ -79,7 +66,7 @@ def initialize_plots_animsave_2D(sim):
                 vmin = -cv
                 vmax =  cv
 
-            Q = plt.pcolormesh(X/1e3, Y/1e3, to_plot, cmap=sim.cmap, 
+            Q = plt.pcolormesh(sim.X/1e3, sim.Y/1e3, to_plot, cmap=sim.cmap, 
                         vmin = vmin, vmax = vmax)
             Qs[var_cnt] += [Q]
             ttls[var_cnt] += [ttl]
@@ -100,7 +87,7 @@ def initialize_plots_animsave_2D(sim):
         plt.ion()
         plt.pause(0.01)
         plt.draw()
-        
+
     sim.figs = figs
     sim.Qs = Qs
     sim.ttls = ttls
