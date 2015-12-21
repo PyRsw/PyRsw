@@ -5,22 +5,28 @@ from smart_time import smart_time
 
 def update_anim_2D(sim):
 
+    if sim.method.lower() == 'sadourny':
+        off = 1
+    else:
+        off = 0
+
     Nx, Ny = sim.Nx, sim.Ny
     for var_cnt in range(len(sim.plot_vars)):
 
         var = sim.plot_vars[var_cnt]
+
     
         for L in range(sim.Nz):
 
             if var == 'u':
                 sim.ttls[var_cnt][L].set_text('Zonal Velocity : {0:s}'.format(smart_time(sim.time)))
-                to_plot = sim.soln.u[0:Nx,0:Ny,L]
+                to_plot = sim.soln.u[off:off+Nx,off:off+Ny,L]
             elif var == 'v':
                 sim.ttls[var_cnt][L].set_text('Meridional Velocity : {0:s}'.format(smart_time(sim.time)))
-                to_plot = sim.soln.v[0:Nx,0:Ny,L]
+                to_plot = sim.soln.v[off:off+Nx,off:off+Ny,L]
             elif var == 'h':
                 sim.ttls[var_cnt][L].set_text('Free Surface Displacement : {0:s}'.format(smart_time(sim.time)))
-                to_plot = sim.soln.h[0:Nx,0:Ny,L] - sim.Hs[L]
+                to_plot = sim.soln.h[off:off+Nx,off:off+Ny,L] - sim.Hs[L]
             elif var == 'vort':
                 to_plot =     sim.ddx_v(sim.soln.v[0:Nx,0:Ny,L],sim) \
                             - sim.ddy_u(sim.soln.u[0:Nx,0:Ny,L],sim)

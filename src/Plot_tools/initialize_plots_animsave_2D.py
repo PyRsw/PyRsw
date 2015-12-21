@@ -25,6 +25,11 @@ def initialize_plots_animsave_2D(sim):
         fig = plt.figure()
         figs += [fig]
 
+        if sim.method.lower() == 'sadourny':
+            off = 1
+        else:
+            off = 0
+
         # Plot the data
         for L in range(sim.Nz):
 
@@ -32,13 +37,25 @@ def initialize_plots_animsave_2D(sim):
 
             if var == 'u':
                 ttl = fig.suptitle('Zonal Velocity : t = 0')
-                to_plot = sim.soln.u[0:sim.Nx,0:sim.Ny,L]
+                to_plot = sim.soln.u[off:off+sim.Nx,off:off+sim.Ny,L]
+                if sim.method.lower() == 'sadourny':
+                    X = sim.Xe
+                else:
+                    X = sim.X
+                Y = sim.Y
             elif var == 'v':
                 ttl = fig.suptitle('Meridional Velocity : t = 0')
-                to_plot = sim.soln.v[0:sim.Nx,0:sim.Ny,L]
+                to_plot = sim.soln.v[off:off+sim.Nx,off:off+sim.Ny,L]
+                if sim.method.lower() == 'sadourny':
+                    Y = sim.Ye
+                else:
+                    Y = sim.Y
+                X = sim.X
             elif var == 'h':
                 ttl = fig.suptitle('Free Surface Displacement : t = 0')
-                to_plot = sim.soln.h[0:sim.Nx,0:sim.Ny,L] - sim.Hs[L]
+                to_plot = sim.soln.h[off:off+sim.Nx,off:off+sim.Ny,L] - sim.Hs[L]
+                X = sim.X
+                Y = sim.Y
             elif var == 'vort':
                 to_plot =     sim.ddx_v(sim.soln.v[0:sim.Nx,0:sim.Ny,L],sim) \
                             - sim.ddy_u(sim.soln.u[0:sim.Nx,0:sim.Ny,L],sim)
@@ -66,7 +83,8 @@ def initialize_plots_animsave_2D(sim):
                 vmin = -cv
                 vmax =  cv
 
-            Q = plt.pcolormesh(sim.X/1e3, sim.Y/1e3, to_plot, cmap=sim.cmap, 
+            print(X.shape,Y.shape,sim.X.shape,sim.Y.shape)
+            Q = plt.pcolormesh(X/1e3, Y/1e3, to_plot, cmap=sim.cmap, 
                         vmin = vmin, vmax = vmax)
             Qs[var_cnt] += [Q]
             ttls[var_cnt] += [ttl]
