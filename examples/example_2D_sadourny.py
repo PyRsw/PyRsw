@@ -20,8 +20,6 @@ sim.run_name = '1D GeoAdjust'
 sim.geomy       = 'periodic'       # Geometry Types: 'periodic' or 'walls'
 sim.stepper     = Step.AB3         # Time-stepping algorithm: Euler, AB2, RK4
 sim.dynamics    = 'Linear'      # Dynamics: 'Nonlinear' or 'Linear'
-sim.method      = 'Spectral'       # Numerical method: 'Spectral'
-sim.flux_method = Flux.spectral_sw # Flux method: 
 sim.method      = 'Sadourny'       # Numerical method: 'Sadourny'
 sim.flux_method = Flux.sadourny_sw # Flux method: 
 

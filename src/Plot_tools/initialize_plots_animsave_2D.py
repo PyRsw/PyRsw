@@ -107,7 +107,9 @@ def initialize_plots_animsave_2D(sim):
             plt.colorbar()
 
             plt.axis('tight')
-            plt.gca().set_aspect('equal')
+
+            if 1./1.1 <= sim.Ly/sim.Lx <= 1.1:
+                plt.gca().set_aspect('equal')
 
     if sim.animate == 'Anim':
         sim.update_plots = update_anim_2D
