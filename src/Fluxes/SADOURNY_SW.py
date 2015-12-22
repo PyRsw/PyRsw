@@ -67,8 +67,10 @@ def sadourny_sw_flux(sim):
         q = (sim.ddx_v(v,dx) - sim.ddy_u(u,dy)  + sim.F)/(sim.avy_u(sim.avx_h(h)))  
 
         # Flux
-        sim.curr_flux.u[:,:,ii] =   sim.avy_v(q*sim.avx_v(V)) - sim.ddx_h(B,dx)
-        sim.curr_flux.v[:,:,ii] = - sim.avx_u(q*sim.avy_u(U)) - sim.ddy_h(B,dy)
+        #sim.curr_flux.u[:,:,ii] =   sim.avy_v(q*sim.avx_v(V)) - sim.ddx_h(B,dx)
+        #sim.curr_flux.v[:,:,ii] = - sim.avx_u(q*sim.avy_u(U)) - sim.ddy_h(B,dy)
+        sim.curr_flux.u[:,:,ii] =   sim.avy_v(q)*sim.avy_v(sim.avx_v(V)) - sim.ddx_h(B,dx)
+        sim.curr_flux.v[:,:,ii] = - sim.avx_u(q)*sim.avx_u(sim.avy_u(U)) - sim.ddy_h(B,dy)
         sim.curr_flux.h[:,:,ii] = - sim.ddx_u(U,dx) - sim.ddy_v(V,dy)
     return
 
@@ -95,8 +97,10 @@ def sadourny_sw_linear_flux(sim):
         B = sim.gs[ii]*h
 
         # Flux
-        sim.curr_flux.u[:,:,ii] =   sim.avy_v(q*sim.avx_v(V)) - sim.ddx_h(B,dx)
-        sim.curr_flux.v[:,:,ii] = - sim.avx_u(q*sim.avy_u(U)) - sim.ddy_h(B,dy)
+        #sim.curr_flux.u[:,:,ii] =   sim.avy_v(q*sim.avx_v(V)) - sim.ddx_h(B,dx)
+        #sim.curr_flux.v[:,:,ii] = - sim.avx_u(q*sim.avy_u(U)) - sim.ddy_h(B,dy)
+        sim.curr_flux.u[:,:,ii] =   sim.avy_v(q)*sim.avy_v(sim.avx_v(V)) - sim.ddx_h(B,dx)
+        sim.curr_flux.v[:,:,ii] = - sim.avx_u(q)*sim.avx_u(sim.avy_u(U)) - sim.ddy_h(B,dy)
         sim.curr_flux.h[:,:,ii] = - sim.ddx_u(U,dx) - sim.ddy_v(V,dy)
 
     return

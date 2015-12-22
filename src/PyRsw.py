@@ -2,11 +2,14 @@
 ## This file contains the core PyRsw user class.
 ##
 
+
 import numpy as np
 import matplotlib
 import Plot_tools
 import Diagnose
 import Steppers
+import Fluxes as Fluxes
+
 from scipy.fftpack import fftn, ifftn, fftfreq
 import os, sys, shutil
 #FJP
@@ -110,6 +113,25 @@ class Simulation:
     # Full initialization for once the user has specified parameters
     def initialize(self):
 
+        # Initial conditions and topography
+        if self.method == 'Spectral':
+            self.soln      = Solution(self.Nx,self.Ny,self.Nz)
+            self.curr_flux = Solution(self.Nx,self.Ny,self.Nz)
+            self.grid_x    = Solution(self.Nx,self.Ny,self.Nz)
+            self.grid_y    = Solution(self.Nx,self.Ny,self.Nz)
+
+            self.flux_method = Fluxes.spectral_sw
+        elif self.method == 'Sadourny':
+            self.soln      = SolutionSd(self.Nx,self.Ny,self.Nz)
+            self.curr_flux = SolutionSd(self.Nx,self.Ny,self.Nz)
+            self.grid_x    = SolutionSd(self.Nx,self.Ny,self.Nz)
+            self.grid_y    = SolutionSd(self.Nx,self.Ny,self.Nz)
+
+            self.flux_method = Fluxes.sadourny_sw
+        else:
+            print('Flux Method must be Spectral or Sadourny.')
+            sys.exit()
+
         # Determine the CFL value based on the time-stepping scheme
         if self.cfl == -1:
             if self.stepper.__name__ == 'AB3':
@@ -141,21 +163,6 @@ class Simulation:
             print('Restarting from index {0:d}'.format(self.restart_index))
         print ' '
         
-
-        # Initial conditions and topography
-        if self.method == 'Spectral':
-            self.soln      = Solution(self.Nx,self.Ny,self.Nz)
-            self.curr_flux = Solution(self.Nx,self.Ny,self.Nz)
-            self.grid_x    = Solution(self.Nx,self.Ny,self.Nz)
-            self.grid_y    = Solution(self.Nx,self.Ny,self.Nz)
-        elif self.method == 'Sadourny':
-            self.soln      = SolutionSd(self.Nx,self.Ny,self.Nz)
-            self.curr_flux = SolutionSd(self.Nx,self.Ny,self.Nz)
-            self.grid_x    = SolutionSd(self.Nx,self.Ny,self.Nz)
-            self.grid_y    = SolutionSd(self.Nx,self.Ny,self.Nz)
-        else:
-            print('Flux Method must be Spectral or Sadourny.')
-            sys.exit()
 
         # Initialize grids and cell centres
         dxs = [1,1]

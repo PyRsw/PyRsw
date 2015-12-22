@@ -9,7 +9,7 @@ import sys
 sys.path.append('../src')
 
 import Steppers as Step
-import Fluxes as Flux
+#import Fluxes as Flux
 from PyRsw import Simulation
 from constants import minute, hour, day
 
@@ -18,15 +18,16 @@ sim.run_name = '2D_Bickley_Jet_Sadourny'
 
 # Geometry and Model Equations
 sim.geomx       = 'periodic'       # Geometry Types: 'periodic' or 'walls'
-sim.geomy       = 'periodic'
+sim.geomy       = 'walls'
 sim.stepper     = Step.AB3         # Time-stepping algorithm: Euler, AB2, RK4
 sim.method      = 'Sadourny'       # Numerical method: 'Spectral'
+sim.method      = 'Spectral'
 sim.dynamics    = 'Nonlinear'      # Dynamics: 'Nonlinear' or 'Linear'
-sim.flux_method = Flux.sadourny_sw # Flux method: spectral_sw is only option currently
+#sim.flux_method = Flux.sadourny_sw # Flux method: spectral_sw is only option currently
 
 # Specify paramters
 sim.Lx  = 200e3           # Domain extent               (m)
-sim.Ly  = 400e3           # Domain extent               (m)
+sim.Ly  = 200e3           # Domain extent               (m)
 sim.Nx  = 64             # Grid points in x
 sim.Ny  = 128             # Grid points in y
 sim.Nz  = 1               # Number of layers
@@ -42,7 +43,7 @@ sim.num_threads = 32
 
 # Plotting parameters
 sim.plott   = 1.*hour  # Period of plots
-sim.animate = 'Save'      # 'Save' to create video frames,
+sim.animate = 'Anim'      # 'Save' to create video frames,
                           # 'Anim' to animate,
                           # 'None' otherwise
 sim.plot_vars = ['v', 'u', 'h']
@@ -66,12 +67,14 @@ for ii in range(sim.Nz):  # Set mean depths
 # First we define the jet
 Ljet = 10e3            # Jet width
 amp  = 0.1             # Elevation of free-surface in basic state
-sim.soln.h[:,:,0] +=  amp*np.tanh((sim.grid_y.h + sim.Ly/4)/Ljet) - amp*np.tanh((sim.grid_y.h - sim.Ly/4)/Ljet)
-sim.soln.u[:,:,0]  = -sim.g*amp/(sim.f0*Ljet)/(np.cosh((sim.grid_y.u + sim.Ly/4)/Ljet)**2) + sim.g*amp/(sim.f0*Ljet)/(np.cosh((sim.grid_y.u - sim.Ly/4)/Ljet)**2)
+sim.soln.h[:,:,0] += - amp*np.tanh((sim.grid_y.h)/Ljet)
+sim.soln.u[:,:,0]  =   sim.g*amp/(sim.f0*Ljet)/(np.cosh((sim.grid_y.u)/Ljet)**2)
+#sim.soln.h[:,:,0] +=  amp*np.tanh((sim.grid_y.h + sim.Ly/4)/Ljet) - amp*np.tanh((sim.grid_y.h - sim.Ly/4)/Ljet)
+#sim.soln.u[:,:,0]  = -sim.g*amp/(sim.f0*Ljet)/(np.cosh((sim.grid_y.u + sim.Ly/4)/Ljet)**2) + sim.g*amp/(sim.f0*Ljet)/(np.cosh((sim.grid_y.u - sim.Ly/4)/Ljet)**2)
 
 # Then we add on a random perturbation
-sim.soln.u[:,:,0] +=  1e-3*np.exp(-((sim.grid_y.u+sim.Ly/4)/Ljet)**2)*np.random.randn(*sim.grid_y.u.shape)
-sim.soln.u[:,:,0] +=  1e-3*np.exp(-((sim.grid_y.u-sim.Ly/4)/Ljet)**2)*np.random.randn(*sim.grid_y.u.shape)
+sim.soln.u[:,:,0] +=  1e-3*np.exp(-((sim.grid_y.u)/Ljet)**2)*np.random.randn(*sim.grid_y.u.shape)
+#sim.soln.u[:,:,0] +=  1e-3*np.exp(-((sim.grid_y.u-sim.Ly/4)/Ljet)**2)*np.random.randn(*sim.grid_y.u.shape)
 
 sim.run()                # Run the simulation
 

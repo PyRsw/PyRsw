@@ -9,7 +9,6 @@ import sys
 sys.path.append('../src')
 
 import Steppers as Step
-import Fluxes as Flux
 from PyRsw import Simulation
 from constants import minute, hour, day
 
@@ -17,18 +16,17 @@ sim = Simulation()  # Create a simulation object
 sim.run_name = '1D_Sadourny'
 
 # Geometry and Model Equations
-sim.geomx       = 'periodic'       # Geometry Types: 'periodic' or 'walls'
-sim.geomy       = 'periodic'       # Geometry Types: 'periodic' or 'walls'
+sim.geomy       = 'walls'       # Geometry Types: 'periodic' or 'walls'
 sim.stepper     = Step.AB3         # Time-stepping algorithm: Euler, AB2, RK4
-sim.dynamics    = 'Linear'      # Dynamics: 'Nonlinear' or 'Linear'
+sim.dynamics    = 'Nonlinear'         # Dynamics: 'Nonlinear' or 'Linear'
 sim.method      = 'Sadourny'       # Numerical method: 'Sadourny'
-sim.flux_method = Flux.sadourny_sw # Flux method: 
+sim.method      = 'Spectral'
 
 # Specify paramters
 sim.Lx  = 4000e3          # Domain extent               (m)
 sim.Ly  = 4000e3          # Domain extent               (m)
-sim.Nx  = 1                 # Grid points in x
-sim.Ny  = 128               # Grid points in y
+sim.Nx  = 1               # Grid points in x
+sim.Ny  = 128             # Grid points in y
 sim.Nz  = 1               # Number of layers
 sim.g   = 9.81            # Gravity                     (m/sec^2)
 sim.f0  = 0.e-4           # Coriolis                    (1/sec)
@@ -70,33 +68,34 @@ x0 = 1.*sim.Lx/2.          # Centre
 W  = 200.e3                # Width
 amp = 1.                   # Amplitude
 
-sim.soln.h[:,:,0] += amp*np.exp(-(sim.grid_y.h)**2/(W**2))
+sim.soln.h[:,:,0] += amp*np.exp(-(sim.grid_y.h + sim.Ly/4.)**2/(W**2))
+#sim.soln.h[:,:,0] += amp*np.exp(-(sim.grid_x.h + sim.Lx/4.)**2/(W**2))
 
 # Run the simulation
 sim.run()                
 
 # Hovmuller plot
-plt.figure()
-t = np.arange(0,sim.end_time+sim.plott,sim.plott)/86400.
+#plt.figure()
+#t = np.arange(0,sim.end_time+sim.plott,sim.plott)/86400.
 
-if sim.Ny==1:
-    x = sim.x/1e3
-elif sim.Nx == 1:
-    x = sim.y/1e3
+#if sim.Ny==1:
+#    x = sim.x/1e3
+#elif sim.Nx == 1:
+#    x = sim.y/1e3
 
-for L in range(sim.Nz):
-    field = sim.hov_h[:,0,:].T - np.sum(sim.Hs[L:])
-    cv = np.max(np.abs(field.ravel()))
-    plt.subplot(sim.Nz,1,L+1)
-    plt.pcolormesh(x,t, field,
-        cmap=sim.cmap, vmin = -cv, vmax = cv)
-    plt.axis('tight')
-    plt.title(r"$\mathrm{Hovm{\"o}ller} \; \mathrm{Plot} \; \mathrm{of} \; \eta$", fontsize = 16)
-    if sim.Nx > 1:
-        plt.xlabel(r"$\mathrm{x} \; \mathrm{(km)}$", fontsize=14)
-    else:
-        plt.xlabel(r"$\mathrm{y} \; \mathrm{(km)}$", fontsize=14)
-    plt.ylabel(r"$\mathrm{Time} \; \mathrm{(days)}$", fontsize=14)
-    plt.colorbar()
-
-plt.show()
+#for L in range(sim.Nz):
+#    field = sim.hov_h[:,0,:].T - np.sum(sim.Hs[L:])
+#    cv = np.max(np.abs(field.ravel()))
+#    plt.subplot(sim.Nz,1,L+1)
+#    plt.pcolormesh(x,t, field,
+#        cmap=sim.cmap, vmin = -cv, vmax = cv)
+#    plt.axis('tight')
+#    plt.title(r"$\mathrm{Hovm{\"o}ller} \; \mathrm{Plot} \; \mathrm{of} \; \eta$", fontsize = 16)
+#    if sim.Nx > 1:
+#        plt.xlabel(r"$\mathrm{x} \; \mathrm{(km)}$", fontsize=14)
+#    else:
+#        plt.xlabel(r"$\mathrm{y} \; \mathrm{(km)}$", fontsize=14)
+#    plt.ylabel(r"$\mathrm{Time} \; \mathrm{(days)}$", fontsize=14)
+#    plt.colorbar()
+#
+#plt.show()

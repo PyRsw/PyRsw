@@ -20,6 +20,13 @@ def ddx_periodic(f,dx):
             
     return df
 
+def ddx_walls(f,dx):
+
+    fs = np.concatenate([-f[0:1,:],f,-f[-1:,:]],axis=0)
+    df = (fs[1:,:] - fs[0:-1,:])/dx
+            
+    return df
+
 def avx_none(f):
 
     af = f
@@ -40,6 +47,13 @@ def avx_periodic(f):
             
     return af
 
+def avx_walls(f):
+
+    fs = np.concatenate([-f[0:1,:],f,-f[-1:,:]],axis=0)
+    af = 0.5*(fs[1:,:] + fs[0:-1,:])
+            
+    return af
+
 def SADOURNY_x(sim):       # Set the differentiation operators
 
     if sim.Nx == 1:
@@ -53,12 +67,21 @@ def SADOURNY_x(sim):       # Set the differentiation operators
 
     else:
 
-        sim.ddx_u = ddx_periodic
         sim.ddx_v = ddx
         sim.ddx_h = ddx
-        sim.avx_u = avx_periodic
         sim.avx_v = avx
         sim.avx_h = avx
 
+        if sim.geomx == 'periodic':
+            
+            sim.ddx_u = ddx_periodic
+            sim.avx_u = avx_periodic
 
-        
+        elif sim.geomx == 'walls':
+
+            sim.ddx_u = ddx_walls
+            sim.avx_u = avx_walls
+
+        else:
+            print "x boundary conditions must be from the list: periodic, walls"
+            sys.exit()

@@ -20,6 +20,13 @@ def ddy_periodic(f,dy):
             
     return df
 
+def ddy_walls(f,dy):
+
+    fs = np.concatenate([-f[:,0:1],f,-f[:,-1:]],axis=1)
+    df = (fs[:,1:] - fs[:,0:-1])/dy
+            
+    return df
+
 def avy_none(f):
 
     af = f
@@ -39,6 +46,13 @@ def avy_periodic(f):
             
     return af
 
+def avy_walls(f):
+
+    fs = np.concatenate([-f[:,0:1],f,-f[:,-1:]],axis=1)
+    af = 0.5*(fs[:,1:] + fs[:,0:-1])
+    
+    return af
+
 def SADOURNY_y(sim):       # Set the differentiation operators
 
     if sim.Ny == 1:
@@ -53,9 +67,23 @@ def SADOURNY_y(sim):       # Set the differentiation operators
     else:
 
         sim.ddy_u = ddy
-        sim.ddy_v = ddy_periodic
         sim.ddy_h = ddy
         sim.avy_u = avy
-        sim.avy_v = avy_periodic
         sim.avy_h = avy
 
+        if sim.geomy == 'periodic':
+            
+            sim.ddy_v = ddy_periodic
+            sim.avy_v = avy_periodic
+            
+        elif sim.geomy == 'walls':
+            
+            sim.ddy_v = ddy_walls
+            sim.avy_v = avy_walls
+
+        else:
+            print "y boundary conditions must be from the list: periodic, walls"
+            sys.exit()
+
+
+            

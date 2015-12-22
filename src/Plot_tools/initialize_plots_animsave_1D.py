@@ -81,7 +81,6 @@ def initialize_plots_animsave_1D(sim):
                     to_plot *= 1./sim.f0
                 to_plot = to_plot.ravel()
 
-            print(x.shape, to_plot.shape)
             l, = plt.plot(x.ravel(), to_plot.ravel(), linewidth=2)
 
             # Has the user specified plot limits?
