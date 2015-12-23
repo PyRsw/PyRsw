@@ -4,6 +4,7 @@ examples/*.png
 examples/Frames
 examples/*.mp4
 examples/Outputs
+*.so
 
 # Ignore latex-related files
 *.synctex.gz

@@ -66,24 +66,51 @@ def SADOURNY_y(sim):       # Set the differentiation operators
 
     else:
 
-        sim.ddy_u = ddy
-        sim.ddy_h = ddy
-        sim.avy_u = avy
-        sim.avy_h = avy
+        try:
+            import SADOURNY_y_fortran as fort
 
-        if sim.geomy == 'periodic':
-            
-            sim.ddy_v = ddy_periodic
-            sim.avy_v = avy_periodic
-            
-        elif sim.geomy == 'walls':
-            
-            sim.ddy_v = ddy_walls
-            sim.avy_v = avy_walls
+            sim.ddy_u = fort.ddy
+            sim.ddy_h = fort.ddy
+            sim.avy_u = fort.avy
+            sim.avy_h = fort.avy
 
-        else:
-            print "y boundary conditions must be from the list: periodic, walls"
-            sys.exit()
+            if sim.geomy == 'periodic':
+            
+                sim.ddy_v = fort.ddy_periodic
+                sim.avy_v = fort.avy_periodic
+            
+            elif sim.geomy == 'walls':
+            
+                sim.ddy_v = fort.ddy_walls
+                sim.avy_v = fort.avy_walls
+
+            else:
+                print "y boundary conditions must be from the list: periodic, walls"
+                sys.exit()
+
+
+            print('Using Fortran in y')
+        except:
+            print('Unable to load Fortran for y functions')
+
+            sim.ddy_u = ddy
+            sim.ddy_h = ddy
+            sim.avy_u = avy
+            sim.avy_h = avy
+
+            if sim.geomy == 'periodic':
+            
+                sim.ddy_v = ddy_periodic
+                sim.avy_v = avy_periodic
+            
+            elif sim.geomy == 'walls':
+            
+                sim.ddy_v = ddy_walls
+                sim.avy_v = avy_walls
+
+            else:
+                print "y boundary conditions must be from the list: periodic, walls"
+                sys.exit()
 
 
             

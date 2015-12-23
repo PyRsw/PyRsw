@@ -374,7 +374,6 @@ class Simulation:
         self.time += self.dt
        
         if do_plot:
-            print "in step t = ", self.time
             self.update_plots(self)
             self.next_plot_time += self.plott
             #FJP

@@ -2,10 +2,7 @@ import numpy as np
 import sys
  
 def ddx_none(f,dx):
-
-    df = 0.0
-    
-    return df
+    return 0.
 
 def ddx(f,dx):
 
@@ -28,10 +25,7 @@ def ddx_walls(f,dx):
     return df
 
 def avx_none(f):
-
-    af = f
-            
-    return af
+    return f
 
 
 def avx(f):
@@ -67,21 +61,47 @@ def SADOURNY_x(sim):       # Set the differentiation operators
 
     else:
 
-        sim.ddx_v = ddx
-        sim.ddx_h = ddx
-        sim.avx_v = avx
-        sim.avx_h = avx
+        try:
+            import SADOURNY_x_fortran as fort
 
-        if sim.geomx == 'periodic':
+            sim.ddx_v = fort.ddx
+            sim.ddx_h = fort.ddx
+            sim.avx_v = fort.avx
+            sim.avx_h = fort.avx
+
+            if sim.geomx == 'periodic':
             
-            sim.ddx_u = ddx_periodic
-            sim.avx_u = avx_periodic
+                sim.ddx_u = fort.ddx_periodic
+                sim.avx_u = fort.avx_periodic
 
-        elif sim.geomx == 'walls':
+            elif sim.geomx == 'walls':
 
-            sim.ddx_u = ddx_walls
-            sim.avx_u = avx_walls
+                sim.ddx_u = fort.ddx_walls
+                sim.avx_u = fort.avx_walls
 
-        else:
-            print "x boundary conditions must be from the list: periodic, walls"
-            sys.exit()
+            else:
+                print "x boundary conditions must be from the list: periodic, walls"
+                sys.exit()
+
+            print('Using Fortran in x')
+        except:
+            print('Unable to load Fortran for x functions')
+
+            sim.ddx_v = ddx
+            sim.ddx_h = ddx
+            sim.avx_v = avx
+            sim.avx_h = avx
+
+            if sim.geomx == 'periodic':
+            
+                sim.ddx_u = ddx_periodic
+                sim.avx_u = avx_periodic
+
+            elif sim.geomx == 'walls':
+
+                sim.ddx_u = ddx_walls
+                sim.avx_u = avx_walls
+
+            else:
+                print "x boundary conditions must be from the list: periodic, walls"
+                sys.exit()

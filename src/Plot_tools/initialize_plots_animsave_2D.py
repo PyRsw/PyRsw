@@ -55,21 +55,36 @@ def initialize_plots_animsave_2D(sim):
                 X = sim.grid_x.h
                 Y = sim.grid_y.h
             elif var == 'vort':
+                
                 if sim.method.lower() == 'sadourny':
-                    to_plot =     sim.ddx_v(sim.soln.v[0:sim.Nx+1,0:sim.Ny,L],sim) \
-                                - sim.ddy_u(sim.soln.u[0:sim.Nx,0:sim.Ny+1,L],sim)
+                    to_plot =     sim.ddx_v(sim.soln.v[0:sim.Nx+1,0:sim.Ny,L],sim.dx[0]) \
+                                - sim.ddy_u(sim.soln.u[0:sim.Nx,0:sim.Ny+1,L],sim.dx[1])
+                    to_plot = sim.avx_u(sim.avy_v(to_plot))
                 elif sim.method.lower() == 'spectral':
                     to_plot =     sim.ddx_v(sim.soln.v[0:sim.Nx,0:sim.Ny,L],sim) \
                                 - sim.ddy_u(sim.soln.u[0:sim.Nx,0:sim.Ny,L],sim)
+                
+                X = sim.grid_x.h
+                Y = sim.grid_y.h
+
                 if sim.f0 != 0:
                     ttl = fig.suptitle('Vorticity / f_0 : t = 0')
                     to_plot *= 1./sim.f0
                 else:   
                     ttl = fig.suptitle('Vorticity : t = 0')
             elif var == 'div':
-                h = sim.soln.h[:,:,L] 
-                to_plot =     sim.ddx_u(h*sim.soln.u[0:sim.Nx,0:sim.Ny,L],sim) \
-                            + sim.ddy_v(h*sim.soln.v[0:sim.Nx,0:sim.Ny,L],sim)
+
+                if sim.method.lower() == 'sadourny':
+                    to_plot =     sim.ddx_u(sim.avx_h(sim.soln.h[0:sim.Nx+1,0:sim.Ny+1,L])*sim.soln.u[0:sim.Nx,0:sim.Ny+1,L],sim.dx[0]) \
+                                + sim.ddy_v(sim.avy_h(sim.soln.h[0:sim.Nx+1,0:sim.Ny+1,L])*sim.soln.v[0:sim.Nx+1,0:sim.Ny,L],sim.dy[0])
+                elif sim.method.lower() == 'spectral':
+                    h = sim.soln.h[:,:,L] 
+                    to_plot =     sim.ddx_u(h*sim.soln.u[0:Nx,0:Ny,L],sim) \
+                                + sim.ddy_v(h*sim.soln.v[0:Nx,0:Ny,L],sim)
+
+                X = sim.grid_x.h
+                Y = sim.grid_y.h
+
                 if sim.f0 != 0:
                     ttl = fig.suptitle('Divergence of mass-flux / f_0 : t = 0')
                     to_plot *= 1./sim.f0
