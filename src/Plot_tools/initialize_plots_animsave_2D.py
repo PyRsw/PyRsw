@@ -13,19 +13,6 @@ def initialize_plots_animsave_2D(sim):
     Qs   = []
     ttls = []
 
-    # Create the appropriate grids:
-    # extend by a point to handle the way
-    # that pcolor removes boundaries
-    x = np.zeros((sim.Nx+1))
-    x[1:] = sim.x + (sim.x[1] - sim.x[0])/2.
-    x[0]  = sim.x[0] - (sim.x[1] - sim.x[0])/2.
-
-    y = np.zeros((sim.Ny+1))
-    y[1:] = sim.y + (sim.y[1] - sim.y[0])/2.
-    y[0]  = sim.y[0] - (sim.y[1] - sim.y[0])/2.
-
-    X,Y = np.meshgrid(x,y,indexing='ij')
-
     # Loop through each element of plot_vars
     # Each field will be given its own figure
     for var_cnt in range(len(sim.plot_vars)):
@@ -45,25 +32,59 @@ def initialize_plots_animsave_2D(sim):
 
             if var == 'u':
                 ttl = fig.suptitle('Zonal Velocity : t = 0')
-                to_plot = sim.soln.u[:,:,L]
+                if sim.method.lower() == 'sadourny':
+                    to_plot = sim.soln.u[0:sim.Nx,0:sim.Ny+1,L]
+                elif sim.method.lower() == 'spectral':
+                    to_plot = sim.soln.u[0:sim.Nx,0:sim.Ny,L]
+                X = sim.grid_x.u
+                Y = sim.grid_y.u
             elif var == 'v':
                 ttl = fig.suptitle('Meridional Velocity : t = 0')
-                to_plot = sim.soln.v[:,:,L]
+                if sim.method.lower() == 'sadourny':
+                    to_plot = sim.soln.v[0:sim.Nx+1,0:sim.Ny,L]
+                elif sim.method.lower() == 'spectral':
+                    to_plot = sim.soln.v[0:sim.Nx,0:sim.Ny,L]
+                X = sim.grid_x.v
+                Y = sim.grid_y.v
             elif var == 'h':
                 ttl = fig.suptitle('Free Surface Displacement : t = 0')
-                to_plot = sim.soln.h[:,:,L] - sim.Hs[L]
+                if sim.method.lower() == 'sadourny':
+                    to_plot = sim.soln.h[0:sim.Nx+1,0:sim.Ny+1,L] - sim.Hs[L]
+                elif sim.method.lower() == 'spectral':
+                    to_plot = sim.soln.h[0:sim.Nx,0:sim.Ny,L] - sim.Hs[L]
+                X = sim.grid_x.h
+                Y = sim.grid_y.h
             elif var == 'vort':
-                to_plot =     sim.ddx_v(sim.soln.v[:,:,L],sim) \
-                            - sim.ddy_u(sim.soln.u[:,:,L],sim)
+                
+                if sim.method.lower() == 'sadourny':
+                    to_plot =     sim.ddx_v(sim.soln.v[0:sim.Nx+1,0:sim.Ny,L],sim.dx[0]) \
+                                - sim.ddy_u(sim.soln.u[0:sim.Nx,0:sim.Ny+1,L],sim.dx[1])
+                    to_plot = sim.avx_u(sim.avy_v(to_plot))
+                elif sim.method.lower() == 'spectral':
+                    to_plot =     sim.ddx_v(sim.soln.v[0:sim.Nx,0:sim.Ny,L],sim) \
+                                - sim.ddy_u(sim.soln.u[0:sim.Nx,0:sim.Ny,L],sim)
+                
+                X = sim.grid_x.h
+                Y = sim.grid_y.h
+
                 if sim.f0 != 0:
                     ttl = fig.suptitle('Vorticity / f_0 : t = 0')
                     to_plot *= 1./sim.f0
                 else:   
                     ttl = fig.suptitle('Vorticity : t = 0')
             elif var == 'div':
-                h = sim.soln.h[:,:,L] 
-                to_plot =     sim.ddx_u(h*sim.soln.u[:,:,L],sim) \
-                            + sim.ddy_v(h*sim.soln.v[:,:,L],sim)
+
+                if sim.method.lower() == 'sadourny':
+                    to_plot =     sim.ddx_u(sim.avx_h(sim.soln.h[0:sim.Nx+1,0:sim.Ny+1,L])*sim.soln.u[0:sim.Nx,0:sim.Ny+1,L],sim.dx[0]) \
+                                + sim.ddy_v(sim.avy_h(sim.soln.h[0:sim.Nx+1,0:sim.Ny+1,L])*sim.soln.v[0:sim.Nx+1,0:sim.Ny,L],sim.dy[0])
+                elif sim.method.lower() == 'spectral':
+                    h = sim.soln.h[:,:,L] 
+                    to_plot =     sim.ddx_u(h*sim.soln.u[0:Nx,0:Ny,L],sim) \
+                                + sim.ddy_v(h*sim.soln.v[0:Nx,0:Ny,L],sim)
+
+                X = sim.grid_x.h
+                Y = sim.grid_y.h
+
                 if sim.f0 != 0:
                     ttl = fig.suptitle('Divergence of mass-flux / f_0 : t = 0')
                     to_plot *= 1./sim.f0
@@ -79,7 +100,21 @@ def initialize_plots_animsave_2D(sim):
                 vmin = -cv
                 vmax =  cv
 
-            Q = plt.pcolormesh(X/1e3, Y/1e3, to_plot, cmap=sim.cmap, 
+            # Extend the grid to account for pcolor peculiarities
+            Nx = X.shape[0]
+            Ny = Y.shape[1]
+            X_plot = np.zeros((Nx+1,Ny+1))
+            Y_plot = np.zeros((Nx+1,Ny+1))
+
+            X_plot[1:,1:] = X + sim.dx[0]/2.
+            X_plot[1:,0]  = X[:,0] + sim.dx[0]/2.
+            X_plot[0,:]   = X[0,0] - sim.dx[0]/2.
+
+            Y_plot[1:,1:] = Y + sim.dx[1]/2.
+            Y_plot[0,1:]  = Y[0,:] + sim.dx[1]/2.
+            Y_plot[:,0]   = Y[0,0] - sim.dx[1]/2.
+
+            Q = plt.pcolormesh(X_plot/1e3, Y_plot/1e3, to_plot, cmap=sim.cmap, 
                         vmin = vmin, vmax = vmax)
             Qs[var_cnt] += [Q]
             ttls[var_cnt] += [ttl]
@@ -87,7 +122,9 @@ def initialize_plots_animsave_2D(sim):
             plt.colorbar()
 
             plt.axis('tight')
-            plt.gca().set_aspect('equal')
+
+            if 1./1.1 <= sim.Ly/sim.Lx <= 1.1:
+                plt.gca().set_aspect('equal')
 
     if sim.animate == 'Anim':
         sim.update_plots = update_anim_2D
@@ -100,7 +137,7 @@ def initialize_plots_animsave_2D(sim):
         plt.ion()
         plt.pause(0.01)
         plt.draw()
-        
+
     sim.figs = figs
     sim.Qs = Qs
     sim.ttls = ttls

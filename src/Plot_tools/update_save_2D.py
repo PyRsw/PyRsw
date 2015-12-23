@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 
 def update_save_2D(sim):
 
+    Nx, Ny = sim.Nx, sim.Ny
     for var_cnt in range(len(sim.plot_vars)):
 
         var = sim.plot_vars[var_cnt]
@@ -13,25 +14,47 @@ def update_save_2D(sim):
 
             if var == 'u':
                 sim.ttls[var_cnt][L].set_text('Zonal Velocity : {0:s}'.format(smart_time(sim.time)))
-                to_plot = sim.soln.u[:,:,L]
+                if sim.method.lower() == 'sadourny':
+                    to_plot = sim.soln.u[0:sim.Nx,0:sim.Ny+1,L]
+                elif sim.method.lower() == 'spectral':
+                    to_plot = sim.soln.u[0:sim.Nx,0:sim.Ny,L]
             elif var == 'v':
                 sim.ttls[var_cnt][L].set_text('Meridional Velocity : {0:s}'.format(smart_time(sim.time)))
-                to_plot = sim.soln.v[:,:,L]
+                if sim.method.lower() == 'sadourny':
+                    to_plot = sim.soln.v[0:sim.Nx+1,0:sim.Ny,L]
+                elif sim.method.lower() == 'spectral':
+                    to_plot = sim.soln.v[0:sim.Nx,0:sim.Ny,L]
             elif var == 'h':
                 sim.ttls[var_cnt][L].set_text('Free Surface Displacement : {0:s}'.format(smart_time(sim.time)))
-                to_plot = sim.soln.h[:,:,L] - sim.Hs[L]
+                if sim.method.lower() == 'sadourny':
+                    to_plot = sim.soln.h[0:sim.Nx+1,0:sim.Ny+1,L] - sim.Hs[L]
+                elif sim.method.lower() == 'spectral':
+                    to_plot = sim.soln.h[0:sim.Nx,0:sim.Ny,L] - sim.Hs[L]
             elif var == 'vort':
-                to_plot =     sim.ddx_v(sim.soln.v[:,:,L],sim) \
-                            - sim.ddy_u(sim.soln.u[:,:,L],sim)
+                
+                if sim.method.lower() == 'sadourny':
+                    to_plot =     sim.ddx_v(sim.soln.v[0:sim.Nx+1,0:sim.Ny,L],sim.dx[0]) \
+                                - sim.ddy_u(sim.soln.u[0:sim.Nx,0:sim.Ny+1,L],sim.dx[1])
+                    to_plot = sim.avx_u(sim.avy_v(to_plot))
+                elif sim.method.lower() == 'spectral':
+                    to_plot =     sim.ddx_v(sim.soln.v[0:sim.Nx,0:sim.Ny,L],sim) \
+                                - sim.ddy_u(sim.soln.u[0:sim.Nx,0:sim.Ny,L],sim)
+                
                 if sim.f0 != 0:
                     sim.ttls[var_cnt][L].set_text('Vorticity / f_0 : {0:s}'.format(smart_time(sim.time)))
                     to_plot *= 1./sim.f0
                 else:   
                     sim.ttls[var_cnt][L].set_text('Vorticity : {0:s}'.format(smart_time(sim.time)))
             elif var == 'div':
-                h = sim.soln.h[:,:,L]
-                to_plot =     sim.ddx_u(h*sim.soln.u[:,:,L],sim) \
-                            + sim.ddy_v(h*sim.soln.v[:,:,L],sim)
+
+                if sim.method.lower() == 'sadourny':
+                    to_plot =     sim.ddx_u(sim.avx_h(sim.soln.h[0:sim.Nx+1,0:sim.Ny+1,L])*sim.soln.u[0:sim.Nx,0:sim.Ny+1,L],sim.dx[0]) \
+                                + sim.ddy_v(sim.avy_h(sim.soln.h[0:sim.Nx+1,0:sim.Ny+1,L])*sim.soln.v[0:sim.Nx+1,0:sim.Ny,L],sim.dy[0])
+                elif sim.method.lower() == 'spectral':
+                    h = sim.soln.h[:,:,L] 
+                    to_plot =     sim.ddx_u(h*sim.soln.u[0:Nx,0:Ny,L],sim) \
+                                + sim.ddy_v(h*sim.soln.v[0:Nx,0:Ny,L],sim)
+
                 if sim.f0 != 0:
                     sim.ttls[var_cnt][L].set_text('Divergence of mass-flux / f_0 : {0:s}'.format(smart_time(sim.time)))
                     to_plot *= 1./sim.f0

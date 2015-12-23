@@ -2,22 +2,43 @@
 ## This file contains the core PyRsw user class.
 ##
 
+
 import numpy as np
 import matplotlib
 import Plot_tools
 import Diagnose
 import Steppers
+import Fluxes as Fluxes
+
 from scipy.fftpack import fftn, ifftn, fftfreq
 import os, sys, shutil
+#FJP
+import matplotlib.pyplot as plt
 
 def null_topo(a_sim):
     return
 
+#FJP: why do we have 2 layers of u,v,h if Nz = 0?
 class Solution():
     def __init__(self,Nx,Ny,Nz):
         self.u = np.zeros((Nx,Ny,Nz+1))
         self.v = np.zeros((Nx,Ny,Nz+1))
         self.h = np.zeros((Nx,Ny,Nz+1))
+
+class SolutionSd():
+    def __init__(self,Nx,Ny,Nz):
+        if Nx == 1:
+            self.u = np.zeros((1, Ny+1, Nz))
+            self.v = np.zeros((1, Ny,   Nz))
+            self.h = np.zeros((1, Ny+1, Nz+1))
+        elif Ny == 1:    
+            self.u = np.zeros((Nx,   1, Nz))
+            self.v = np.zeros((Nx+1, 1, Nz))
+            self.h = np.zeros((Nx+1, 1, Nz+1))
+        else:
+            self.u = np.zeros((Nx,   Ny+1, Nz))
+            self.v = np.zeros((Nx+1, Ny,   Nz))
+            self.h = np.zeros((Nx+1, Ny+1, Nz+1))
 
 class Flux():
     def __init__(self):
@@ -53,7 +74,7 @@ class Simulation:
         self.g    = 9.81            # gravity
         self.f0   = 1e-4            # Coriolis
         self.beta = 0.
-        self.cfl  = -1             # default CFL
+        self.cfl  = -1              # default CFL
         self.time = 0.              # initial time
         self.min_dt = 1e-3          # minimum timestep
         self.adaptive = True        # Adaptive (True) or fixed (False) timestep
@@ -66,6 +87,7 @@ class Simulation:
         
         self.run_name = 'test'      # Name of variable
 
+        #FJP: only spectral
         self.fcut = 0.6             # Filter cutoff
         self.ford = 2.0             # Filter order
         self.fstr = 20.0            # Filter strength
@@ -90,6 +112,25 @@ class Simulation:
         
     # Full initialization for once the user has specified parameters
     def initialize(self):
+
+        # Initial conditions and topography
+        if self.method == 'Spectral':
+            self.soln      = Solution(self.Nx,self.Ny,self.Nz)
+            self.curr_flux = Solution(self.Nx,self.Ny,self.Nz)
+            self.grid_x    = Solution(self.Nx,self.Ny,self.Nz)
+            self.grid_y    = Solution(self.Nx,self.Ny,self.Nz)
+
+            self.flux_method = Fluxes.spectral_sw
+        elif self.method == 'Sadourny':
+            self.soln      = SolutionSd(self.Nx,self.Ny,self.Nz)
+            self.curr_flux = SolutionSd(self.Nx,self.Ny,self.Nz)
+            self.grid_x    = SolutionSd(self.Nx,self.Ny,self.Nz)
+            self.grid_y    = SolutionSd(self.Nx,self.Ny,self.Nz)
+
+            self.flux_method = Fluxes.sadourny_sw
+        else:
+            print('Flux Method must be Spectral or Sadourny.')
+            sys.exit()
 
         # Determine the CFL value based on the time-stepping scheme
         if self.cfl == -1:
@@ -122,33 +163,52 @@ class Simulation:
             print('Restarting from index {0:d}'.format(self.restart_index))
         print ' '
         
+
         # Initialize grids and cell centres
         dxs = [1,1]
+
+        # x,  y:   centre values
+        # xe, ye:  edge values
         
-        if self.Nx > 1:
-            dx = self.Lx/self.Nx
-            self.x = np.arange(dx/2,self.Lx,dx) - self.Lx/2.
-            dxs[0] = dx
-        else:
-            self.x = np.array([0.])
-            
-        if self.Ny > 1:
-            dy = self.Ly/self.Ny
-            self.y = np.arange(dy/2,self.Ly,dy) - self.Ly/2.
-            dxs[1] = dy
-        else:
-            self.y = np.array([0.])
-            
+        dx = self.Lx/self.Nx
+        self.x = np.arange(dx/2,self.Lx,dx)    - self.Lx/2.
+        dxs[0] = dx
+
+        dy = self.Ly/self.Ny
+        self.y = np.arange(dy/2,self.Ly,dy)    - self.Ly/2.
+        dxs[1] = dy
+
+        [self.X, self.Y]  = np.meshgrid(self.x, self.y, indexing='ij')
+
+        if self.method.lower() == 'sadourny':
+            if self.Nx > 1:
+                xe = np.arange(0.0, self.Lx+dx,dx) - self.Lx/2.
+                #xe.reshape((self.Nx+1,1))
+            else:
+                xe = np.array([0.0])
+            if self.Ny > 1:
+                ye = np.arange(0.0, self.Ly+dy,dy) - self.Ly/2.
+                #ye.reshape((1,self.Ny+1))
+            else:
+                ye = np.array([0.0])
+
         self.dx = dxs
+
+        if self.method.lower() == 'sadourny':
+            [self.grid_x.u, self.grid_y.u] = np.meshgrid(self.x,ye, indexing='ij')
+            [self.grid_x.v, self.grid_y.v] = np.meshgrid(xe,self.y, indexing='ij')
+            [self.grid_x.h, self.grid_y.h] = np.meshgrid(xe,ye,     indexing='ij')
+        elif self.method.lower() == 'spectral':
+            [self.grid_x.u, self.grid_y.u] = np.meshgrid(self.x,self.y, indexing='ij')
+            [self.grid_x.v, self.grid_y.v] = np.meshgrid(self.x,self.y, indexing='ij')
+            [self.grid_x.h, self.grid_y.h] = np.meshgrid(self.x,self.y, indexing='ij')
 
         if self.beta != 0.:
             if self.geomy != 'walls':
                 print('beta-plane requires "walls" geometry in y.')
                 sys.exit()
 
-        # Define a 2D grid
-        self.X, self.Y = np.meshgrid(self.x,self.y,indexing='ij')
-        self.F = self.f0 + self.beta*self.Y
+        self.F  = self.f0 + self.beta*self.Y
 
         # Initialize differentiation and averaging operators
         self.flux_method(self)
@@ -164,30 +224,29 @@ class Simulation:
         else:
             self.gs = np.array([[self.g]])
 
-        # Initial conditions and topography
-        self.soln = Solution(self.Nx,self.Ny,self.Nz)
-        self.curr_flux = Solution(self.Nx,self.Ny,self.Nz)
+
         self.topo_func(self)
 
-        # Construct the spectral filter
-        fcut = self.fcut
-        ford = self.ford
-        fstr = self.fstr
-        if self.Nx>1:
-            k = self.kx/max(self.kx.ravel())
-            filtx = np.exp(-fstr*((np.abs(k)-fcut)/(1-fcut))**ford)*(np.abs(k)>fcut) + (np.abs(k)<fcut)
-            filtx = filtx.reshape((self.Nkx,1))
-        else:
-            filtx = np.array([1.0])
+        # Spectral filter
+        if self.method == 'Spectral':
+            fcut = self.fcut
+            ford = self.ford
+            fstr = self.fstr
+            if self.Nx>1:
+                k = self.kx/max(self.kx.ravel())
+                filtx = np.exp(-fstr*((np.abs(k)-fcut)/(1-fcut))**ford)*(np.abs(k)>fcut) + (np.abs(k)<fcut)
+                filtx = filtx.reshape((self.Nkx,1))
+            else:
+                filtx = np.array([1.0])
                 
-        if self.Ny>1:
-            k = self.ky/max(self.ky.ravel())
-            filty = np.exp(-fstr*((np.abs(k)-fcut)/(1-fcut))**ford)*(np.abs(k)>fcut) + (np.abs(k)<fcut)
-            filty = filty.reshape((1,self.Nky))
-        else:
-            filty = np.array([1.0])
+            if self.Ny>1:
+                k = self.ky/max(self.ky.ravel())
+                filty = np.exp(-fstr*((np.abs(k)-fcut)/(1-fcut))**ford)*(np.abs(k)>fcut) + (np.abs(k)<fcut)
+                filty = filty.reshape((1,self.Nky))
+            else:
+                filty = np.array([1.0])
                 
-        self.sfilt = np.tile(filtx,(1,self.Nky))*np.tile(filty,(self.Nkx,1))
+            self.sfilt = np.tile(filtx,(1,self.Nky))*np.tile(filty,(self.Nkx,1))
 
         # If we're using a fixed dt, check that it matches plott, savet, and diagt
         if self.animate.lower() != 'none':
@@ -219,8 +278,9 @@ class Simulation:
         
     def prepare_for_run(self):
 
+        #FJP: not ready for Sadourny
         # If we're going to be diagnosing, initialize those
-        Diagnose.initialize_diagnostics(self)
+        #Diagnose.initialize_diagnostics(self)
     
         # If we're saving, initialize those too
         if self.output:
@@ -241,15 +301,17 @@ class Simulation:
                 self.initialize_plots = Plot_tools.initialize_plots_animsave_1D
         
             num_plot = self.end_time/self.plott+1
-            if (self.Nx > 1) and (self.Ny == 1):
-                self.hov_h = np.zeros((self.Nx,self.Nz,num_plot))
-                self.hov_h[:,:,0] = self.soln.h[:,0,:-1]
-            elif (self.Nx == 1) and (self.Ny > 1):
-                self.hov_h = np.zeros((self.Ny,self.Nz,num_plot))
-                self.hov_h[:,:,0] = self.soln.h[0,:,:-1]
-            self.hov_count = 1
+            #FJP: not ready for Sadourny
+            #if (self.Nx > 1) and (self.Ny == 1):
+            #    self.hov_h = np.zeros((self.Nx,self.Nz,num_plot))
+            #    self.hov_h[:,:,0] = self.soln.h[:,0,:-1]
+            #elif (self.Nx == 1) and (self.Ny > 1):
+            #    self.hov_h = np.zeros((self.Ny,self.Nz,num_plot))
+            #    self.hov_h[:,:,0] = self.soln.h[0,:,:-1]
+            #self.hov_count = 1
 
             self.initialize_plots(self)
+
             if not(self.restarting):
                 self.update_plots(self)
             self.frame_count = int(np.floor(self.time/self.plott) + 1)
@@ -297,7 +359,6 @@ class Simulation:
     # Advance the simulation one time-step.
     def step(self):
 
-        #FJP: comment this back in
         self.compute_dt() 
         
         # Check if we need to adjust the time-step
@@ -315,11 +376,12 @@ class Simulation:
         if do_plot:
             self.update_plots(self)
             self.next_plot_time += self.plott
-            if (self.Nx == 1) or (self.Ny == 1):
-                Plot_tools.update_hov(self)
+            #FJP
+            #if (self.Nx == 1) or (self.Ny == 1):
+                #Plot_tools.update_hov(self)
 
-        if do_diag:
-            Diagnose.update(self)
+        #if do_diag:
+        #    Diagnose.update(self)
 
         if do_save:
             self.save_state()
@@ -340,8 +402,8 @@ class Simulation:
             maxv = np.max(np.ravel(self.soln.v[:,:,0]))
             minv = np.min(np.ravel(self.soln.v[:,:,0]))
             
-            mass = Diagnose.compute_mass(self)
-            enrg = Diagnose.compute_PE(self) + Diagnose.compute_KE(self)
+            #mass = Diagnose.compute_mass(self)
+            #enrg = Diagnose.compute_PE(self) + Diagnose.compute_KE(self)
 
             if self.Nz == 1:
                 pstr  = '{0:s}'.format(Plot_tools.smart_time(self.time))
@@ -352,22 +414,22 @@ class Simulation:
                     pstr += ',  dt = {0:0<7.1e}'.format(self.dt)
                 L = len(pstr) - 13
                 pstr += ', min(u,v,h) = ({0: < 8.4e},{1: < 8.4e},{2: < 8.4e})'.format(minu,minv,minh)
-                pstr += ', del_mass = {0: .2g}'.format(mass/self.Ms[0]-1)
+                #pstr += ', del_mass = {0: .2g}'.format(mass/self.Ms[0]-1)
                 pstr += '\n'
                 tmp = '  = {0:.3%}'.format(self.time/self.end_time)
                 pstr += tmp
                 pstr += ' '*(L - len(tmp))            
                 pstr += 'avg = {0:0<7.1e}'.format(self.mean_dt)
                 pstr += ', max(u,v,h) = ({0: < 8.4e},{1: < 8.4e},{2: < 8.4e})'.format(maxu,maxv,maxh)
-                pstr += ', del_enrg = {0: .2g}'.format(enrg/(self.KEs[0]+self.PEs[0])-1)
+                #pstr += ', del_enrg = {0: .2g}'.format(enrg/(self.KEs[0]+self.PEs[0])-1)
             else:
                 pstr  = 't = {0:.4g}s'.format(self.time)
                 try:
                     pstr += ', dt = {0:0<7.1e}'.format(np.mean(self.dts))
                 except:
                     pstr += ', dt = {0:0<7.1e}'.format(self.dt)
-                pstr += ', del_mass = {0:+.2g}'.format(mass/self.Ms[0]-1)
-                pstr += ', del_enrg = {0:+.2g}'.format(enrg/(self.KEs[0]+self.PEs[0])-1)
+                #pstr += ', del_mass = {0:+.2g}'.format(mass/self.Ms[0]-1)
+                #pstr += ', del_enrg = {0:+.2g}'.format(enrg/(self.KEs[0]+self.PEs[0])-1)
                 pstr += '\n'
                 pstr += '  = {0:.3%}'.format(self.time/self.end_time)
 
@@ -388,16 +450,32 @@ class Simulation:
 
         while self.time < self.end_time:
             self.step()
+            #plt.clf()
+            #plt.pcolormesh(self.Xe/1e3, self.Ye/1e3, self.soln.h[:,:,0],cmap='seismic')
+            #plt.title('t = ')
+            #plt.colorbar
+            #plt.pause(0.01)
+            #plt.draw()
+            #plt.show()
 
-        if self.diagnose:
-            Diagnose.plot(self)
+        #if self.diagnose:
+        #    Diagnose.plot(self)
         
-        if (self.animate == 'Anim'):
-            matplotlib.pyplot.ioff()
-            matploblib.show()
+        #if (self.animate == 'Anim'):
+            #print "h at x = 0 and t = ", self.time
+            #plt.figure()
+            #plt.clf()
+            #plt.pcolormesh(self.Xe/1e3, self.Ye/1e3, self.soln.h[:,:,0])
+            #plt.colorbar
+            #plt.pause(0.01)
+            ##plt.show()
+            #plt.ioff()
+            #plt.show()
+            ##matplotlib.pyplot.ioff()
+            ##matplotlib.show()
 
-        if self.diagnose:
-            Diagnose.save(self)
+        #if self.diagnose:
+        #    Diagnose.save(self)
 
     # Compute time-step using CFL condition.
     def compute_dt(self):
@@ -428,7 +506,7 @@ class Simulation:
 
     # Initialize the saving
     def initialize_saving(self):
-        
+
         if not(self.restarting):
             path = 'Outputs/{0:s}'.format(self.run_name)
             if not(os.path.isdir('Outputs')):
@@ -470,6 +548,7 @@ class Simulation:
 
         fp.close()
 
+    #FJP: modify for new grid sizes
     # Save grid 
     def save_grid(self):
         fname = 'Outputs/{0:s}/grid'.format(self.run_name) 
