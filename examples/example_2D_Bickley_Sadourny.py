@@ -14,7 +14,7 @@ from PyRsw import Simulation
 from constants import minute, hour, day
 
 sim = Simulation()  # Create a simulation object
-sim.run_name = '2D_Bickley_Jet_Sadourny_fort'
+sim.run_name = '2D_Bickley_Jet_Sadourny_N256'
 
 # Geometry and Model Equations
 sim.geomx       = 'periodic'       # Geometry Types: 'periodic' or 'walls'
@@ -24,10 +24,10 @@ sim.method      = 'Sadourny'       # Numerical method: 'Spectral'
 sim.dynamics    = 'Nonlinear'      # Dynamics: 'Nonlinear' or 'Linear'
 
 # Specify paramters
-sim.Lx  = 200e3           # Domain extent               (m)
-sim.Ly  = 200e3           # Domain extent               (m)
-sim.Nx  = 512             # Grid points in x
-sim.Ny  = 512             # Grid points in y
+sim.Lx  = 150e3           # Domain extent               (m)
+sim.Ly  = 100e3           # Domain extent               (m)
+sim.Nx  = 256             # Grid points in x
+sim.Ny  = 256             # Grid points in y
 sim.Nz  = 1               # Number of layers
 sim.g   = 9.81            # Gravity                     (m/sec^2)
 sim.f0  = 1.e-4           # Coriolis                    (1/sec)
