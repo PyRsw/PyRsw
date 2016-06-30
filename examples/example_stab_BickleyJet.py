@@ -42,6 +42,9 @@ sim.rho = [1025.]         # Vector of layer densities   (kg/m^3)
 sim.end_time = 14*24.*hour   # End Time                    (sec)
 
 # Initialize the grid and zero solutions
+sim.animate = 'None'
+sim.diagnose = False
+sim.output = False
 sim.initialize()
 
 
